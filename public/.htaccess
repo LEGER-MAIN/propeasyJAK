@@ -19,6 +19,18 @@ RewriteRule ^(.*)$ index.php [QSA,L]
     Allow from all
 </Files>
 
+<Files "test_chat_websocket.php">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+<Files "test_navegacion_chat.php">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+
+
 # Configuración de caché para archivos estáticos
 <IfModule mod_expires.c>
     ExpiresActive On

@@ -277,10 +277,62 @@ class Router {
         $this->post('/requests', 'RequestController@store');
         $this->get('/requests/{id}', 'RequestController@show');
         
-        // Rutas de chat (futuras)
+        // Rutas de chat
         $this->get('/chat', 'ChatController@index');
         $this->get('/chat/{id}', 'ChatController@show');
         $this->post('/chat/{id}/messages', 'ChatController@sendMessage');
+        $this->get('/chat/{id}/messages', 'ChatController@getMessages');
+        $this->get('/chat/unread-messages', 'ChatController@getUnreadMessages');
+        $this->post('/chat/{id}/mark-read', 'ChatController@markAsRead');
+        $this->get('/chat/stats', 'ChatController@getStats');
+        $this->get('/chat/search', 'ChatController@search');
+        $this->get('/chat/search-users', 'ChatController@searchUsers');
+        $this->get('/chat/iniciar/{clienteId}', 'ChatController@iniciarConNuevoCliente');
+        
+        // Rutas del chat integrado (API)
+        $this->get('/chat/conversations', 'ChatController@conversations');
+        $this->get('/chat/messages/{id}', 'ChatController@messages');
+        $this->post('/chat/send-message', 'ChatController@sendMessageJson');
+        $this->post('/chat/create-conversation', 'ChatController@createConversation');
+        
+        // Rutas del chat directo (sin solicitudes de compra)
+        $this->get('/chat/direct-conversations', 'ChatController@directConversations');
+        $this->get('/chat/direct/{id}/messages', 'ChatController@directMessages');
+        $this->post('/chat/send-direct-message', 'ChatController@sendDirectMessage');
+        $this->post('/chat/create-direct-conversation', 'ChatController@createDirectConversation');
+        $this->get('/chat/users-for-direct-chat', 'ChatController@usersForDirectChat');
+        
+
+        
+        // Ruta de prueba del chat real
+        $this->get('/test-chat-real', function() {
+            include APP_PATH . '/../test_chat_real.php';
+        });
+        
+        // Ruta de prueba JavaScript simple
+        $this->get('/test-js-simple', function() {
+            include APP_PATH . '/../test_js_simple.php';
+        });
+        
+        // Rutas de favoritos
+        $this->get('/favorites', 'FavoriteController@index');
+        $this->post('/favorites/add', 'FavoriteController@add');
+        $this->post('/favorites/remove', 'FavoriteController@remove');
+        $this->get('/favorites/verify/{id}', 'FavoriteController@verify');
+        $this->get('/favorites/count/{id}', 'FavoriteController@count');
+        $this->get('/favorites/total', 'FavoriteController@total');
+        $this->get('/favorites/list', 'FavoriteController@list');
+        $this->post('/favorites/clear', 'FavoriteController@clear');
+        
+
+        
+        // Rutas de búsqueda
+        $this->get('/buscar-agentes', 'SearchController@buscarAgentes');
+        $this->get('/buscar-clientes', 'SearchController@buscarClientes');
+        $this->get('/api/buscar-agentes', 'SearchController@apiBuscarAgentes');
+        $this->get('/api/buscar-clientes', 'SearchController@apiBuscarClientes');
+        $this->get('/api/ciudades', 'SearchController@getCiudades');
+        $this->get('/api/solicitudes-cliente/{id}', 'SearchController@getSolicitudesCliente');
         
         // Rutas de citas (futuras)
         $this->get('/appointments', 'AppointmentController@index');

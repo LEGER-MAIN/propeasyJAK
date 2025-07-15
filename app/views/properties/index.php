@@ -193,6 +193,17 @@ $content = ob_start();
                             </span>
                         </div>
                         
+                        <!-- Botón de Favorito -->
+                        <?php if (isAuthenticated()): ?>
+                        <div class="absolute top-2 right-2">
+                            <button class="favorite-btn bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110" 
+                                    data-property-id="<?= $property['id'] ?>"
+                                    data-is-favorite="false">
+                                <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors"></i>
+                            </button>
+                        </div>
+                        <?php endif; ?>
+                        
                         <!-- Precio -->
                         <div class="absolute bottom-2 right-2">
                             <span class="bg-white text-primary-600 px-3 py-1 rounded-lg text-sm font-bold shadow-md">

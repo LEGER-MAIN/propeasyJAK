@@ -40,6 +40,28 @@
         
         .slide-in { animation: slideIn 0.3s ease-out; }
         @keyframes slideIn { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .chat-tab.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .chat-message {
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        .chat-message.sent {
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 18px 18px 4px 18px;
+        }
+        
+        .chat-message.received {
+            background-color: #f3f4f6;
+            color: #374151;
+            border-radius: 18px 18px 18px 4px;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -77,12 +99,82 @@
                         <a href="/dashboard" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                             Dashboard
                         </a>
+                        <?php if (hasRole(ROLE_CLIENTE)): ?>
+                            <a href="/buscar-agentes" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                                <i class="fas fa-search"></i> Buscar Agentes
+                            </a>
+                        <?php endif; ?>
+                        <?php if (hasRole(ROLE_AGENTE)): ?>
+                            <a href="/buscar-clientes" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                                <i class="fas fa-search"></i> Buscar Clientes
+                            </a>
+                        <?php endif; ?>
+                        <a href="/chat" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="fas fa-comments"></i> Chat Completo
+                        </a>
+                        <a href="/favorites" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors relative">
+                            <i class="fas fa-heart"></i> Favoritos
+                            <span id="favorite-count" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                        </a>
                     <?php endif; ?>
                 </nav>
                 
-                <!-- Menú de usuario -->
+                <!-- Menú de usuario y chat -->
                 <div class="flex items-center space-x-4">
                     <?php if (isAuthenticated()): ?>
+                        <!-- Chat Button -->
+                        <div class="relative">
+                            <button id="chat-toggle" class="relative p-2 text-gray-700 hover:text-primary-600 transition-colors">
+                                <i class="fas fa-comments text-lg"></i>
+                                <span id="chat-notification" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                            </button>
+                            
+                            <!-- Chat Panel -->
+                            <div id="chat-panel" class="hidden absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                                <!-- Chat Header -->
+                                <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-comments text-primary-600"></i>
+                                        <h3 class="font-semibold text-gray-900">Chat</h3>
+                                    </div>
+                                    <button id="chat-close" class="text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Chat Tabs -->
+                                <div id="chat-tabs" class="flex border-b border-gray-200">
+                                    <!-- Tabs se cargarán dinámicamente -->
+                                </div>
+                                
+                                <!-- Chat Content -->
+                                <div id="chat-content" class="h-96 flex flex-col">
+                                    <!-- Messages Area -->
+                                    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3">
+                                        <div class="text-center text-gray-500 text-sm">
+                                            <i class="fas fa-comments text-2xl mb-2 block"></i>
+                                            <p>Selecciona una conversación para comenzar</p>
+                                            <p class="text-xs mt-1">O ve al chat completo para iniciar nuevas conversaciones</p>
+                                            <a href="/chat" class="inline-block mt-2 px-3 py-1 bg-primary-600 text-white rounded text-xs hover:bg-primary-700 transition-colors">
+                                                Ir al Chat Completo
+                                            </a>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Message Input -->
+                                    <div class="p-4 border-t border-gray-200">
+                                        <div class="flex space-x-2">
+                                            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." 
+                                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                            <button id="chat-send" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                                                <i class="fas fa-paper-plane"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- Menú de usuario -->
                         <div class="relative">
                             <button id="user-menu-button" class="w-9 h-9 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-bold text-lg hover:bg-primary-200 transition-colors">
@@ -201,6 +293,11 @@
 
     <!-- JavaScript -->
     <script>
+        // Variables globales del chat
+        let currentChatId = null;
+        let chatTabs = [];
+        let chatMessages = {};
+        
         // Menú de usuario
         const userMenuButton = document.getElementById('user-menu-button');
         const userMenuDropdown = document.getElementById('user-menu-dropdown');
@@ -217,6 +314,214 @@
                 }
             });
         }
+        
+        <?php if (isAuthenticated()): ?>
+        // Funcionalidad del chat
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatPanel = document.getElementById('chat-panel');
+        const chatClose = document.getElementById('chat-close');
+        const chatTabsContainer = document.getElementById('chat-tabs');
+        const chatMessagesContainer = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const chatSend = document.getElementById('chat-send');
+        
+        // Toggle del chat
+        if (chatToggle && chatPanel) {
+            chatToggle.addEventListener('click', function() {
+                chatPanel.classList.toggle('hidden');
+                if (!chatPanel.classList.contains('hidden')) {
+                    loadChatTabs();
+                }
+            });
+            
+            chatClose.addEventListener('click', function() {
+                chatPanel.classList.add('hidden');
+            });
+            
+            // Cerrar chat al hacer clic fuera
+            document.addEventListener('click', function(event) {
+                if (!chatToggle.contains(event.target) && !chatPanel.contains(event.target)) {
+                    chatPanel.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Cargar pestañas del chat
+        function loadChatTabs() {
+            fetch('/chat/conversations')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        chatTabs = data.conversations;
+                        renderChatTabs();
+                        if (chatTabs.length > 0 && !currentChatId) {
+                            selectChatTab(chatTabs[0].id);
+                        }
+                    }
+                })
+                .catch(error => console.error('Error al cargar conversaciones:', error));
+        }
+        
+        // Renderizar pestañas del chat
+        function renderChatTabs() {
+            chatTabsContainer.innerHTML = '';
+            
+            if (chatTabs.length === 0) {
+                chatTabsContainer.innerHTML = `
+                    <div class="p-4 text-center text-gray-500">
+                        <i class="fas fa-comments text-2xl mb-2"></i>
+                        <p class="text-sm">No hay conversaciones</p>
+                        <a href="/chat" class="inline-block mt-2 px-3 py-1 bg-primary-600 text-white rounded text-xs hover:bg-primary-700 transition-colors">
+                            Ir al Chat Completo
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            chatTabs.forEach(conversation => {
+                const tab = document.createElement('div');
+                tab.className = `chat-tab flex-1 px-3 py-2 text-center text-sm cursor-pointer transition-colors ${conversation.id === currentChatId ? 'active' : 'hover:bg-gray-100'}`;
+                tab.innerHTML = `
+                    <div class="flex items-center justify-center space-x-2">
+                        <div class="w-2 h-2 rounded-full ${conversation.online ? 'bg-green-500' : 'bg-gray-400'}"></div>
+                        <span class="truncate">${conversation.name}</span>
+                        ${conversation.unread > 0 ? `<span class="bg-red-500 text-white text-xs rounded-full px-1">${conversation.unread}</span>` : ''}
+                    </div>
+                `;
+                tab.addEventListener('click', () => selectChatTab(conversation.id));
+                chatTabsContainer.appendChild(tab);
+            });
+        }
+        
+        // Seleccionar pestaña del chat
+        function selectChatTab(chatId) {
+            currentChatId = chatId;
+            renderChatTabs();
+            loadChatMessages(chatId);
+        }
+        
+        // Cargar mensajes del chat
+        function loadChatMessages(chatId) {
+            fetch(`/chat/messages/${chatId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        chatMessages[chatId] = data.messages;
+                        renderChatMessages(chatId);
+                    }
+                })
+                .catch(error => console.error('Error al cargar mensajes:', error));
+        }
+        
+        // Renderizar mensajes del chat
+        function renderChatMessages(chatId) {
+            const messages = chatMessages[chatId] || [];
+            chatMessagesContainer.innerHTML = '';
+            
+            if (messages.length === 0) {
+                chatMessagesContainer.innerHTML = `
+                    <div class="text-center text-gray-500 text-sm">
+                        No hay mensajes en esta conversación
+                    </div>
+                `;
+                return;
+            }
+            
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `flex ${message.sender_id == <?= $_SESSION['user_id'] ?? 0 ?> ? 'justify-end' : 'justify-start'}`;
+                messageDiv.innerHTML = `
+                    <div class="chat-message ${message.sender_id == <?= $_SESSION['user_id'] ?? 0 ?> ? 'sent' : 'received'} px-4 py-2">
+                        <div class="text-sm">${message.message}</div>
+                        <div class="text-xs opacity-75 mt-1">${new Date(message.created_at).toLocaleTimeString()}</div>
+                    </div>
+                `;
+                chatMessagesContainer.appendChild(messageDiv);
+            });
+            
+            // Scroll al final
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+        }
+        
+        // Enviar mensaje
+        function sendMessage() {
+            if (!currentChatId || !chatInput.value.trim()) return;
+            
+            const message = chatInput.value.trim();
+            chatInput.value = '';
+            
+            fetch('/chat/send-message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    conversation_id: currentChatId,
+                    message: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Agregar mensaje a la conversación actual
+                    if (!chatMessages[currentChatId]) {
+                        chatMessages[currentChatId] = [];
+                    }
+                    chatMessages[currentChatId].push({
+                        id: data.message_id,
+                        message: message,
+                        sender_id: <?= $_SESSION['user_id'] ?? 0 ?>,
+                        created_at: new Date().toISOString()
+                    });
+                    renderChatMessages(currentChatId);
+                }
+            })
+            .catch(error => console.error('Error al enviar mensaje:', error));
+        }
+        
+        // Event listeners para envío de mensajes
+        if (chatSend) {
+            chatSend.addEventListener('click', sendMessage);
+        }
+        
+        if (chatInput) {
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+        
+        // Actualizar notificaciones del chat
+        function updateChatNotifications() {
+            fetch('/chat/unread-messages')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const notification = document.getElementById('chat-notification');
+                        if (data.total > 0) {
+                            notification.textContent = data.total > 99 ? '99+' : data.total;
+                            notification.classList.remove('hidden');
+                        } else {
+                            notification.classList.add('hidden');
+                        }
+                    }
+                })
+                .catch(error => console.error('Error al obtener notificaciones del chat:', error));
+        }
+        
+        // Actualizar notificaciones cada 30 segundos
+        setInterval(updateChatNotifications, 30000);
+        
+        // Actualizar al cargar la página
+        updateChatNotifications();
+        <?php endif; ?>
+        
+        <!-- Sistema de Favoritos -->
+        <?php if (isAuthenticated()): ?>
+        <script src="/js/favorites.js"></script>
+        <?php endif; ?>
     </script>
 </body>
 </html> 

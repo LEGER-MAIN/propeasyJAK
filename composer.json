@@ -11,6 +11,7 @@
     ],
     "require": {
         "php": ">=7.4",
+        "cboden/ratchet": "*",
         "phpmailer/phpmailer": "^6.10"
     },
     "require-dev": {

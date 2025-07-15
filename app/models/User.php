@@ -592,4 +592,250 @@ class User {
         $emailHelper = new EmailHelper();
         return $emailHelper->sendPasswordResetEmail($email, $token, $nombre);
     }
+    
+    /**
+     * Buscar agentes por nombre y ciudad
+     * 
+     * @param string $nombre Nombre o apellido del agente (opcional)
+     * @param string $ciudad Ciudad del agente (opcional)
+     * @param int $limit Límite de resultados
+     * @param int $offset Offset para paginación
+     * @return array Lista de agentes encontrados
+     */
+    public function buscarAgentes($nombre = '', $ciudad = '', $limit = 20, $offset = 0) {
+        $conditions = ["u.rol = 'agente'", "u.estado = 'activo'"];
+        $params = [];
+        
+        if (!empty($nombre)) {
+            $conditions[] = "(u.nombre LIKE ? OR u.apellido LIKE ?)";
+            $params[] = "%{$nombre}%";
+            $params[] = "%{$nombre}%";
+        }
+        
+        if (!empty($ciudad)) {
+            $conditions[] = "u.ciudad LIKE ?";
+            $params[] = "%{$ciudad}%";
+        }
+        
+        $whereClause = implode(' AND ', $conditions);
+        
+        $query = "SELECT 
+                    u.id,
+                    u.nombre,
+                    u.apellido,
+                    u.email,
+                    u.telefono,
+                    u.ciudad,
+                    u.sector,
+                    u.fecha_registro,
+                    u.ultimo_acceso,
+                    COUNT(DISTINCT p.id) as total_propiedades,
+                    COUNT(DISTINCT sc.id) as total_solicitudes
+                  FROM {$this->table} u
+                  LEFT JOIN propiedades p ON u.id = p.agente_id AND p.estado_publicacion = 'activa'
+                  LEFT JOIN solicitudes_compra sc ON u.id = sc.agente_id
+                  WHERE {$whereClause}
+                  GROUP BY u.id
+                  ORDER BY u.nombre, u.apellido
+                  LIMIT ? OFFSET ?";
+        
+        $params[] = $limit;
+        $params[] = $offset;
+        
+        return $this->db->select($query, $params);
+    }
+    
+    /**
+     * Buscar clientes por nombre
+     * 
+     * @param string $nombre Nombre o apellido del cliente
+     * @param int $limit Límite de resultados
+     * @param int $offset Offset para paginación
+     * @return array Lista de clientes encontrados
+     */
+    public function buscarClientes($nombre = '', $limit = 20, $offset = 0) {
+        $conditions = ["u.rol = 'cliente'", "u.estado = 'activo'"];
+        $params = [];
+        
+        if (!empty($nombre)) {
+            $conditions[] = "(u.nombre LIKE ? OR u.apellido LIKE ?)";
+            $params[] = "%{$nombre}%";
+            $params[] = "%{$nombre}%";
+        }
+        
+        $whereClause = implode(' AND ', $conditions);
+        
+        $query = "SELECT 
+                    u.id,
+                    u.nombre,
+                    u.apellido,
+                    u.email,
+                    u.telefono,
+                    u.ciudad,
+                    u.sector,
+                    u.fecha_registro,
+                    u.ultimo_acceso,
+                    COUNT(DISTINCT sc.id) as total_solicitudes
+                  FROM {$this->table} u
+                  LEFT JOIN solicitudes_compra sc ON u.id = sc.cliente_id
+                  WHERE {$whereClause}
+                  GROUP BY u.id
+                  ORDER BY u.nombre, u.apellido
+                  LIMIT ? OFFSET ?";
+        
+        $params[] = $limit;
+        $params[] = $offset;
+        
+        return $this->db->select($query, $params);
+    }
+    
+    /**
+     * Obtener estadísticas de búsqueda
+     * 
+     * @param string $tipo Tipo de búsqueda ('agentes' o 'clientes')
+     * @param string $nombre Nombre para filtrar
+     * @param string $ciudad Ciudad para filtrar (solo para agentes)
+     * @return array Estadísticas
+     */
+    public function getEstadisticasBusqueda($tipo, $nombre = '', $ciudad = '') {
+        $conditions = ["rol = ?", "estado = 'activo'"];
+        $params = [$tipo === 'agentes' ? 'agente' : 'cliente'];
+        
+        if (!empty($nombre)) {
+            $conditions[] = "(nombre LIKE ? OR apellido LIKE ?)";
+            $params[] = "%{$nombre}%";
+            $params[] = "%{$nombre}%";
+        }
+        
+        if ($tipo === 'agentes' && !empty($ciudad)) {
+            $conditions[] = "ciudad LIKE ?";
+            $params[] = "%{$ciudad}%";
+        }
+        
+        $whereClause = implode(' AND ', $conditions);
+        
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE {$whereClause}";
+        
+        $result = $this->db->selectOne($query, $params);
+        return $result ? $result['total'] : 0;
+    }
+
+    /**
+     * Obtener la última actividad de un usuario
+     * 
+     * @param int $userId ID del usuario
+     * @return string|null Fecha de última actividad o null si no existe
+     */
+    public function getLastActivity($userId) {
+        try {
+            $query = "SELECT ultimo_acceso FROM {$this->table} WHERE id = ?";
+            $user = $this->db->selectOne($query, [$userId]);
+            
+            return $user ? $user['ultimo_acceso'] : null;
+        } catch (Exception $e) {
+            error_log("Error obteniendo última actividad del usuario: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Buscar usuarios para el chat
+     * 
+     * @param string $query Término de búsqueda
+     * @param string|null $role Rol específico a buscar (null para todos)
+     * @param int $excludeUserId ID del usuario a excluir de la búsqueda
+     * @return array Lista de usuarios encontrados
+     */
+    public function searchUsers($query, $role = null, $excludeUserId = null) {
+        $params = [];
+        $conditions = ["estado = 'activo'", "email_verificado = 1"];
+        
+        // Excluir usuario actual
+        if ($excludeUserId) {
+            $conditions[] = "id != ?";
+            $params[] = $excludeUserId;
+        }
+        
+        // Filtrar por rol si se especifica
+        if ($role) {
+            $conditions[] = "rol = ?";
+            $params[] = $role;
+        }
+        
+        // Agregar término de búsqueda
+        $searchConditions = [
+            "CONCAT(nombre, ' ', apellido) LIKE ?",
+            "email LIKE ?"
+        ];
+        $searchTerm = '%' . sanitizeInput($query) . '%';
+        $params[] = $searchTerm;
+        $params[] = $searchTerm;
+        
+        $whereClause = implode(' AND ', $conditions) . ' AND (' . implode(' OR ', $searchConditions) . ')';
+        
+        $query = "SELECT id, nombre, apellido, email, rol, ultimo_acceso 
+                  FROM {$this->table} 
+                  WHERE {$whereClause} 
+                  ORDER BY nombre, apellido 
+                  LIMIT 10";
+        
+        return $this->db->select($query, $params);
+    }
+
+    /**
+     * Obtener usuarios disponibles para chat directo
+     * 
+     * @param int $currentUserId ID del usuario actual
+     * @param string $currentUserRole Rol del usuario actual
+     * @param string $searchQuery Término de búsqueda (opcional)
+     * @return array Lista de usuarios disponibles
+     */
+    public function getUsersForDirectChat($currentUserId, $currentUserRole, $searchQuery = '') {
+        try {
+            $params = [$currentUserId];
+            $conditions = ["estado = 'activo'", "email_verificado = 1", "id != ?"];
+            
+            // Si es cliente, mostrar solo agentes
+            // Si es agente, mostrar clientes y otros agentes
+            if ($currentUserRole === 'cliente') {
+                $conditions[] = "rol = 'agente'";
+            } else {
+                // Para agentes, mostrar clientes y otros agentes
+                $conditions[] = "(rol = 'cliente' OR rol = 'agente')";
+            }
+            
+            // Agregar búsqueda si se proporciona
+            if (!empty($searchQuery)) {
+                $conditions[] = "(nombre LIKE ? OR apellido LIKE ? OR email LIKE ?)";
+                $searchTerm = '%' . sanitizeInput($searchQuery) . '%';
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+            }
+            
+            $whereClause = implode(' AND ', $conditions);
+            
+            $query = "SELECT 
+                        id,
+                        nombre,
+                        apellido,
+                        email,
+                        rol,
+                        ultimo_acceso,
+                        CASE 
+                            WHEN ultimo_acceso > DATE_SUB(NOW(), INTERVAL 5 MINUTE) THEN 1 
+                            ELSE 0 
+                        END as online
+                      FROM {$this->table} 
+                      WHERE {$whereClause} 
+                      ORDER BY online DESC, nombre, apellido
+                      LIMIT 20";
+            
+            return $this->db->select($query, $params);
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo usuarios para chat directo: " . $e->getMessage());
+            return [];
+        }
+    }
 } 

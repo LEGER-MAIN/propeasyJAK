@@ -150,6 +150,9 @@ $content = ob_start();
                                 Fecha
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Favoritos
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Acciones
                             </th>
                         </tr>
@@ -239,6 +242,13 @@ $content = ob_start();
                                     <?= date('d/m/Y', strtotime($property['fecha_creacion'])) ?>
                                 </td>
                                 
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-heart text-red-500 mr-1"></i>
+                                        <span class="favorite-count" data-property-id="<?= $property['id'] ?>">0</span>
+                                    </div>
+                                </td>
+                                
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
                                         <a href="/properties/show/<?= $property['id'] ?>" 
@@ -269,6 +279,27 @@ $content = ob_start();
         </div>
     <?php endif; ?>
 </div>
+
+<!-- Script para cargar contadores de favoritos -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar contadores de favoritos para todas las propiedades
+    const favoriteCounts = document.querySelectorAll('.favorite-count');
+    
+    favoriteCounts.forEach(function(element) {
+        const propertyId = element.getAttribute('data-property-id');
+        
+        fetch(`/favorites/count/${propertyId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    element.textContent = data.count;
+                }
+            })
+            .catch(error => console.error('Error al cargar contador de favoritos:', error));
+    });
+});
+</script>
 
 <?php
 $content = ob_get_clean();

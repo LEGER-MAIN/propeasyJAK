@@ -89,12 +89,24 @@ $content = ob_start();
                         </div>
                     </div>
                     
-                    <!-- Precio -->
+                    <!-- Precio y Favorito -->
                     <div class="text-right">
                         <div class="text-3xl font-bold text-primary-600">
                             $<?= number_format($property['precio']) ?>
                         </div>
                         <div class="text-sm text-gray-500"><?= $property['moneda'] ?></div>
+                        
+                        <!-- Botón de Favorito -->
+                        <?php if (isAuthenticated()): ?>
+                        <div class="mt-3">
+                            <button class="favorite-btn bg-white border-2 border-gray-300 hover:border-red-500 p-3 rounded-full shadow-md transition-all duration-200 hover:scale-110" 
+                                    data-property-id="<?= $property['id'] ?>"
+                                    data-is-favorite="false"
+                                    onclick="toggleFavorite(<?= $property['id'] ?>)">
+                                <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors text-lg"></i>
+                            </button>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 

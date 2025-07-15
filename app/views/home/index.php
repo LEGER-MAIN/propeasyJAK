@@ -18,10 +18,10 @@ ob_start();
             <!-- Búsqueda rápida -->
             <div class="max-w-4xl mx-auto">
                 <div class="bg-white rounded-lg shadow-xl p-6">
-                    <form class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <form action="/properties" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Propiedad</label>
-                            <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <label for="tipo" class="block text-sm font-medium text-gray-700 mb-2">Tipo de Propiedad</label>
+                            <select name="tipo" id="tipo" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                                 <option value="">Todos los tipos</option>
                                 <option value="casa">Casa</option>
                                 <option value="apartamento">Apartamento</option>
@@ -31,15 +31,17 @@ ob_start();
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Ciudad</label>
-                            <input type="text" placeholder="Santo Domingo" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <label for="ciudad" class="block text-sm font-medium text-gray-700 mb-2">Ciudad</label>
+                            <input type="text" name="ciudad" id="ciudad" placeholder="Santo Domingo" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Precio Máximo</label>
-                            <input type="number" placeholder="USD" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <label for="precio_max" class="block text-sm font-medium text-gray-700 mb-2">Precio Máximo</label>
+                            <input type="number" name="precio_max" id="precio_max" placeholder="USD" min="0" step="1000"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                         </div>
                         <div class="flex items-end">
-                            <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-md transition-colors duration-200">
+                            <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-md transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
                                 <i class="fas fa-search mr-2"></i> Buscar
                             </button>
                         </div>
