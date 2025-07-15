@@ -251,7 +251,7 @@ class Router {
         
         // Rutas de propiedades
         $this->get('/properties', 'PropertyController@index');
-        $this->get('/properties/{id}', 'PropertyController@show');
+        $this->get('/properties/show/{id}', 'PropertyController@show');
         $this->get('/properties/create', 'PropertyController@create');
         $this->post('/properties', 'PropertyController@store');
         $this->get('/properties/{id}/edit', 'PropertyController@edit');

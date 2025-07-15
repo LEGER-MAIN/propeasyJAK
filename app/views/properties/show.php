@@ -255,24 +255,19 @@ $content = ob_start();
                 $userRole = $_SESSION['user_rol'];
                 $userId = $_SESSION['user_id'];
                 $canEdit = false;
-                
-                if ($userRole === 'cliente' && $property['cliente_vendedor_id'] == $userId) {
-                    $canEdit = true;
-                } elseif ($userRole === 'agente' && $property['agente_id'] == $userId) {
+                // Solo permitir acciones a agentes propietarios, no a clientes
+                if ($userRole === 'agente' && $property['agente_id'] == $userId) {
                     $canEdit = true;
                 }
                 ?>
-                
                 <?php if ($canEdit): ?>
                     <div class="bg-white rounded-lg shadow-md p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Acciones</h3>
-                        
                         <div class="space-y-2">
                             <a href="/properties/edit/<?= $property['id'] ?>" 
                                class="w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-md font-medium transition-colors">
                                 <i class="fas fa-edit mr-2"></i>Editar Propiedad
                             </a>
-                            
                             <form action="/properties/delete/<?= $property['id'] ?>" method="POST" 
                                   onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta propiedad?')">
                                 <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md font-medium transition-colors">

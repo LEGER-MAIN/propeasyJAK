@@ -453,17 +453,16 @@ class Property {
      * @return bool Resultado de la operación
      */
     private function processImages($propertyId, $images) {
-        // Por ahora, solo simulamos el procesamiento
-        // En una implementación real, aquí se subirían las imágenes al servidor
-        // y se guardarían las rutas en la base de datos
+        // Las imágenes ya fueron procesadas por el controlador
+        // Aquí solo las guardamos en la base de datos
         
         foreach ($images as $index => $image) {
             $isPrincipal = $index === 0; // La primera imagen es la principal
             
             $imageData = [
                 'propiedad_id' => $propertyId,
-                'nombre_archivo' => $image['name'] ?? 'imagen_' . ($index + 1) . '.jpg',
-                'ruta' => '/uploads/properties/' . $image['name'] ?? 'imagen_' . ($index + 1) . '.jpg',
+                'nombre_archivo' => $image['name'],
+                'ruta' => $image['path'], // Usar la ruta procesada por el controlador
                 'es_principal' => $isPrincipal ? 1 : 0,
                 'orden' => $index + 1,
                 'fecha_subida' => date('Y-m-d H:i:s')

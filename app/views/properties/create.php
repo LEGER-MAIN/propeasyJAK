@@ -229,11 +229,11 @@ $content = ob_start();
                     <label for="imagenes" class="block text-sm font-medium text-gray-700 mb-1">
                         Subir Imágenes
                     </label>
-                    <input type="file" name="imagenes[]" id="imagenes" multiple accept="image/*"
+                    <input type="file" name="imagenes[]" id="imagenes" multiple accept="image/*,.webp"
                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
                     <p class="mt-1 text-sm text-gray-500">
                         Puedes subir múltiples imágenes. La primera imagen será la imagen principal.
-                        Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 5MB por imagen.
+                        Formatos permitidos: JPG, PNG, GIF, WebP. Tamaño máximo: 5MB por imagen.
                     </p>
                 </div>
             </div>
