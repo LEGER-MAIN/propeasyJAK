@@ -1,5 +1,5 @@
 <?php
-// Incluir el layout principal
+// Capturar el contenido para pasarlo al layout
 ob_start();
 ?>
 
@@ -16,33 +16,39 @@ ob_start();
             </p>
             
             <!-- Búsqueda rápida -->
-            <div class="max-w-4xl mx-auto">
-                <div class="bg-white rounded-lg shadow-xl p-6">
-                    <form action="/properties" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label for="tipo" class="block text-sm font-medium text-gray-700 mb-2">Tipo de Propiedad</label>
-                            <select name="tipo" id="tipo" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+            <div class="max-w-5xl mx-auto">
+                <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 p-8">
+                    <form action="/properties" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="space-y-2">
+                            <label for="tipo" class="block text-sm font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-home mr-2 text-primary-600"></i>Tipo de Propiedad
+                            </label>
+                            <select name="tipo" id="tipo" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-gray-700 font-medium shadow-sm hover:border-gray-300">
                                 <option value="">Todos los tipos</option>
-                                <option value="casa">Casa</option>
-                                <option value="apartamento">Apartamento</option>
-                                <option value="terreno">Terreno</option>
-                                <option value="local_comercial">Local Comercial</option>
-                                <option value="oficina">Oficina</option>
+                                <option value="casa">🏠 Casa</option>
+                                <option value="apartamento">🏢 Apartamento</option>
+                                <option value="terreno">🌱 Terreno</option>
+                                <option value="local_comercial">🏪 Local Comercial</option>
+                                <option value="oficina">🏢 Oficina</option>
                             </select>
                         </div>
-                        <div>
-                            <label for="ciudad" class="block text-sm font-medium text-gray-700 mb-2">Ciudad</label>
-                            <input type="text" name="ciudad" id="ciudad" placeholder="Santo Domingo" 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                        <div class="space-y-2">
+                            <label for="ciudad" class="block text-sm font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-map-marker-alt mr-2 text-primary-600"></i>Ciudad
+                            </label>
+                            <input type="text" name="ciudad" id="ciudad" placeholder="Ej: Santo Domingo" 
+                                   class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-gray-700 font-medium shadow-sm hover:border-gray-300 placeholder-gray-400">
                         </div>
-                        <div>
-                            <label for="precio_max" class="block text-sm font-medium text-gray-700 mb-2">Precio Máximo</label>
-                            <input type="number" name="precio_max" id="precio_max" placeholder="USD" min="0" step="1000"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                        <div class="space-y-2">
+                            <label for="precio_max" class="block text-sm font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-dollar-sign mr-2 text-primary-600"></i>Precio Máximo
+                            </label>
+                            <input type="number" name="precio_max" id="precio_max" placeholder="Ej: 500,000" min="0" step="1000"
+                                   class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-gray-700 font-medium shadow-sm hover:border-gray-300 placeholder-gray-400">
                         </div>
                         <div class="flex items-end">
-                            <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-md transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                                <i class="fas fa-search mr-2"></i> Buscar
+                            <button type="submit" class="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white px-6 py-3 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold text-lg">
+                                <i class="fas fa-search mr-2"></i> Buscar Propiedades
                             </button>
                         </div>
                     </form>
@@ -81,60 +87,86 @@ ob_start();
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
             <h2 class="text-3xl font-bold text-gray-900 mb-4">Propiedades Destacadas</h2>
-            <p class="text-xl text-gray-600">Las mejores opciones seleccionadas para ti</p>
+            <?php 
+            // Verificar si hay propiedades con favoritos
+            $hayFavoritos = false;
+            if (!empty($propiedadesDestacadas)) {
+                foreach ($propiedadesDestacadas as $propiedad) {
+                    if ($propiedad['total_favoritos'] > 0) {
+                        $hayFavoritos = true;
+                        break;
+                    }
+                }
+            }
+            ?>
+            <p class="text-xl text-gray-600">
+                <?php if ($hayFavoritos): ?>
+                    Las mejores opciones seleccionadas para ti
+                <?php else: ?>
+                    Las propiedades más recientes
+                <?php endif; ?>
+            </p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Propiedad de ejemplo 1 -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div class="h-48 bg-gray-200 flex items-center justify-center">
-                    <i class="fas fa-home text-gray-400 text-4xl"></i>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Hermosa Casa en Santo Domingo</h3>
-                    <p class="text-gray-600 mb-4">3 habitaciones, 2 baños, 150m²</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-bold text-primary-600">$250,000</span>
-                        <a href="/properties/1" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md transition-colors duration-200">
-                            Ver Detalles
+            <?php if (!empty($propiedadesDestacadas)): ?>
+                <?php foreach ($propiedadesDestacadas as $propiedad): ?>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                        <div class="h-48 bg-gray-200 flex items-center justify-center relative">
+                            <?php if (!empty($propiedad['imagen_principal'])): ?>
+                                <img src="<?= htmlspecialchars($propiedad['imagen_principal']) ?>" 
+                                     alt="<?= htmlspecialchars($propiedad['titulo']) ?>" 
+                                     class="w-full h-full object-cover">
+                            <?php else: ?>
+                                <i class="fas fa-home text-gray-400 text-4xl"></i>
+                            <?php endif; ?>
+                            
+                            <!-- Badge de favoritos (solo si hay favoritos) -->
+                            <?php if ($propiedad['total_favoritos'] > 0): ?>
+                                <div class="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                                    <i class="fas fa-heart mr-1"></i>
+                                    <?= $propiedad['total_favoritos'] ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2"><?= htmlspecialchars($propiedad['titulo']) ?></h3>
+                            <p class="text-gray-600 mb-2">
+                                <?= $propiedad['habitaciones'] ?> habitaciones, 
+                                <?= $propiedad['banos'] ?> baños, 
+                                <?= $propiedad['metros_cuadrados'] ?>m²
+                            </p>
+                            <p class="text-gray-500 text-sm mb-4">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                <?= htmlspecialchars($propiedad['ciudad']) ?>, <?= htmlspecialchars($propiedad['sector']) ?>
+                            </p>
+                            <div class="mb-4">
+                                <span class="text-2xl font-bold text-primary-600">
+                                    $<?= number_format($propiedad['precio'], 0, ',', '.') ?>
+                                </span>
+                            </div>
+                            <div class="mt-4">
+                                <a href="/properties/<?= $propiedad['id'] ?>" 
+                                   class="w-full bg-primary-600 hover:bg-primary-700 text-white text-center py-2 px-4 rounded-md transition-colors duration-200 block">
+                                    Ver Detalles
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <!-- Mensaje cuando no hay propiedades -->
+                <div class="col-span-full text-center py-12">
+                    <div class="bg-gray-50 rounded-lg p-8">
+                        <i class="fas fa-home text-gray-400 text-6xl mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">No hay propiedades disponibles</h3>
+                        <p class="text-gray-600 mb-6">Aún no hay propiedades publicadas en la plataforma.</p>
+                        <a href="/properties" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-md transition-colors duration-200">
+                            Ver Propiedades
                         </a>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Propiedad de ejemplo 2 -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div class="h-48 bg-gray-200 flex items-center justify-center">
-                    <i class="fas fa-building text-gray-400 text-4xl"></i>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Apartamento Moderno</h3>
-                    <p class="text-gray-600 mb-4">2 habitaciones, 1 baño, 80m²</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-bold text-primary-600">$180,000</span>
-                        <a href="/properties/2" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md transition-colors duration-200">
-                            Ver Detalles
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Propiedad de ejemplo 3 -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                <div class="h-48 bg-gray-200 flex items-center justify-center">
-                    <i class="fas fa-store text-gray-400 text-4xl"></i>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Local Comercial</h3>
-                    <p class="text-gray-600 mb-4">120m², ubicación privilegiada</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-2xl font-bold text-primary-600">$350,000</span>
-                        <a href="/properties/3" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md transition-colors duration-200">
-                            Ver Detalles
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <?php endif; ?>
         </div>
         
         <div class="text-center mt-12">
@@ -188,8 +220,20 @@ ob_start();
 <section class="py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">Lo que dicen nuestros clientes</h2>
-            <p class="text-xl text-gray-600">Experiencias reales de usuarios satisfechos</p>
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                <?php if (isAuthenticated()): ?>
+                    Bienvenido de vuelta a <?= APP_NAME ?>
+                <?php else: ?>
+                    Lo que dicen nuestros clientes
+                <?php endif; ?>
+            </h2>
+            <p class="text-xl text-gray-600">
+                <?php if (isAuthenticated()): ?>
+                    Continúa explorando las mejores propiedades para ti
+                <?php else: ?>
+                    Experiencias reales de usuarios satisfechos
+                <?php endif; ?>
+            </p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -259,7 +303,8 @@ ob_start();
     </div>
 </section>
 
-<!-- CTA Section -->
+<!-- CTA Section - Solo para usuarios no autenticados -->
+<?php if (!isAuthenticated()): ?>
 <section class="py-16 bg-primary-600 text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl font-bold mb-4">¿Listo para encontrar tu hogar ideal?</h2>
@@ -274,8 +319,10 @@ ob_start();
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <?php
+// Capturar el contenido y pasarlo al layout
 $content = ob_get_clean();
 include APP_PATH . '/views/layouts/main.php';
 ?> 

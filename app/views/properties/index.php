@@ -43,14 +43,22 @@ $content = ob_start();
 </div>
 
 <!-- Filtros de Búsqueda -->
-<div class="bg-white border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <form method="GET" action="/properties" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-gradient-to-br from-gray-50 to-blue-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="text-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Buscar Propiedades</h2>
+            <p class="text-gray-600">Encuentra la propiedad perfecta con nuestros filtros avanzados</p>
+        </div>
+        
+        <form method="GET" action="/properties" class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Tipo de Propiedad -->
-                <div>
-                    <label for="tipo" class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-                    <select name="tipo" id="tipo" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                <div class="space-y-2">
+                    <label for="tipo" class="block text-sm font-semibold text-gray-800">
+                        <i class="fas fa-home text-primary-600 mr-2"></i>
+                        Tipo de Propiedad
+                    </label>
+                    <select name="tipo" id="tipo" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-white shadow-sm">
                         <option value="">Todos los tipos</option>
                         <option value="casa" <?= ($filters['tipo'] === 'casa') ? 'selected' : '' ?>>Casa</option>
                         <option value="apartamento" <?= ($filters['tipo'] === 'apartamento') ? 'selected' : '' ?>>Apartamento</option>
@@ -61,71 +69,91 @@ $content = ob_start();
                 </div>
                 
                 <!-- Ciudad -->
-                <div>
-                    <label for="ciudad" class="block text-sm font-medium text-gray-700 mb-1">Ciudad</label>
+                <div class="space-y-2">
+                    <label for="ciudad" class="block text-sm font-semibold text-gray-800">
+                        <i class="fas fa-city text-primary-600 mr-2"></i>
+                        Ciudad
+                    </label>
                     <input type="text" name="ciudad" id="ciudad" value="<?= htmlspecialchars($filters['ciudad']) ?>" 
                            placeholder="Ej: Santo Domingo" 
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                           class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 placeholder-gray-400 shadow-sm">
                 </div>
                 
                 <!-- Sector -->
-                <div>
-                    <label for="sector" class="block text-sm font-medium text-gray-700 mb-1">Sector</label>
+                <div class="space-y-2">
+                    <label for="sector" class="block text-sm font-semibold text-gray-800">
+                        <i class="fas fa-map-marker-alt text-primary-600 mr-2"></i>
+                        Sector
+                    </label>
                     <input type="text" name="sector" id="sector" value="<?= htmlspecialchars($filters['sector']) ?>" 
                            placeholder="Ej: Bella Vista" 
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                           class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 placeholder-gray-400 shadow-sm">
                 </div>
                 
                 <!-- Precio Mínimo -->
-                <div>
-                    <label for="precio_min" class="block text-sm font-medium text-gray-700 mb-1">Precio Mínimo</label>
+                <div class="space-y-2">
+                    <label for="precio_min" class="block text-sm font-semibold text-gray-800">
+                        <i class="fas fa-dollar-sign text-green-600 mr-2"></i>
+                        Precio Mínimo
+                    </label>
                     <input type="number" name="precio_min" id="precio_min" value="<?= htmlspecialchars($filters['precio_min']) ?>" 
                            placeholder="USD" min="0" step="1000"
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                           class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 placeholder-gray-400 shadow-sm">
                 </div>
                 
                 <!-- Precio Máximo -->
-                <div>
-                    <label for="precio_max" class="block text-sm font-medium text-gray-700 mb-1">Precio Máximo</label>
+                <div class="space-y-2">
+                    <label for="precio_max" class="block text-sm font-semibold text-gray-800">
+                        <i class="fas fa-dollar-sign text-green-600 mr-2"></i>
+                        Precio Máximo
+                    </label>
                     <input type="number" name="precio_max" id="precio_max" value="<?= htmlspecialchars($filters['precio_max']) ?>" 
                            placeholder="USD" min="0" step="1000"
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                           class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 placeholder-gray-400 shadow-sm">
                 </div>
                 
                 <!-- Habitaciones -->
-                <div>
-                    <label for="habitaciones" class="block text-sm font-medium text-gray-700 mb-1">Mín. Habitaciones</label>
-                    <select name="habitaciones" id="habitaciones" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                <div class="space-y-2">
+                    <label for="habitaciones" class="block text-sm font-semibold text-gray-800">
+                        <i class="fas fa-bed text-purple-600 mr-2"></i>
+                        Mín. Habitaciones
+                    </label>
+                    <select name="habitaciones" id="habitaciones" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm">
                         <option value="">Cualquier cantidad</option>
-                        <option value="1" <?= ($filters['habitaciones'] === '1') ? 'selected' : '' ?>>1+</option>
-                        <option value="2" <?= ($filters['habitaciones'] === '2') ? 'selected' : '' ?>>2+</option>
-                        <option value="3" <?= ($filters['habitaciones'] === '3') ? 'selected' : '' ?>>3+</option>
-                        <option value="4" <?= ($filters['habitaciones'] === '4') ? 'selected' : '' ?>>4+</option>
-                        <option value="5" <?= ($filters['habitaciones'] === '5') ? 'selected' : '' ?>>5+</option>
+                        <option value="1" <?= ($filters['habitaciones'] === '1') ? 'selected' : '' ?>>1+ habitación</option>
+                        <option value="2" <?= ($filters['habitaciones'] === '2') ? 'selected' : '' ?>>2+ habitaciones</option>
+                        <option value="3" <?= ($filters['habitaciones'] === '3') ? 'selected' : '' ?>>3+ habitaciones</option>
+                        <option value="4" <?= ($filters['habitaciones'] === '4') ? 'selected' : '' ?>>4+ habitaciones</option>
+                        <option value="5" <?= ($filters['habitaciones'] === '5') ? 'selected' : '' ?>>5+ habitaciones</option>
                     </select>
                 </div>
                 
                 <!-- Baños -->
-                <div>
-                    <label for="banos" class="block text-sm font-medium text-gray-700 mb-1">Mín. Baños</label>
-                    <select name="banos" id="banos" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                <div class="space-y-2">
+                    <label for="banos" class="block text-sm font-semibold text-gray-800">
+                        <i class="fas fa-bath text-purple-600 mr-2"></i>
+                        Mín. Baños
+                    </label>
+                    <select name="banos" id="banos" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm">
                         <option value="">Cualquier cantidad</option>
-                        <option value="1" <?= ($filters['banos'] === '1') ? 'selected' : '' ?>>1+</option>
-                        <option value="2" <?= ($filters['banos'] === '2') ? 'selected' : '' ?>>2+</option>
-                        <option value="3" <?= ($filters['banos'] === '3') ? 'selected' : '' ?>>3+</option>
-                        <option value="4" <?= ($filters['banos'] === '4') ? 'selected' : '' ?>>4+</option>
+                        <option value="1" <?= ($filters['banos'] === '1') ? 'selected' : '' ?>>1+ baño</option>
+                        <option value="2" <?= ($filters['banos'] === '2') ? 'selected' : '' ?>>2+ baños</option>
+                        <option value="3" <?= ($filters['banos'] === '3') ? 'selected' : '' ?>>3+ baños</option>
+                        <option value="4" <?= ($filters['banos'] === '4') ? 'selected' : '' ?>>4+ baños</option>
                     </select>
                 </div>
-                
-                <!-- Botones -->
-                <div class="flex space-x-2">
-                    <button type="submit" class="flex-1 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
-                        <i class="fas fa-search mr-2"></i>Buscar
-                    </button>
-                    <a href="/properties" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md font-medium transition-colors">
-                        <i class="fas fa-times mr-2"></i>Limpiar
-                    </a>
-                </div>
+            </div>
+            
+            <!-- Botones de acción -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-6 pt-6 border-t border-gray-200">
+                <button type="submit" class="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                    <i class="fas fa-search mr-2"></i>
+                    Buscar Propiedades
+                </button>
+                <a href="/properties" class="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-center">
+                    <i class="fas fa-times mr-2"></i>
+                    Limpiar Filtros
+                </a>
             </div>
         </form>
     </div>
@@ -135,12 +163,21 @@ $content = ob_start();
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Resultados -->
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900">
-            Propiedades Disponibles
-            <?php if (!empty(array_filter($filters))): ?>
-                <span class="text-lg font-normal text-gray-600">(<?= count($properties) ?> resultados)</span>
-            <?php endif; ?>
-        </h2>
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">
+                Propiedades Disponibles
+            </h2>
+            <p class="text-gray-600 mt-1">
+                <?php if (!empty(array_filter($filters))): ?>
+                    <?= $totalProperties ?> resultados encontrados
+                <?php else: ?>
+                    <?= $totalProperties ?> propiedades disponibles
+                <?php endif; ?>
+                <?php if ($totalPages > 1): ?>
+                    • Página <?= $page ?> de <?= $totalPages ?>
+                <?php endif; ?>
+            </p>
+        </div>
         
         <?php if (isAuthenticated()): ?>
             <a href="/properties/create" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
@@ -193,13 +230,13 @@ $content = ob_start();
                             </span>
                         </div>
                         
-                        <!-- Botón de Favorito -->
+                        <!-- Botón de favorito -->
                         <?php if (isAuthenticated()): ?>
                         <div class="absolute top-2 right-2">
-                            <button class="favorite-btn bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110" 
-                                    data-property-id="<?= $property['id'] ?>"
-                                    data-is-favorite="false">
-                                <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors"></i>
+                            <button class="favorite-toggle bg-white hover:bg-red-50 text-red-600 hover:text-red-700 border border-red-600 hover:border-red-700 rounded-full p-2 transition-colors duration-200" 
+                                    data-propiedad-id="<?= $property['id'] ?>"
+                                    title="Agregar a favoritos">
+                                <i class="far fa-heart text-sm"></i>
                             </button>
                         </div>
                         <?php endif; ?>
@@ -276,7 +313,7 @@ $content = ob_start();
                         <!-- Botón de acción -->
                         <div class="mt-4">
                             <a href="/properties/show/<?= $property['id'] ?>" 
-                               class="w-full bg-primary-600 hover:bg-primary-700 text-white text-center py-2 px-4 rounded-md font-medium transition-colors">
+                               class="w-full bg-primary-600 hover:bg-primary-700 text-white text-center py-2 px-4 rounded-md font-medium transition-colors block">
                                 Ver Detalles
                             </a>
                         </div>
@@ -284,29 +321,53 @@ $content = ob_start();
                 </div>
             <?php endforeach; ?>
         </div>
-        
+
         <!-- Paginación -->
         <?php if ($totalPages > 1): ?>
             <div class="mt-8 flex justify-center">
                 <nav class="flex items-center space-x-2">
+                    <!-- Primera página -->
                     <?php if ($page > 1): ?>
-                        <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page - 1])) ?>" 
-                           class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
-                            <i class="fas fa-chevron-left"></i>
+                        <a href="?<?= http_build_query(array_merge($_GET, ['page' => 1])) ?>" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            <i class="fas fa-angle-double-left"></i>
                         </a>
                     <?php endif; ?>
                     
-                    <?php for ($i = max(1, $page - 2); $i <= min($totalPages, $page + 2); $i++): ?>
+                    <!-- Página anterior -->
+                    <?php if ($page > 1): ?>
+                        <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page - 1])) ?>" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    <?php endif; ?>
+                    
+                    <!-- Números de página -->
+                    <?php
+                    $start = max(1, $page - 2);
+                    $end = min($totalPages, $page + 2);
+                    
+                    for ($i = $start; $i <= $end; $i++):
+                    ?>
                         <a href="?<?= http_build_query(array_merge($_GET, ['page' => $i])) ?>" 
-                           class="px-3 py-2 rounded-md transition-colors <?= $i === $page ? 'bg-primary-600 text-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' ?>">
+                           class="px-3 py-2 text-sm font-medium <?= $i === $page ? 'text-white bg-primary-600 border-primary-600' : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-50' ?> border rounded-md">
                             <?= $i ?>
                         </a>
                     <?php endfor; ?>
                     
+                    <!-- Página siguiente -->
                     <?php if ($page < $totalPages): ?>
                         <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page + 1])) ?>" 
-                           class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
-                            <i class="fas fa-chevron-right"></i>
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    <?php endif; ?>
+                    
+                    <!-- Última página -->
+                    <?php if ($page < $totalPages): ?>
+                        <a href="?<?= http_build_query(array_merge($_GET, ['page' => $totalPages])) ?>" 
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                            <i class="fas fa-angle-double-right"></i>
                         </a>
                     <?php endif; ?>
                 </nav>
@@ -315,17 +376,4 @@ $content = ob_start();
     <?php endif; ?>
 </div>
 
-<!-- Estilos adicionales -->
-<style>
-    .line-clamp-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-</style>
-
-<?php
-$content = ob_get_clean();
-include APP_PATH . '/views/layouts/main.php';
-?> 
+<?php $content = ob_get_clean(); include APP_PATH . '/views/layouts/main.php'; ?> 

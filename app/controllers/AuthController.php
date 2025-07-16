@@ -419,4 +419,28 @@ class AuthController {
         
         redirect('/admin/users');
     }
+    
+    /**
+     * API: Verificar estado de autenticación
+     */
+    public function check() {
+        header('Content-Type: application/json');
+        
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        if (isset($_SESSION['user_id'])) {
+            echo json_encode([
+                'authenticated' => true,
+                'user_id' => $_SESSION['user_id'],
+                'user_email' => $_SESSION['user_email'],
+                'user_role' => $_SESSION['user_rol']
+            ]);
+        } else {
+            echo json_encode([
+                'authenticated' => false
+            ]);
+        }
+    }
 } 

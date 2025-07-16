@@ -3,263 +3,257 @@
 ob_start();
 ?>
 
-<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md mx-auto">
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl mx-auto">
         <!-- Header del formulario -->
-        <div class="text-center">
-            <div class="mx-auto h-12 w-12 bg-primary-600 rounded-lg flex items-center justify-center">
-                <i class="fas fa-user-plus text-white text-xl"></i>
+        <div class="text-center mb-8">
+            <div class="mx-auto h-20 w-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <i class="fas fa-user-plus text-white text-3xl"></i>
             </div>
-            <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+            <h2 class="mt-6 text-4xl font-bold text-gray-900">
                 Crear Cuenta
             </h2>
-            <p class="mt-2 text-sm text-gray-600">
+            <p class="mt-3 text-lg text-gray-700">
                 Únete a <?= APP_NAME ?> y encuentra tu propiedad ideal
             </p>
         </div>
 
         <!-- Formulario de registro -->
-        <form class="mt-8 space-y-6" method="POST" action="/register" id="registerForm">
-            <!-- CSRF Token -->
-            <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
-            
-            <div class="space-y-4">
-                <!-- Nombre y Apellido -->
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label for="nombre" class="block text-sm font-medium text-gray-700">
-                            Nombre *
-                        </label>
-                        <div class="mt-1 relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-user text-gray-400"></i>
+        <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+            <form class="space-y-6" method="POST" action="/register" id="registerForm">
+                <!-- CSRF Token -->
+                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                
+                <div class="space-y-6">
+                    <!-- Nombre y Apellido -->
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <div>
+                            <label for="nombre" class="block text-base font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-user text-blue-600 mr-2"></i>
+                                Nombre *
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    id="nombre" 
+                                    name="nombre" 
+                                    type="text" 
+                                    required 
+                                    class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 placeholder-gray-400"
+                                    placeholder="Tu nombre"
+                                    value="<?= htmlspecialchars($_POST['nombre'] ?? '') ?>"
+                                    minlength="2"
+                                >
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-user text-gray-400"></i>
+                                </div>
                             </div>
-                            <input 
-                                id="nombre" 
-                                name="nombre" 
-                                type="text" 
-                                required 
-                                class="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                                placeholder="Tu nombre"
-                                value="<?= htmlspecialchars($_POST['nombre'] ?? '') ?>"
-                                minlength="2"
-                            >
+                            <div id="nombre-error" class="hidden text-red-600 text-sm mt-2 font-medium"></div>
                         </div>
-                        <div id="nombre-error" class="hidden text-red-600 text-xs mt-1"></div>
-                    </div>
 
-                    <div>
-                        <label for="apellido" class="block text-sm font-medium text-gray-700">
-                            Apellido *
-                        </label>
-                        <div class="mt-1 relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-user text-gray-400"></i>
+                        <div>
+                            <label for="apellido" class="block text-base font-semibold text-gray-800 mb-2">
+                                <i class="fas fa-user text-blue-600 mr-2"></i>
+                                Apellido *
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    id="apellido" 
+                                    name="apellido" 
+                                    type="text" 
+                                    required 
+                                    class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 placeholder-gray-400"
+                                    placeholder="Tu apellido"
+                                    value="<?= htmlspecialchars($_POST['apellido'] ?? '') ?>"
+                                    minlength="2"
+                                >
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-user text-gray-400"></i>
+                                </div>
                             </div>
+                            <div id="apellido-error" class="hidden text-red-600 text-sm mt-2 font-medium"></div>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-envelope text-blue-600 mr-2"></i>
+                            Correo Electrónico *
+                        </label>
+                        <div class="relative">
                             <input 
-                                id="apellido" 
-                                name="apellido" 
-                                type="text" 
+                                id="email" 
+                                name="email" 
+                                type="email" 
                                 required 
-                                class="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                                placeholder="Tu apellido"
-                                value="<?= htmlspecialchars($_POST['apellido'] ?? '') ?>"
-                                minlength="2"
+                                class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 placeholder-gray-400"
+                                placeholder="tu@email.com"
+                                value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
                             >
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-envelope text-gray-400"></i>
+                            </div>
                         </div>
-                        <div id="apellido-error" class="hidden text-red-600 text-xs mt-1"></div>
+                        <div id="email-error" class="hidden text-red-600 text-sm mt-2 font-medium"></div>
                     </div>
-                </div>
 
-                <!-- Email -->
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">
-                        Correo Electrónico *
-                    </label>
-                    <div class="mt-1 relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-envelope text-gray-400"></i>
-                        </div>
-                        <input 
-                            id="email" 
-                            name="email" 
-                            type="email" 
-                            required 
-                            class="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                            placeholder="tu@email.com"
-                            value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
-                        >
-                    </div>
-                    <div id="email-error" class="hidden text-red-600 text-xs mt-1"></div>
-                </div>
-
-                <!-- Teléfono -->
-                <div>
-                    <label for="telefono" class="block text-sm font-medium text-gray-700">
-                        Teléfono *
-                    </label>
-                    <div class="mt-1 relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-phone text-gray-400"></i>
-                        </div>
-                        <input 
-                            id="telefono" 
-                            name="telefono" 
-                            type="tel" 
-                            required 
-                            class="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                            placeholder="(809) 555-0000"
-                            value="<?= htmlspecialchars($_POST['telefono'] ?? '') ?>"
-                            minlength="10"
-                        >
-                    </div>
-                    <div id="telefono-error" class="hidden text-red-600 text-xs mt-1"></div>
-                </div>
-
-                <!-- Rol -->
-                <div>
-                    <label for="rol" class="block text-sm font-medium text-gray-700">
-                        Tipo de Usuario *
-                    </label>
-                    <div class="mt-1 relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-users text-gray-400"></i>
-                        </div>
-                        <select 
-                            id="rol" 
-                            name="rol" 
-                            required 
-                            class="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                        >
-                            <option value="">Selecciona tu tipo de usuario</option>
-                            <option value="cliente" <?= ($_POST['rol'] ?? '') === 'cliente' ? 'selected' : '' ?>>Cliente - Busco comprar propiedades</option>
-                            <option value="agente" <?= ($_POST['rol'] ?? '') === 'agente' ? 'selected' : '' ?>>Agente Inmobiliario - Vendo propiedades</option>
-                        </select>
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <i class="fas fa-chevron-down text-gray-400"></i>
-                        </div>
-                    </div>
-                    <div id="rol-error" class="hidden text-red-600 text-xs mt-1"></div>
-                </div>
-
-                <!-- Contraseña -->
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700">
-                        Contraseña *
-                    </label>
-                    <div class="mt-1 relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-lock text-gray-400"></i>
-                        </div>
-                        <input 
-                            id="password" 
-                            name="password" 
-                            type="password" 
-                            required 
-                            class="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                            placeholder="Mínimo 8 caracteres"
-                            minlength="8"
-                        >
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                            <button 
-                                type="button" 
-                                onclick="togglePassword('password')"
-                                class="text-gray-400 hover:text-gray-600 focus:outline-none"
+                    <!-- Teléfono -->
+                    <div>
+                        <label for="telefono" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-phone text-blue-600 mr-2"></i>
+                            Teléfono *
+                        </label>
+                        <div class="relative">
+                            <input 
+                                id="telefono" 
+                                name="telefono" 
+                                type="tel" 
+                                required 
+                                class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 placeholder-gray-400"
+                                placeholder="(809) 555-0000"
+                                value="<?= htmlspecialchars($_POST['telefono'] ?? '') ?>"
+                                minlength="10"
                             >
-                                <i id="password-icon" class="fas fa-eye"></i>
-                            </button>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-phone text-gray-400"></i>
+                            </div>
                         </div>
+                        <div id="telefono-error" class="hidden text-red-600 text-sm mt-2 font-medium"></div>
                     </div>
-                    <div id="password-error" class="hidden text-red-600 text-xs mt-1"></div>
-                    
-                    <!-- Indicador de fortaleza de contraseña -->
-                    <div class="mt-2">
-                        <div class="flex space-x-1">
-                            <div id="strength-1" class="h-1 flex-1 bg-gray-200 rounded"></div>
-                            <div id="strength-2" class="h-1 flex-1 bg-gray-200 rounded"></div>
-                            <div id="strength-3" class="h-1 flex-1 bg-gray-200 rounded"></div>
-                            <div id="strength-4" class="h-1 flex-1 bg-gray-200 rounded"></div>
-                        </div>
-                        <p id="strength-text" class="text-xs text-gray-500 mt-1">Fortaleza de la contraseña</p>
-                    </div>
-                </div>
 
-                <!-- Confirmar Contraseña -->
-                <div>
-                    <label for="confirm_password" class="block text-sm font-medium text-gray-700">
-                        Confirmar Contraseña *
-                    </label>
-                    <div class="mt-1 relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-lock text-gray-400"></i>
-                        </div>
-                        <input 
-                            id="confirm_password" 
-                            name="confirm_password" 
-                            type="password" 
-                            required 
-                            class="appearance-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                            placeholder="Repite tu contraseña"
-                            minlength="8"
-                        >
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                            <button 
-                                type="button" 
-                                onclick="togglePassword('confirm_password')"
-                                class="text-gray-400 hover:text-gray-600 focus:outline-none"
+                    <!-- Rol -->
+                    <div>
+                        <label for="rol" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-users text-blue-600 mr-2"></i>
+                            Tipo de Usuario *
+                        </label>
+                        <div class="relative">
+                            <select 
+                                id="rol" 
+                                name="rol" 
+                                required 
+                                class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white"
                             >
-                                <i id="confirm-password-icon" class="fas fa-eye"></i>
-                            </button>
+                                <option value="">Selecciona tu tipo de usuario</option>
+                                <option value="cliente" <?= ($_POST['rol'] ?? '') === 'cliente' ? 'selected' : '' ?>>👤 Cliente - Busco comprar propiedades</option>
+                                <option value="agente" <?= ($_POST['rol'] ?? '') === 'agente' ? 'selected' : '' ?>>🏠 Agente Inmobiliario - Vendo propiedades</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-chevron-down text-gray-400 text-lg"></i>
+                            </div>
+                        </div>
+                        <div id="rol-error" class="hidden text-red-600 text-sm mt-2 font-medium"></div>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div>
+                        <label for="password" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-lock text-blue-600 mr-2"></i>
+                            Contraseña *
+                        </label>
+                        <div class="relative">
+                            <input 
+                                id="password" 
+                                name="password" 
+                                type="password" 
+                                required 
+                                class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 placeholder-gray-400"
+                                placeholder="Mínimo 8 caracteres"
+                                minlength="8"
+                            >
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <button 
+                                    type="button" 
+                                    onclick="togglePassword('password')"
+                                    class="text-gray-400 hover:text-gray-600 focus:outline-none p-1"
+                                >
+                                    <i id="password-icon" class="fas fa-eye text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="password-error" class="hidden text-red-600 text-sm mt-2 font-medium"></div>
+                        
+                        <!-- Indicador de fortaleza de contraseña -->
+                        <div class="mt-3">
+                            <div class="flex space-x-2">
+                                <div id="strength-1" class="h-2 flex-1 bg-gray-200 rounded-full transition-all duration-300"></div>
+                                <div id="strength-2" class="h-2 flex-1 bg-gray-200 rounded-full transition-all duration-300"></div>
+                                <div id="strength-3" class="h-2 flex-1 bg-gray-200 rounded-full transition-all duration-300"></div>
+                                <div id="strength-4" class="h-2 flex-1 bg-gray-200 rounded-full transition-all duration-300"></div>
+                            </div>
+                            <p id="strength-text" class="text-sm text-gray-600 mt-2 font-medium">Fortaleza de la contraseña</p>
                         </div>
                     </div>
-                    <div id="confirm-password-error" class="hidden text-red-600 text-xs mt-1"></div>
+
+                    <!-- Confirmar Contraseña -->
+                    <div>
+                        <label for="confirm_password" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-lock text-blue-600 mr-2"></i>
+                            Confirmar Contraseña *
+                        </label>
+                        <div class="relative">
+                            <input 
+                                id="confirm_password" 
+                                name="confirm_password" 
+                                type="password" 
+                                required 
+                                class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 placeholder-gray-400"
+                                placeholder="Repite tu contraseña"
+                                minlength="8"
+                            >
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <button 
+                                    type="button" 
+                                    onclick="togglePassword('confirm_password')"
+                                    class="text-gray-400 hover:text-gray-600 focus:outline-none p-1"
+                                >
+                                    <i id="confirm_password-icon" class="fas fa-eye text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="confirm_password-error" class="hidden text-red-600 text-sm mt-2 font-medium"></div>
+                    </div>
+
+                    <!-- Términos y condiciones -->
+                    <div class="flex items-start space-x-3">
+                        <input 
+                            id="terms" 
+                            name="terms" 
+                            type="checkbox" 
+                            required 
+                            class="mt-1 h-5 w-5 text-blue-600 focus:ring-blue-500 border-2 border-gray-300 rounded"
+                        >
+                        <label for="terms" class="text-sm text-gray-700 leading-relaxed">
+                            Acepto los 
+                            <a href="/terms" class="text-blue-600 hover:text-blue-800 font-semibold underline">términos y condiciones</a> 
+                            y la 
+                            <a href="/privacy" class="text-blue-600 hover:text-blue-800 font-semibold underline">política de privacidad</a>
+                        </label>
+                    </div>
+
+                    <!-- Botón de registro -->
+                    <div class="pt-4">
+                        <button 
+                            type="submit" 
+                            class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-lg font-bold py-4 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                        >
+                            <i class="fas fa-user-plus mr-2"></i>
+                            Crear Cuenta
+                        </button>
+                    </div>
                 </div>
+            </form>
 
-                <!-- Términos y condiciones -->
-                <div class="flex items-center">
-                    <input 
-                        id="terms" 
-                        name="terms" 
-                        type="checkbox" 
-                        required
-                        class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                    >
-                    <label for="terms" class="ml-2 block text-sm text-gray-900">
-                        Acepto los 
-                        <a href="/terms" class="text-primary-600 hover:text-primary-500">términos y condiciones</a>
-                        y la 
-                        <a href="/privacy" class="text-primary-600 hover:text-primary-500">política de privacidad</a>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Botón de envío -->
-            <div>
-                <button 
-                    type="submit" 
-                    id="submit-btn"
-                    class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                        <i class="fas fa-user-plus text-primary-500 group-hover:text-primary-400"></i>
-                    </span>
-                    <span id="submit-text">Crear Cuenta</span>
-                    <span id="submit-loading" class="hidden">
-                        <i class="fas fa-spinner fa-spin"></i> Creando cuenta...
-                    </span>
-                </button>
-            </div>
-
-            <!-- Enlaces adicionales -->
-            <div class="text-center">
-                <p class="text-sm text-gray-600">
+            <!-- Enlace para iniciar sesión -->
+            <div class="mt-8 text-center">
+                <p class="text-gray-600 text-lg">
                     ¿Ya tienes una cuenta? 
-                    <a href="/login" class="font-medium text-primary-600 hover:text-primary-500">
+                    <a href="/login" class="text-blue-600 hover:text-blue-800 font-semibold underline text-lg">
                         Inicia sesión aquí
                     </a>
                 </p>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -267,7 +261,7 @@ ob_start();
 <script>
     function togglePassword(fieldId) {
         const passwordInput = document.getElementById(fieldId);
-        const iconId = fieldId === 'password' ? 'password-icon' : 'confirm-password-icon';
+        const iconId = fieldId === 'password' ? 'password-icon' : 'confirm_password-icon';
         const passwordIcon = document.getElementById(iconId);
         
         if (passwordInput.type === 'password') {
@@ -300,27 +294,27 @@ ob_start();
             const bar = document.getElementById(barId);
             if (index < strength) {
                 if (strength <= 2) {
-                    bar.className = 'h-1 flex-1 bg-red-500 rounded';
+                    bar.className = 'h-2 flex-1 bg-red-500 rounded-full';
                 } else if (strength <= 3) {
-                    bar.className = 'h-1 flex-1 bg-yellow-500 rounded';
+                    bar.className = 'h-2 flex-1 bg-yellow-500 rounded-full';
                 } else {
-                    bar.className = 'h-1 flex-1 bg-green-500 rounded';
+                    bar.className = 'h-2 flex-1 bg-green-500 rounded-full';
                 }
             } else {
-                bar.className = 'h-1 flex-1 bg-gray-200 rounded';
+                bar.className = 'h-2 flex-1 bg-gray-200 rounded-full';
             }
         });
         
         // Actualizar texto
         if (strength <= 2) {
             strengthText.textContent = 'Contraseña débil';
-            strengthText.className = 'text-xs text-red-500 mt-1';
+            strengthText.className = 'text-sm text-red-500 mt-2 font-medium';
         } else if (strength <= 3) {
             strengthText.textContent = 'Contraseña media';
-            strengthText.className = 'text-xs text-yellow-500 mt-1';
+            strengthText.className = 'text-sm text-yellow-500 mt-2 font-medium';
         } else {
             strengthText.textContent = 'Contraseña fuerte';
-            strengthText.className = 'text-xs text-green-500 mt-1';
+            strengthText.className = 'text-sm text-green-500 mt-2 font-medium';
         }
         
         return strength;
@@ -428,18 +422,14 @@ ob_start();
         }
         
         // Mostrar estado de carga
-        const submitBtn = document.getElementById('submit-btn');
-        const submitText = document.getElementById('submit-text');
-        const submitLoading = document.getElementById('submit-loading');
-        
+        const submitBtn = document.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
-        submitText.classList.add('hidden');
-        submitLoading.classList.remove('hidden');
+        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
     });
 
     // Animación de entrada
     document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('.max-w-md');
+        const form = document.querySelector('.max-w-2xl');
         form.classList.add('animate-fade-in');
     });
 </script>

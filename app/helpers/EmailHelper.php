@@ -182,12 +182,105 @@ class EmailHelper {
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
             <title>Verifica tu cuenta - " . APP_NAME . "</title>
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: #2563eb; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-                .content { background: #f8fafc; padding: 30px; border-radius: 0 0 8px 8px; }
-                .button { display: inline-block; background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-                .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+                body { 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                    line-height: 1.6; 
+                    color: #333; 
+                    margin: 0; 
+                    padding: 0; 
+                    background-color: #f5f5f5; 
+                }
+                .container { 
+                    max-width: 600px; 
+                    margin: 20px auto; 
+                    background: white; 
+                    border-radius: 12px; 
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+                    overflow: hidden; 
+                }
+                .header { 
+                    background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%); 
+                    color: white; 
+                    padding: 30px 20px; 
+                    text-align: center; 
+                }
+                .header h1 { 
+                    margin: 0; 
+                    font-size: 28px; 
+                    font-weight: 600; 
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+                }
+                .content { 
+                    padding: 40px 30px; 
+                    background: white; 
+                }
+                .content h2 { 
+                    color: #2d3748; 
+                    margin-top: 0; 
+                    margin-bottom: 20px; 
+                    font-size: 24px; 
+                    font-weight: 600; 
+                }
+                .button-container { 
+                    text-align: center; 
+                    margin: 30px 0; 
+                    padding: 20px 0; 
+                }
+                .button { 
+                    display: inline-block; 
+                    background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%); 
+                    color: #ffffff !important; 
+                    padding: 16px 32px; 
+                    text-decoration: none; 
+                    border-radius: 50px; 
+                    font-weight: 700; 
+                    font-size: 16px; 
+                    text-transform: uppercase; 
+                    letter-spacing: 0.5px; 
+                    box-shadow: 0 4px 15px rgba(30, 64, 175, 0.5); 
+                    transition: all 0.3s ease; 
+                    border: none; 
+                    cursor: pointer; 
+                    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); 
+                }
+                .button:hover { 
+                    transform: translateY(-2px); 
+                    box-shadow: 0 6px 20px rgba(30, 64, 175, 0.7); 
+                    background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%); 
+                }
+                .link-text { 
+                    background: #f7fafc; 
+                    padding: 15px; 
+                    border-radius: 8px; 
+                    border-left: 4px solid #1e40af; 
+                    margin: 20px 0; 
+                    word-break: break-all; 
+                    font-family: 'Courier New', monospace; 
+                    font-size: 14px; 
+                    color: #4a5568; 
+                }
+                .important-note { 
+                    background: #fff5f5; 
+                    border: 1px solid #fed7d7; 
+                    border-radius: 8px; 
+                    padding: 15px; 
+                    margin: 20px 0; 
+                    color: #c53030; 
+                }
+                .footer { 
+                    text-align: center; 
+                    margin-top: 30px; 
+                    padding: 20px; 
+                    background: #f7fafc; 
+                    color: #718096; 
+                    font-size: 14px; 
+                    border-top: 1px solid #e2e8f0; 
+                }
+                @media only screen and (max-width: 600px) {
+                    .container { margin: 10px; }
+                    .content { padding: 30px 20px; }
+                    .button { padding: 14px 28px; font-size: 15px; }
+                }
             </style>
         </head>
         <body>
@@ -200,14 +293,16 @@ class EmailHelper {
                     <p>Hola <strong>{$nombre}</strong>,</p>
                     <p>Gracias por registrarte en nuestra plataforma. Para completar tu registro y acceder a todas las funcionalidades, por favor verifica tu dirección de email.</p>
                     
-                    <div style='text-align: center;'>
-                        <a href='{$verificationUrl}' class='button'>Verificar mi cuenta</a>
+                    <div class='button-container'>
+                        <a href='{$verificationUrl}' class='button' style='display: inline-block; background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%); color: #ffffff !important; padding: 16px 32px; text-decoration: none; border-radius: 50px; font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(30, 64, 175, 0.5); border: none; cursor: pointer; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);'>Verificar mi cuenta</a>
                     </div>
                     
                     <p>O copia y pega este enlace en tu navegador:</p>
-                    <p style='word-break: break-all; color: #2563eb;'>{$verificationUrl}</p>
+                    <div class='link-text'>{$verificationUrl}</div>
                     
-                    <p><strong>Importante:</strong> Este enlace expirará en 1 hora por motivos de seguridad.</p>
+                    <div class='important-note'>
+                        <strong>⚠️ Importante:</strong> Este enlace expirará en 1 hora por motivos de seguridad.
+                    </div>
                     
                     <p>Si no creaste esta cuenta, puedes ignorar este mensaje de forma segura.</p>
                 </div>
@@ -260,12 +355,105 @@ El equipo de " . APP_NAME;
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
             <title>Recuperación de contraseña - " . APP_NAME . "</title>
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: #dc2626; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-                .content { background: #f8fafc; padding: 30px; border-radius: 0 0 8px 8px; }
-                .button { display: inline-block; background: #dc2626; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-                .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+                body { 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                    line-height: 1.6; 
+                    color: #333; 
+                    margin: 0; 
+                    padding: 0; 
+                    background-color: #f5f5f5; 
+                }
+                .container { 
+                    max-width: 600px; 
+                    margin: 20px auto; 
+                    background: white; 
+                    border-radius: 12px; 
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+                    overflow: hidden; 
+                }
+                .header { 
+                    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); 
+                    color: white; 
+                    padding: 30px 20px; 
+                    text-align: center; 
+                }
+                .header h1 { 
+                    margin: 0; 
+                    font-size: 28px; 
+                    font-weight: 600; 
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+                }
+                .content { 
+                    padding: 40px 30px; 
+                    background: white; 
+                }
+                .content h2 { 
+                    color: #2d3748; 
+                    margin-top: 0; 
+                    margin-bottom: 20px; 
+                    font-size: 24px; 
+                    font-weight: 600; 
+                }
+                .button-container { 
+                    text-align: center; 
+                    margin: 30px 0; 
+                    padding: 20px 0; 
+                }
+                .button { 
+                    display: inline-block; 
+                    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); 
+                    color: #ffffff !important; 
+                    padding: 16px 32px; 
+                    text-decoration: none; 
+                    border-radius: 50px; 
+                    font-weight: 700; 
+                    font-size: 16px; 
+                    text-transform: uppercase; 
+                    letter-spacing: 0.5px; 
+                    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.5); 
+                    transition: all 0.3s ease; 
+                    border: none; 
+                    cursor: pointer; 
+                    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); 
+                }
+                .button:hover { 
+                    transform: translateY(-2px); 
+                    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.7); 
+                    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
+                }
+                .link-text { 
+                    background: #f7fafc; 
+                    padding: 15px; 
+                    border-radius: 8px; 
+                    border-left: 4px solid #dc2626; 
+                    margin: 20px 0; 
+                    word-break: break-all; 
+                    font-family: 'Courier New', monospace; 
+                    font-size: 14px; 
+                    color: #4a5568; 
+                }
+                .important-note { 
+                    background: #fff5f5; 
+                    border: 1px solid #fed7d7; 
+                    border-radius: 8px; 
+                    padding: 15px; 
+                    margin: 20px 0; 
+                    color: #c53030; 
+                }
+                .footer { 
+                    text-align: center; 
+                    margin-top: 30px; 
+                    padding: 20px; 
+                    background: #f7fafc; 
+                    color: #718096; 
+                    font-size: 14px; 
+                    border-top: 1px solid #e2e8f0; 
+                }
+                @media only screen and (max-width: 600px) {
+                    .container { margin: 10px; }
+                    .content { padding: 30px 20px; }
+                    .button { padding: 14px 28px; font-size: 15px; }
+                }
             </style>
         </head>
         <body>
@@ -277,14 +465,16 @@ El equipo de " . APP_NAME;
                     <h2>Hola <strong>{$nombre}</strong>,</h2>
                     <p>Has solicitado restablecer tu contraseña en " . APP_NAME . ".</p>
                     
-                    <div style='text-align: center;'>
-                        <a href='{$resetUrl}' class='button'>Restablecer mi contraseña</a>
+                    <div class='button-container'>
+                        <a href='{$resetUrl}' class='button' style='display: inline-block; background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #ffffff !important; padding: 16px 32px; text-decoration: none; border-radius: 50px; font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.5); border: none; cursor: pointer; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);'>Restablecer mi contraseña</a>
                     </div>
                     
                     <p>O copia y pega este enlace en tu navegador:</p>
-                    <p style='word-break: break-all; color: #dc2626;'>{$resetUrl}</p>
+                    <div class='link-text'>{$resetUrl}</div>
                     
-                    <p><strong>Importante:</strong> Este enlace expirará en 30 minutos por motivos de seguridad.</p>
+                    <div class='important-note'>
+                        <strong>⚠️ Importante:</strong> Este enlace expirará en 30 minutos por motivos de seguridad.
+                    </div>
                     
                     <p>Si no solicitaste este cambio, puedes ignorar este mensaje de forma segura. Tu contraseña actual permanecerá sin cambios.</p>
                 </div>

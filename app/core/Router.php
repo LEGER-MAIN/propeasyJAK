@@ -231,6 +231,7 @@ class Router {
         $this->get('/reset-password', 'AuthController@showResetPassword');
         $this->post('/reset-password', 'AuthController@resetPassword');
         $this->get('/logout', 'AuthController@logout');
+        $this->get('/auth/check', 'AuthController@check');
         
         // Rutas protegidas (requieren autenticación)
         $this->get('/dashboard', 'DashboardController@index');
@@ -251,6 +252,7 @@ class Router {
         
         // Rutas de propiedades
         $this->get('/properties', 'PropertyController@index');
+        $this->get('/properties/list', 'PropertyController@list');
         $this->get('/properties/show/{id}', 'PropertyController@show');
         $this->get('/properties/create', 'PropertyController@create');
         $this->post('/properties', 'PropertyController@store');
@@ -302,7 +304,21 @@ class Router {
         $this->post('/chat/create-direct-conversation', 'ChatController@createDirectConversation');
         $this->get('/chat/users-for-direct-chat', 'ChatController@usersForDirectChat');
         
-
+        // Rutas de favoritos
+        $this->get('/favorites', 'FavoriteController@index');
+        $this->post('/favorites/agregar', 'FavoriteController@agregar');
+        $this->post('/favorites/eliminar', 'FavoriteController@eliminar');
+        $this->post('/favorites/toggle', 'FavoriteController@toggle');
+        $this->post('/favorites/eliminar-por-id', 'FavoriteController@eliminarPorId');
+        $this->post('/favorites/limpiar-todos', 'FavoriteController@limpiarTodos');
+        $this->get('/favorites/contador', 'FavoriteController@contador');
+        $this->get('/favorites/verificar', 'FavoriteController@verificar');
+        $this->get('/favorites/estadisticas', 'FavoriteController@estadisticas');
+        
+        // Ruta de prueba para favoritos
+        $this->get('/test-favorites', function() {
+            include APP_PATH . '/../test_favorites.html';
+        });
         
         // Ruta de prueba del chat real
         $this->get('/test-chat-real', function() {
@@ -314,15 +330,9 @@ class Router {
             include APP_PATH . '/../test_js_simple.php';
         });
         
-        // Rutas de favoritos
-        $this->get('/favorites', 'FavoriteController@index');
-        $this->post('/favorites/add', 'FavoriteController@add');
-        $this->post('/favorites/remove', 'FavoriteController@remove');
-        $this->get('/favorites/verify/{id}', 'FavoriteController@verify');
-        $this->get('/favorites/count/{id}', 'FavoriteController@count');
-        $this->get('/favorites/total', 'FavoriteController@total');
-        $this->get('/favorites/list', 'FavoriteController@list');
-        $this->post('/favorites/clear', 'FavoriteController@clear');
+
+        
+
         
 
         

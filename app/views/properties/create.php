@@ -10,25 +10,25 @@
 $content = ob_start();
 ?>
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Breadcrumb -->
-    <nav class="flex mb-6" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-2 md:space-x-4">
             <li class="inline-flex items-center">
-                <a href="/" class="text-gray-700 hover:text-primary-600">
+                <a href="/" class="text-gray-700 hover:text-blue-600 font-medium">
                     <i class="fas fa-home mr-2"></i>Inicio
                 </a>
             </li>
             <li>
                 <div class="flex items-center">
                     <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                    <a href="/properties" class="text-gray-700 hover:text-primary-600">Propiedades</a>
+                    <a href="/properties" class="text-gray-700 hover:text-blue-600 font-medium">Propiedades</a>
                 </div>
             </li>
             <li aria-current="page">
                 <div class="flex items-center">
                     <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                    <span class="text-gray-500">Publicar Propiedad</span>
+                    <span class="text-gray-500 font-medium">Publicar Propiedad</span>
                 </div>
             </li>
         </ol>
@@ -36,170 +36,197 @@ $content = ob_start();
 
     <!-- Header -->
     <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Publicar Nueva Propiedad</h1>
-        <p class="text-gray-600">Completa el formulario para publicar tu propiedad en nuestra plataforma</p>
+        <div class="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+            <i class="fas fa-plus text-white text-2xl"></i>
+        </div>
+        <h1 class="text-4xl font-bold text-gray-900 mb-3">Publicar Nueva Propiedad</h1>
+        <p class="text-lg text-gray-700">Completa el formulario para publicar tu propiedad en nuestra plataforma</p>
     </div>
 
     <!-- Formulario -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <form action="/properties" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+        <form action="/properties" method="POST" enctype="multipart/form-data" class="space-y-8">
             <!-- Información básica -->
-            <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100">
+                <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+                    Información Básica
+                </h3>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Título -->
                     <div class="md:col-span-2">
-                        <label for="titulo" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="titulo" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-tag text-blue-600 mr-2"></i>
                             Título de la Propiedad <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="titulo" id="titulo" required
                                placeholder="Ej: Hermosa casa en Bella Vista"
-                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                               class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 placeholder-gray-400">
                     </div>
                     
                     <!-- Tipo de propiedad -->
                     <div>
-                        <label for="tipo" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="tipo" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-home text-blue-600 mr-2"></i>
                             Tipo de Propiedad <span class="text-red-500">*</span>
                         </label>
                         <select name="tipo" id="tipo" required
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                                class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                             <option value="">Selecciona un tipo</option>
-                            <option value="casa">Casa</option>
-                            <option value="apartamento">Apartamento</option>
-                            <option value="terreno">Terreno</option>
-                            <option value="local_comercial">Local Comercial</option>
-                            <option value="oficina">Oficina</option>
+                            <option value="casa">🏠 Casa</option>
+                            <option value="apartamento">🏢 Apartamento</option>
+                            <option value="terreno">🌱 Terreno</option>
+                            <option value="local_comercial">🏪 Local Comercial</option>
+                            <option value="oficina">🏢 Oficina</option>
                         </select>
                     </div>
                     
                     <!-- Estado de la propiedad -->
                     <div>
-                        <label for="estado_propiedad" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="estado_propiedad" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-star text-blue-600 mr-2"></i>
                             Estado de la Propiedad
                         </label>
                         <select name="estado_propiedad" id="estado_propiedad"
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
-                            <option value="bueno">Bueno</option>
-                            <option value="excelente">Excelente</option>
-                            <option value="regular">Regular</option>
-                            <option value="necesita_reparacion">Necesita Reparación</option>
+                                class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                            <option value="bueno">✅ Bueno</option>
+                            <option value="excelente">⭐ Excelente</option>
+                            <option value="regular">⚠️ Regular</option>
+                            <option value="necesita_reparacion">🔧 Necesita Reparación</option>
                         </select>
                     </div>
                 </div>
             </div>
 
             <!-- Precio y moneda -->
-            <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Precio</h3>
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-100">
+                <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i class="fas fa-dollar-sign text-green-600 mr-3"></i>
+                    Precio
+                </h3>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Precio -->
                     <div>
-                        <label for="precio" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="precio" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-money-bill-wave text-green-600 mr-2"></i>
                             Precio <span class="text-red-500">*</span>
                         </label>
                         <input type="number" name="precio" id="precio" required min="0" step="1000"
                                placeholder="0"
-                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                               class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 placeholder-gray-400">
                     </div>
                     
                     <!-- Moneda -->
                     <div>
-                        <label for="moneda" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="moneda" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-coins text-green-600 mr-2"></i>
                             Moneda
                         </label>
                         <select name="moneda" id="moneda"
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
-                            <option value="USD">USD - Dólar Estadounidense</option>
-                            <option value="DOP">DOP - Peso Dominicano</option>
-                            <option value="EUR">EUR - Euro</option>
+                                class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 appearance-none bg-white">
+                            <option value="USD">💵 USD - Dólar Estadounidense</option>
+                            <option value="DOP">💲 DOP - Peso Dominicano</option>
+                            <option value="EUR">💶 EUR - Euro</option>
                         </select>
                     </div>
                 </div>
             </div>
 
             <!-- Ubicación -->
-            <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Ubicación</h3>
+            <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-100">
+                <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i class="fas fa-map-marker-alt text-purple-600 mr-3"></i>
+                    Ubicación
+                </h3>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Ciudad -->
                     <div>
-                        <label for="ciudad" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="ciudad" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-city text-purple-600 mr-2"></i>
                             Ciudad <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="ciudad" id="ciudad" required
                                placeholder="Ej: Santo Domingo"
-                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                               class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 placeholder-gray-400">
                     </div>
                     
                     <!-- Sector -->
                     <div>
-                        <label for="sector" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="sector" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-map text-purple-600 mr-2"></i>
                             Sector <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="sector" id="sector" required
                                placeholder="Ej: Bella Vista"
-                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                               class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 placeholder-gray-400">
                     </div>
                     
                     <!-- Dirección -->
                     <div class="md:col-span-2">
-                        <label for="direccion" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="direccion" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-map-pin text-purple-600 mr-2"></i>
                             Dirección Completa <span class="text-red-500">*</span>
                         </label>
-                        <textarea name="direccion" id="direccion" rows="2" required
+                        <textarea name="direccion" id="direccion" rows="3" required
                                   placeholder="Ej: Calle Principal #123, entre Calle A y Calle B"
-                                  class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"></textarea>
+                                  class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 placeholder-gray-400 resize-none"></textarea>
                     </div>
                 </div>
             </div>
 
             <!-- Características -->
-            <div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Características</h3>
+            <div class="bg-gradient-to-r from-orange-50 to-yellow-50 p-6 rounded-xl border border-orange-100">
+                <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i class="fas fa-ruler-combined text-orange-600 mr-3"></i>
+                    Características
+                </h3>
                 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <!-- Metros cuadrados -->
                     <div>
-                        <label for="metros_cuadrados" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="metros_cuadrados" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-vector-square text-orange-600 mr-2"></i>
                             Metros Cuadrados <span class="text-red-500">*</span>
                         </label>
                         <input type="number" name="metros_cuadrados" id="metros_cuadrados" required min="0" step="0.01"
                                placeholder="0"
-                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                               class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 placeholder-gray-400">
                     </div>
                     
                     <!-- Habitaciones -->
                     <div>
-                        <label for="habitaciones" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="habitaciones" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-bed text-orange-600 mr-2"></i>
                             Habitaciones <span class="text-red-500">*</span>
                         </label>
                         <input type="number" name="habitaciones" id="habitaciones" required min="0"
                                placeholder="0"
-                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                               class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 placeholder-gray-400">
                     </div>
                     
                     <!-- Baños -->
                     <div>
-                        <label for="banos" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="banos" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-bath text-orange-600 mr-2"></i>
                             Baños <span class="text-red-500">*</span>
                         </label>
                         <input type="number" name="banos" id="banos" required min="0"
                                placeholder="0"
-                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                               class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 placeholder-gray-400">
                     </div>
                     
                     <!-- Estacionamientos -->
                     <div>
-                        <label for="estacionamientos" class="block text-sm font-medium text-gray-700 mb-1">
+                        <label for="estacionamientos" class="block text-base font-semibold text-gray-800 mb-2">
+                            <i class="fas fa-car text-orange-600 mr-2"></i>
                             Estacionamientos
                         </label>
                         <input type="number" name="estacionamientos" id="estacionamientos" min="0"
                                placeholder="0"
-                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                               class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 placeholder-gray-400">
                     </div>
                 </div>
             </div>

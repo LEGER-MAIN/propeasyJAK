@@ -6,22 +6,41 @@
  * Este controlador maneja la página principal y otras páginas públicas.
  */
 
+require_once APP_PATH . '/models/Property.php';
+require_once APP_PATH . '/models/Favorite.php';
+require_once APP_PATH . '/models/User.php';
+
 class HomeController {
     
     /**
      * Mostrar página principal
      */
     public function index() {
-        $pageTitle = 'Inicio - ' . APP_NAME;
+        // Cargar modelos
+        $propertyModel = new Property();
+        $favoriteModel = new Favorite();
+        $userModel = new User();
         
-        // Obtener estadísticas básicas (futuras implementaciones)
+        // Obtener estadísticas reales
         $stats = [
-            'total_propiedades' => 0,
-            'propiedades_activas' => 0,
-            'total_agentes' => 0,
-            'total_clientes' => 0
+            'total_propiedades' => $propertyModel->getTotalPropiedades(),
+            'propiedades_activas' => $propertyModel->getTotalPropiedadesActivas(),
+            'total_agentes' => $userModel->getTotalUsuariosPorRol('agente'),
+            'total_clientes' => $userModel->getTotalUsuariosPorRol('cliente')
         ];
         
+        // Obtener propiedades más favoritas
+        $propiedadesDestacadas = $favoriteModel->getPropiedadesMasFavoritas(6);
+        
+        // Si no hay propiedades con favoritos, cargar las más recientes
+        if (empty($propiedadesDestacadas)) {
+            $propiedadesDestacadas = $propertyModel->getPropiedadesRecientes(6);
+        }
+        
+        // Establecer variables para la vista
+        $pageTitle = 'Inicio - ' . APP_NAME;
+        
+        // Incluir la vista directamente (sin capturar contenido)
         include APP_PATH . '/views/home/index.php';
     }
     

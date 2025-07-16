@@ -10,6 +10,7 @@ PropEasy es una plataforma web diseñada para optimizar la gestión inmobiliaria
 - **Publicación de Propiedades**: Los clientes pueden publicar sus propiedades para venta
 - **Sistema de Token de Validación**: Cada propiedad requiere validación por un agente
 - **Búsqueda Avanzada**: Filtros por precio, ubicación, características, etc.
+- **Sistema de Favoritos**: Marcar y gestionar propiedades favoritas
 - **Comunicación Directa**: Chat interno con agentes
 - **Seguimiento de Solicitudes**: Estado de las solicitudes de compra
 
@@ -130,6 +131,47 @@ El sistema incluye usuarios de prueba predefinidos:
 5. Agenda citas con clientes
 6. Mantiene comunicación vía chat
 
+## Sistema de Favoritos
+
+### Características del Sistema de Favoritos
+
+- **Marcar/Desmarcar Favoritos**: Toggle desde listado y detalle de propiedades
+- **Listado de Favoritos**: Vista dedicada en `/favorites` con paginación
+- **Contador en Header**: Contador dinámico actualizado en tiempo real
+- **Notificaciones Visuales**: Alertas de éxito/error con animaciones
+- **Seguridad**: Solo usuarios autenticados, validación de permisos
+
+### Estructura de Base de Datos
+
+#### Tabla: `favoritos_propiedades`
+```sql
+CREATE TABLE favoritos_propiedades (
+  id int NOT NULL AUTO_INCREMENT,
+  usuario_id int NOT NULL,
+  propiedad_id int NOT NULL,
+  fecha_agregado datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY unique_usuario_propiedad (usuario_id, propiedad_id),
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+  FOREIGN KEY (propiedad_id) REFERENCES propiedades(id) ON DELETE CASCADE
+);
+```
+
+### API Endpoints de Favoritos
+
+- `GET /favorites` - Listado de favoritos
+- `POST /favorites/agregar` - Agregar favorito
+- `POST /favorites/eliminar` - Eliminar favorito
+- `POST /favorites/toggle` - Toggle favorito
+- `GET /favorites/contador` - Obtener contador
+- `GET /favorites/verificar` - Verificar estado
+
+### Uso del Sistema de Favoritos
+
+1. **Marcar Favorito**: Hacer clic en el botón de corazón en cualquier propiedad
+2. **Ver Favoritos**: Ir a "Favoritos" en el menú de navegación
+3. **Eliminar Favorito**: Desde el listado con botón "X" o desde propiedades haciendo clic nuevamente en el corazón
+
 ## Configuración
 
 ### Variables de Entorno
@@ -202,4 +244,7 @@ Para soporte técnico o preguntas:
 - Sistema de validación por tokens
 - Dashboard para agentes
 - Interfaz responsiva con Tailwind CSS
-- Sistema de roles y permisos 
+- Sistema de roles y permisos
+- Sistema de favoritos completo
+- Chat interno entre usuarios
+- Sistema de notificaciones por email 

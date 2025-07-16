@@ -170,23 +170,6 @@ BEGIN
 END//
 DELIMITER ;
 
--- Dumping structure for table propeasy_db.favoritos_propiedades
-CREATE TABLE IF NOT EXISTS `favoritos_propiedades` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `usuario_id` int NOT NULL,
-  `propiedad_id` int NOT NULL,
-  `fecha_agregado` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_favorito` (`usuario_id`,`propiedad_id`),
-  KEY `idx_favoritos_usuario` (`usuario_id`),
-  KEY `idx_favoritos_propiedad` (`propiedad_id`),
-  KEY `idx_favoritos_fecha` (`fecha_agregado`),
-  CONSTRAINT `favoritos_propiedades_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `favoritos_propiedades_ibfk_2` FOREIGN KEY (`propiedad_id`) REFERENCES `propiedades` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Data exporting was unselected.
-
 -- Dumping structure for table propeasy_db.imagenes_propiedades
 CREATE TABLE IF NOT EXISTS `imagenes_propiedades` (
   `id` int NOT NULL AUTO_INCREMENT,

@@ -838,4 +838,16 @@ class User {
             return [];
         }
     }
+    
+    /**
+     * Obtener total de usuarios por rol
+     * 
+     * @param string $rol Rol de usuario (cliente, agente, admin)
+     * @return int Total de usuarios con ese rol
+     */
+    public function getTotalUsuariosPorRol($rol) {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE rol = ? AND estado = 'activo'";
+        $resultado = $this->db->selectOne($query, [$rol]);
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
 } 

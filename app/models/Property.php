@@ -123,6 +123,26 @@ class Property {
     }
     
     /**
+     * Obtener todas las propiedades activas (para API)
+     * 
+     * @return array Lista de propiedades activas
+     */
+    public function getAllActive() {
+        $query = "SELECT p.*, 
+                         u.nombre as agente_nombre, 
+                         u.apellido as agente_apellido,
+                         (SELECT ruta FROM {$this->tableImages} 
+                          WHERE propiedad_id = p.id AND es_principal = 1 
+                          LIMIT 1) as imagen_principal
+                  FROM {$this->table} p
+                  LEFT JOIN usuarios u ON p.agente_id = u.id
+                  WHERE p.estado_publicacion = 'activa'
+                  ORDER BY p.fecha_creacion DESC";
+        
+        return $this->db->select($query);
+    }
+    
+    /**
      * Obtener todas las propiedades con filtros
      * 
      * @param array $filters Filtros de búsqueda
@@ -797,6 +817,111 @@ class Property {
         $stats['total'] = $stats['activas'] + $stats['en_revision'] + $stats['rechazadas'] + $stats['vendidas'];
         
         return $stats;
+    }
+    
+    /**
+     * Obtener total de propiedades
+     * 
+     * @return int Total de propiedades
+     */
+    public function getTotalPropiedades() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table}";
+        $resultado = $this->db->selectOne($query);
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener total de propiedades activas
+     * 
+     * @return int Total de propiedades activas
+     */
+    public function getTotalPropiedadesActivas() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE estado_publicacion = 'activa'";
+        $resultado = $this->db->selectOne($query);
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener total de propiedades con filtros aplicados
+     * 
+     * @param array $filters Filtros de búsqueda
+     * @return int Total de propiedades que coinciden con los filtros
+     */
+    public function getTotalPropertiesWithFilters($filters = []) {
+        $whereConditions = [];
+        $params = [];
+        
+        // Aplicar filtros
+        if (!empty($filters['tipo'])) {
+            $whereConditions[] = "tipo = ?";
+            $params[] = $filters['tipo'];
+        }
+        
+        if (!empty($filters['ciudad'])) {
+            $whereConditions[] = "ciudad LIKE ?";
+            $params[] = '%' . $filters['ciudad'] . '%';
+        }
+        
+        if (!empty($filters['sector'])) {
+            $whereConditions[] = "sector LIKE ?";
+            $params[] = '%' . $filters['sector'] . '%';
+        }
+        
+        if (!empty($filters['precio_min'])) {
+            $whereConditions[] = "precio >= ?";
+            $params[] = floatval($filters['precio_min']);
+        }
+        
+        if (!empty($filters['precio_max'])) {
+            $whereConditions[] = "precio <= ?";
+            $params[] = floatval($filters['precio_max']);
+        }
+        
+        if (!empty($filters['habitaciones'])) {
+            $whereConditions[] = "habitaciones >= ?";
+            $params[] = intval($filters['habitaciones']);
+        }
+        
+        if (!empty($filters['banos'])) {
+            $whereConditions[] = "banos >= ?";
+            $params[] = intval($filters['banos']);
+        }
+        
+        // Solo contar propiedades activas
+        $whereConditions[] = "estado_publicacion = 'activa'";
+        
+        $whereClause = !empty($whereConditions) ? 'WHERE ' . implode(' AND ', $whereConditions) : '';
+        
+        $query = "SELECT COUNT(*) as total FROM {$this->table} {$whereClause}";
+        $resultado = $this->db->selectOne($query, $params);
+        
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener las propiedades más recientes
+     * 
+     * @param int $limit Límite de propiedades a retornar
+     * @return array Lista de propiedades más recientes
+     */
+    public function getPropiedadesRecientes($limit = 6) {
+        $query = "SELECT 
+                    p.*,
+                    u.nombre as agente_nombre,
+                    u.apellido as agente_apellido,
+                    u.telefono as agente_telefono,
+                    0 as total_favoritos,
+                    (SELECT ruta FROM imagenes_propiedades 
+                     WHERE propiedad_id = p.id AND es_principal = 1 
+                     LIMIT 1) as imagen_principal,
+                    (SELECT COUNT(*) FROM imagenes_propiedades WHERE propiedad_id = p.id) as total_imagenes
+                  FROM {$this->table} p
+                  LEFT JOIN usuarios u ON p.agente_id = u.id
+                  WHERE p.estado_publicacion = 'activa'
+                  ORDER BY p.fecha_creacion DESC
+                  LIMIT ?";
+        
+        return $this->db->select($query, [$limit]);
     }
     
     /**

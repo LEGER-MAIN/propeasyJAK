@@ -96,14 +96,14 @@ $content = ob_start();
                         </div>
                         <div class="text-sm text-gray-500"><?= $property['moneda'] ?></div>
                         
-                        <!-- Botón de Favorito -->
+                        <!-- Botón de favorito -->
                         <?php if (isAuthenticated()): ?>
                         <div class="mt-3">
-                            <button class="favorite-btn bg-white border-2 border-gray-300 hover:border-red-500 p-3 rounded-full shadow-md transition-all duration-200 hover:scale-110" 
-                                    data-property-id="<?= $property['id'] ?>"
-                                    data-is-favorite="false"
-                                    onclick="toggleFavorite(<?= $property['id'] ?>)">
-                                <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors text-lg"></i>
+                            <button class="favorite-toggle bg-white hover:bg-red-50 text-red-600 hover:text-red-700 border border-red-600 hover:border-red-700 rounded-md px-4 py-2 transition-colors duration-200 flex items-center" 
+                                    data-propiedad-id="<?= $property['id'] ?>"
+                                    title="Agregar a favoritos">
+                                <i class="far fa-heart mr-2"></i>
+                                <span>Agregar a Favoritos</span>
                             </button>
                         </div>
                         <?php endif; ?>

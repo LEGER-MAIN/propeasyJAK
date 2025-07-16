@@ -38,15 +38,15 @@ class PropertyController {
         
         // Obtener página actual
         $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-        $limit = 12;
+        $limit = 12; // 12 propiedades por página
         $offset = ($page - 1) * $limit;
         
-        // Obtener propiedades
-        $properties = $this->propertyModel->getAll($filters, $limit, $offset);
+        // Obtener total de propiedades para paginación (más eficiente)
+        $totalProperties = $this->propertyModel->getTotalPropertiesWithFilters($filters);
+        $totalPages = ceil($totalProperties / $limit);
         
-        // Obtener total de propiedades para paginación
-        $totalProperties = $this->propertyModel->getAll($filters, 1000, 0); // Obtener todas para contar
-        $totalPages = ceil(count($totalProperties) / $limit);
+        // Obtener propiedades de la página actual
+        $properties = $this->propertyModel->getAll($filters, $limit, $offset);
         
         // Obtener estadísticas
         $stats = $this->propertyModel->getStats();
@@ -639,5 +639,26 @@ class PropertyController {
             echo json_encode(['success' => false, 'message' => 'Error al eliminar la propiedad.']);
         }
         exit;
+    }
+    
+    /**
+     * API: Listar propiedades en formato JSON
+     */
+    public function list() {
+        header('Content-Type: application/json');
+        
+        try {
+            $properties = $this->propertyModel->getAllActive();
+            echo json_encode([
+                'success' => true,
+                'properties' => $properties
+            ]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'error' => 'Error al cargar propiedades'
+            ]);
+        }
     }
 } 

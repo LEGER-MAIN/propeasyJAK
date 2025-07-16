@@ -62,151 +62,102 @@
             color: #374151;
             border-radius: 18px 18px 18px 4px;
         }
+        
+        /* Estilos para botones de favoritos */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-outline-danger {
+            color: #dc2626;
+            border-color: #dc2626;
+            background-color: transparent;
+        }
+        
+        .btn-outline-danger:hover {
+            color: white;
+            background-color: #dc2626;
+        }
+        
+        .btn-danger {
+            color: white;
+            border-color: #dc2626;
+            background-color: #dc2626;
+        }
+        
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        /* Animaciones para favoritos */
+        .animate__animated {
+            animation-duration: 1s;
+            animation-fill-mode: both;
+        }
+        
+        .animate__heartBeat {
+            animation-name: heartBeat;
+        }
+        
+        .animate__fadeOut {
+            animation-name: fadeOut;
+        }
+        
+        .animate__pulse {
+            animation-name: pulse;
+        }
+        
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.3); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.3); }
+            70% { transform: scale(1); }
+        }
+        
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Contador de favoritos */
+        .favorite-counter {
+            font-size: 0.75rem;
+            font-weight: 600;
+            min-width: 1.25rem;
+            height: 1.25rem;
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <a href="/" class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-home text-white text-sm"></i>
-                        </div>
-                        <span class="text-xl font-bold text-gray-900"><?= APP_NAME ?></span>
-                    </a>
-                </div>
-                
-                <!-- Navegación -->
-                <nav class="hidden md:flex space-x-8">
-                    <a href="/" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                        Inicio
-                    </a>
-                    <a href="/properties" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                        Propiedades
-                    </a>
-                    <?php if (isAuthenticated()): ?>
-                        <?php if (hasRole(ROLE_AGENTE)): ?>
-                            <a href="/properties/agent/list" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                Mis Propiedades
-                            </a>
-                            <a href="/properties/pending-validation" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                Pendientes
-                            </a>
-                        <?php endif; ?>
-                        <a href="/dashboard" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                            Dashboard
-                        </a>
-                        <?php if (hasRole(ROLE_CLIENTE)): ?>
-                            <a href="/buscar-agentes" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                <i class="fas fa-search"></i> Buscar Agentes
-                            </a>
-                        <?php endif; ?>
-                        <?php if (hasRole(ROLE_AGENTE)): ?>
-                            <a href="/buscar-clientes" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                <i class="fas fa-search"></i> Buscar Clientes
-                            </a>
-                        <?php endif; ?>
-                        <a href="/chat" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                            <i class="fas fa-comments"></i> Chat Completo
-                        </a>
-                        <a href="/favorites" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors relative">
-                            <i class="fas fa-heart"></i> Favoritos
-                            <span id="favorite-count" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
-                        </a>
-                    <?php endif; ?>
-                </nav>
-                
-                <!-- Menú de usuario y chat -->
-                <div class="flex items-center space-x-4">
-                    <?php if (isAuthenticated()): ?>
-                        <!-- Chat Button -->
-                        <div class="relative">
-                            <button id="chat-toggle" class="relative p-2 text-gray-700 hover:text-primary-600 transition-colors">
-                                <i class="fas fa-comments text-lg"></i>
-                                <span id="chat-notification" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
-                            </button>
-                            
-                            <!-- Chat Panel -->
-                            <div id="chat-panel" class="hidden absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                                <!-- Chat Header -->
-                                <div class="flex items-center justify-between p-4 border-b border-gray-200">
-                                    <div class="flex items-center space-x-2">
-                                        <i class="fas fa-comments text-primary-600"></i>
-                                        <h3 class="font-semibold text-gray-900">Chat</h3>
-                                    </div>
-                                    <button id="chat-close" class="text-gray-400 hover:text-gray-600">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                                
-                                <!-- Chat Tabs -->
-                                <div id="chat-tabs" class="flex border-b border-gray-200">
-                                    <!-- Tabs se cargarán dinámicamente -->
-                                </div>
-                                
-                                <!-- Chat Content -->
-                                <div id="chat-content" class="h-96 flex flex-col">
-                                    <!-- Messages Area -->
-                                    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3">
-                                        <div class="text-center text-gray-500 text-sm">
-                                            <i class="fas fa-comments text-2xl mb-2 block"></i>
-                                            <p>Selecciona una conversación para comenzar</p>
-                                            <p class="text-xs mt-1">O ve al chat completo para iniciar nuevas conversaciones</p>
-                                            <a href="/chat" class="inline-block mt-2 px-3 py-1 bg-primary-600 text-white rounded text-xs hover:bg-primary-700 transition-colors">
-                                                Ir al Chat Completo
-                                            </a>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Message Input -->
-                                    <div class="p-4 border-t border-gray-200">
-                                        <div class="flex space-x-2">
-                                            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." 
-                                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-                                            <button id="chat-send" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-                                                <i class="fas fa-paper-plane"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Menú de usuario -->
-                        <div class="relative">
-                            <button id="user-menu-button" class="w-9 h-9 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 font-bold text-lg hover:bg-primary-200 transition-colors">
-                                <?= strtoupper(substr($_SESSION['user_nombre'] ?? 'U', 0, 1)) ?>
-                            </button>
-                            <div id="user-menu-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50">
-                                <div class="px-4 py-2 text-sm text-gray-700 border-b">
-                                    <?= htmlspecialchars($_SESSION['user_nombre'] ?? 'Usuario') ?>
-                                </div>
-                                <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">Mi Perfil</a>
-                                <?php if (hasRole(ROLE_ADMIN)): ?>
-                                    <a href="/admin/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">Panel Admin</a>
-                                <?php endif; ?>
-                                <?php if (hasRole(ROLE_AGENTE)): ?>
-                                    <a href="/agente/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">Panel Agente</a>
-                                <?php endif; ?>
-                                <a href="/logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">Cerrar Sesión</a>
-                            </div>
-                        </div>
-                    <?php else: ?>
-                        <!-- Botones de autenticación -->
-                        <a href="/login" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                            Iniciar Sesión
-                        </a>
-                        <a href="/register" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                            Registrarse
-                        </a>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </header>
+<body class="bg-gray-50 min-h-screen <?= isAuthenticated() ? 'user-authenticated' : '' ?>">
+    <!-- Header con Navbar del Cliente -->
+    <?php include APP_PATH . '/views/components/navbar.php'; ?>
 
     <!-- Contenido principal -->
     <main class="flex-1">
@@ -518,10 +469,20 @@
         updateChatNotifications();
         <?php endif; ?>
         
-        <!-- Sistema de Favoritos -->
+        // Cargar sistema de favoritos
         <?php if (isAuthenticated()): ?>
-        <script src="/js/favorites.js"></script>
+        // Incluir script de favoritos
+        const favoritesScript = document.createElement('script');
+        favoritesScript.src = '/js/favorites.js';
+        favoritesScript.onload = function() {
+            console.log('Sistema de favoritos cargado correctamente');
+        };
+        favoritesScript.onerror = function() {
+            console.error('Error al cargar el sistema de favoritos');
+        };
+        document.head.appendChild(favoritesScript);
         <?php endif; ?>
+
     </script>
 </body>
 </html> 
