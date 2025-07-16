@@ -39,6 +39,11 @@
                         <span>Favoritos</span>
                     </a>
                     
+                    <a href="/solicitudes" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2">
+                        <i class="fas fa-handshake"></i>
+                        <span><?= hasRole(ROLE_AGENTE) ? 'Solicitudes' : 'Mis Solicitudes' ?></span>
+                    </a>
+                    
                     <?php if (hasRole(ROLE_AGENTE)): ?>
                         <a href="/properties/agent/list" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2">
                             <i class="fas fa-list"></i>
@@ -133,6 +138,9 @@
                 <?php if (isAuthenticated()): ?>
                     <a href="/favorites" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-heart mr-2"></i>Favoritos
+                    </a>
+                    <a href="/solicitudes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                        <i class="fas fa-handshake mr-2"></i><?= hasRole(ROLE_AGENTE) ? 'Solicitudes' : 'Mis Solicitudes' ?>
                     </a>
                     <a href="/dashboard" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-tachometer-alt mr-2"></i>Dashboard

@@ -233,28 +233,21 @@ $content = ob_start();
                 </div>
             <?php endif; ?>
 
-            <!-- Formulario de interés -->
-            <?php if (isAuthenticated() && $property['estado_publicacion'] === 'activa'): ?>
+            <!-- Botón de Solicitar Compra -->
+            <?php if (isAuthenticated() && $property['estado_publicacion'] === 'activa' && $_SESSION['user_rol'] === 'cliente'): ?>
                 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">¿Te interesa esta propiedad?</h3>
+                    <p class="text-gray-600 mb-4">Envía una solicitud de compra para que el agente se ponga en contacto contigo.</p>
                     
-                    <form action="/properties/interest/<?= $property['id'] ?>" method="POST" class="space-y-4">
-                        <div>
-                            <label for="mensaje" class="block text-sm font-medium text-gray-700 mb-1">Mensaje (opcional)</label>
-                            <textarea name="mensaje" id="mensaje" rows="3" 
-                                      placeholder="Cuéntanos más sobre tu interés en esta propiedad..."
-                                      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"></textarea>
-                        </div>
-                        
-                        <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md font-medium transition-colors">
-                            <i class="fas fa-heart mr-2"></i>Expresar Interés
-                        </button>
-                    </form>
+                    <a href="/solicitudes/create/<?= $property['id'] ?>" 
+                       class="w-full bg-primary-600 hover:bg-primary-700 text-white text-center py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center">
+                        <i class="fas fa-handshake mr-2"></i>Solicitar Compra
+                    </a>
                 </div>
             <?php elseif (!isAuthenticated() && $property['estado_publicacion'] === 'activa'): ?>
                 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">¿Te interesa esta propiedad?</h3>
-                    <p class="text-gray-600 mb-4">Inicia sesión para expresar tu interés en esta propiedad.</p>
+                    <p class="text-gray-600 mb-4">Inicia sesión para solicitar la compra de esta propiedad.</p>
                     <a href="/login" class="w-full bg-primary-600 hover:bg-primary-700 text-white text-center py-2 px-4 rounded-md font-medium transition-colors">
                         Iniciar Sesión
                     </a>

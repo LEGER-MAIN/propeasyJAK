@@ -155,12 +155,12 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen <?= isAuthenticated() ? 'user-authenticated' : '' ?>">
+<body class="bg-gray-50 min-h-screen flex flex-col <?= isAuthenticated() ? 'user-authenticated' : '' ?>">
     <!-- Header con Navbar del Cliente -->
     <?php include APP_PATH . '/views/components/navbar.php'; ?>
 
     <!-- Contenido principal -->
-    <main class="flex-1">
+    <main class="flex-1 pt-20">
         <!-- Mensajes flash -->
         <?php $flashMessages = getFlashMessages(); ?>
         <?php if (!empty($flashMessages)): ?>

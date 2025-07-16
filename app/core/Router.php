@@ -105,11 +105,8 @@ class Router {
         // Remover query string
         $path = parse_url($path, PHP_URL_PATH);
         
-        // Remover directorio base si existe
-        $scriptName = dirname($_SERVER['SCRIPT_NAME']);
-        if ($scriptName !== '/') {
-            $path = str_replace($scriptName, '', $path);
-        }
+        // Para Laragon que sirve desde public/, no necesitamos remover directorio base
+        // ya que $_SERVER['SCRIPT_NAME'] ya es /index.php
         
         // Asegurar que empiece con /
         if (empty($path)) {
@@ -274,10 +271,15 @@ class Router {
         $this->post('/simple/activate', 'SimpleController@activate');
         $this->post('/simple/reject', 'SimpleController@reject');
         
-        // Rutas de solicitudes (futuras)
-        $this->get('/requests', 'RequestController@index');
-        $this->post('/requests', 'RequestController@store');
-        $this->get('/requests/{id}', 'RequestController@show');
+        // Rutas de solicitudes de compra
+        $this->get('/solicitudes', 'SolicitudController@index');
+        $this->get('/solicitudes/create/{id}', 'SolicitudController@show');
+        $this->post('/solicitudes', 'SolicitudController@store');
+        $this->get('/solicitudes/{id}', 'SolicitudController@showSolicitud');
+        $this->post('/solicitudes/{id}/update-status', 'SolicitudController@updateStatus');
+        $this->post('/solicitudes/{id}/delete', 'SolicitudController@delete');
+        $this->get('/api/solicitudes-cliente/{id}', 'SolicitudController@getSolicitudesCliente');
+        $this->get('/api/solicitudes/stats', 'SolicitudController@getStats');
         
         // Rutas de chat
         $this->get('/chat', 'ChatController@index');

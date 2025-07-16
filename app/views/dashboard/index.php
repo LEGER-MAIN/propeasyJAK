@@ -16,9 +16,18 @@ $content = ob_start();
             <a href="/properties" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-md font-medium transition-colors">
                 <i class="fas fa-search mr-2"></i>Buscar Propiedades
             </a>
+            <?php if (hasRole(ROLE_CLIENTE)): ?>
+            <a href="/solicitudes" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium transition-colors">
+                <i class="fas fa-handshake mr-2"></i>Mis Solicitudes
+            </a>
+            <?php elseif (hasRole(ROLE_AGENTE)): ?>
+            <a href="/solicitudes" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium transition-colors">
+                <i class="fas fa-handshake mr-2"></i>Ver Solicitudes
+            </a>
             <a href="/properties/create" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-medium transition-colors">
                 <i class="fas fa-plus mr-2"></i>Publicar Propiedad
             </a>
+            <?php endif; ?>
         </div>
     </div>
 </div>

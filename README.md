@@ -1,54 +1,48 @@
 # PropEasy - Sistema Web de Venta de Bienes Raíces
 
-## Descripción
+## 📋 Descripción
 
-PropEasy es una plataforma web diseñada para optimizar la gestión inmobiliaria mediante funcionalidades avanzadas de publicación, búsqueda, comunicación y gestión de propiedades.
+PropEasy es un sistema web completo para la gestión y venta de bienes raíces. Permite a agentes inmobiliarios publicar propiedades, a clientes buscar y solicitar compras, y a administradores gestionar todo el sistema.
 
-## Características Principales
+## ✨ Características Principales
 
-### Para Clientes
-- **Publicación de Propiedades**: Los clientes pueden publicar sus propiedades para venta
-- **Sistema de Token de Validación**: Cada propiedad requiere validación por un agente
-- **Búsqueda Avanzada**: Filtros por precio, ubicación, características, etc.
-- **Sistema de Favoritos**: Marcar y gestionar propiedades favoritas
-- **Comunicación Directa**: Chat interno con agentes
-- **Seguimiento de Solicitudes**: Estado de las solicitudes de compra
+### 🏠 Gestión de Propiedades
+- Publicación de propiedades con múltiples imágenes
+- Categorización por tipo (casa, apartamento, terreno, local comercial, oficina)
+- Filtros avanzados de búsqueda
+- Sistema de favoritos
+- Validación de propiedades por administradores
 
-### Para Agentes Inmobiliarios
-- **Gestión de Propiedades**: Panel para administrar propiedades asignadas
-- **Validación de Propiedades**: Sistema de validación con tokens únicos
-- **Dashboard Personalizado**: Estadísticas y métricas de rendimiento
-- **Agenda de Citas**: Gestión de citas con clientes
-- **Comunicación**: Chat interno con clientes
+### 👥 Gestión de Usuarios
+- **Clientes**: Buscar propiedades, crear solicitudes de compra, gestionar favoritos
+- **Agentes**: Publicar propiedades, gestionar solicitudes, chat con clientes
+- **Administradores**: Gestión completa del sistema, validación de propiedades
 
-### Para Administradores
-- **Dashboard Global**: Estadísticas del sistema
-- **Gestión de Usuarios**: Control de agentes y clientes
-- **Reportes**: Análisis de irregularidades y quejas
-- **Configuración**: Ajustes del sistema
+### 💬 Sistema de Comunicación
+- Chat interno entre agentes y clientes
+- Sistema de solicitudes de compra
+- Notificaciones por email (configurable)
+- Mensajería directa
 
-## Tecnologías Utilizadas
+### 📊 Dashboard y Reportes
+- Dashboard personalizado por rol de usuario
+- Estadísticas de propiedades y solicitudes
+- Reportes de actividad
+- Gestión de citas y reuniones
 
-- **Backend**: PHP 8.2
-- **Base de Datos**: MySQL 8.0
-- **Frontend**: HTML5, CSS3, JavaScript
-- **Framework CSS**: Tailwind CSS
-- **Iconos**: Font Awesome
-- **Email**: PHPMailer
-
-## Instalación
+## 🚀 Instalación
 
 ### Requisitos Previos
-- PHP 8.2 o superior
+- PHP 7.4 o superior
 - MySQL 8.0 o superior
-- Apache/Nginx
 - Composer
+- Servidor web (Apache/Nginx)
 
 ### Pasos de Instalación
 
 1. **Clonar el repositorio**
    ```bash
-   git clone https://github.com/tu-usuario/propeasy.git
+   git clone [URL_DEL_REPOSITORIO]
    cd propeasy
    ```
 
@@ -57,194 +51,200 @@ PropEasy es una plataforma web diseñada para optimizar la gestión inmobiliaria
    composer install
    ```
 
-3. **Configurar la base de datos**
-   - Crear una base de datos MySQL
+3. **Configurar base de datos**
+   - Crear base de datos MySQL
    - Importar el archivo `database/schema.sql`
-   - Configurar las credenciales en `config/database.php`
+   - Configurar credenciales en `config/database.php`
 
-4. **Configurar el servidor web**
+4. **Configurar la aplicación**
+   - Editar `config/config.php` con las configuraciones de tu entorno
+   - Configurar SMTP para emails (opcional)
+
+5. **Configurar servidor web**
    - Apuntar el DocumentRoot a la carpeta `public/`
-   - Asegurar que el archivo `.htaccess` esté habilitado
+   - Configurar URL rewriting para Apache
 
-5. **Configurar permisos**
-   ```bash
-   chmod 755 public/uploads/properties
-   ```
+### Configuración del Servidor Web
 
-6. **Configurar email** (opcional)
-   - Editar las configuraciones SMTP en `config/config.php`
+#### Apache (.htaccess)
+```apache
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+```
 
-## Estructura del Proyecto
+#### Nginx
+```nginx
+location / {
+    try_files $uri $uri/ /index.php?$query_string;
+}
+```
+
+## 📁 Estructura del Proyecto
 
 ```
 propeasy/
-├── app/
-│   ├── controllers/     # Controladores de la aplicación
-│   ├── core/           # Clases principales (Router, Database)
-│   ├── helpers/        # Funciones auxiliares
-│   ├── models/         # Modelos de datos
-│   └── views/          # Vistas de la aplicación
-├── config/             # Archivos de configuración
-├── database/           # Esquemas y migraciones
-├── public/             # Archivos públicos (DocumentRoot)
-├── vendor/             # Dependencias de Composer
-└── README.md
+├── app/                    # Código de la aplicación
+│   ├── controllers/        # Controladores
+│   ├── models/            # Modelos de datos
+│   ├── views/             # Vistas
+│   ├── core/              # Núcleo del sistema
+│   └── helpers/           # Helpers y utilidades
+├── config/                # Configuraciones
+├── database/              # Esquemas de base de datos
+├── public/                # Archivos públicos
+│   ├── js/               # JavaScript del cliente
+│   ├── uploads/          # Archivos subidos
+│   └── index.php         # Punto de entrada
+├── logs/                  # Logs del sistema
+├── uploads/               # Archivos de propiedades
+└── vendor/                # Dependencias de Composer
 ```
 
-## Usuarios de Prueba
-
-El sistema incluye usuarios de prueba predefinidos:
-
-### Administrador
-- **Email**: admin@propeasy.com
-- **Contraseña**: password
-- **Rol**: Administrador
-
-### Agente
-- **Email**: juan.perez@propeasy.com
-- **Contraseña**: password
-- **Rol**: Agente Inmobiliario
-
-### Cliente
-- **Email**: maria.garcia@example.com
-- **Contraseña**: password
-- **Rol**: Cliente
-
-## Flujo de Trabajo
-
-### Publicación de Propiedad por Cliente
-
-1. El cliente se registra/inicia sesión
-2. Completa el formulario de publicación de propiedad
-3. El sistema genera un token único de validación
-4. La propiedad queda en estado "En Revisión"
-5. El cliente comparte el token con un agente
-6. El agente valida la propiedad usando el token
-7. La propiedad se activa y aparece en el listado público
-
-### Gestión por Agente
-
-1. El agente accede a su panel
-2. Ve las propiedades asignadas y pendientes de validación
-3. Valida propiedades usando los tokens proporcionados
-4. Gestiona solicitudes de compra
-5. Agenda citas con clientes
-6. Mantiene comunicación vía chat
-
-## Sistema de Favoritos
-
-### Características del Sistema de Favoritos
-
-- **Marcar/Desmarcar Favoritos**: Toggle desde listado y detalle de propiedades
-- **Listado de Favoritos**: Vista dedicada en `/favorites` con paginación
-- **Contador en Header**: Contador dinámico actualizado en tiempo real
-- **Notificaciones Visuales**: Alertas de éxito/error con animaciones
-- **Seguridad**: Solo usuarios autenticados, validación de permisos
-
-### Estructura de Base de Datos
-
-#### Tabla: `favoritos_propiedades`
-```sql
-CREATE TABLE favoritos_propiedades (
-  id int NOT NULL AUTO_INCREMENT,
-  usuario_id int NOT NULL,
-  propiedad_id int NOT NULL,
-  fecha_agregado datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  UNIQUE KEY unique_usuario_propiedad (usuario_id, propiedad_id),
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-  FOREIGN KEY (propiedad_id) REFERENCES propiedades(id) ON DELETE CASCADE
-);
-```
-
-### API Endpoints de Favoritos
-
-- `GET /favorites` - Listado de favoritos
-- `POST /favorites/agregar` - Agregar favorito
-- `POST /favorites/eliminar` - Eliminar favorito
-- `POST /favorites/toggle` - Toggle favorito
-- `GET /favorites/contador` - Obtener contador
-- `GET /favorites/verificar` - Verificar estado
-
-### Uso del Sistema de Favoritos
-
-1. **Marcar Favorito**: Hacer clic en el botón de corazón en cualquier propiedad
-2. **Ver Favoritos**: Ir a "Favoritos" en el menú de navegación
-3. **Eliminar Favorito**: Desde el listado con botón "X" o desde propiedades haciendo clic nuevamente en el corazón
-
-## Configuración
+## 🔧 Configuración
 
 ### Variables de Entorno
 
-Las principales configuraciones se encuentran en `config/config.php`:
+Editar `config/config.php`:
 
-- **Base de datos**: `config/database.php`
-- **Email SMTP**: Configuraciones en `config/config.php`
-- **Rutas**: Definidas automáticamente
-- **Seguridad**: Configuraciones de sesión y tokens
+```php
+// Configuración de base de datos
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'propeasy_db');
+define('DB_USER', 'tu_usuario');
+define('DB_PASS', 'tu_contraseña');
 
-### Personalización
+// Configuración de email (opcional)
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_USER', 'tu_email@gmail.com');
+define('SMTP_PASS', 'tu_contraseña_app');
+```
 
-- **Tema**: Modificar las clases de Tailwind CSS en las vistas
-- **Funcionalidades**: Extender los controladores y modelos
-- **Base de datos**: Agregar nuevas tablas según necesidades
+### Roles de Usuario
 
-## Seguridad
+- **cliente**: Usuarios que buscan propiedades
+- **agente**: Agentes inmobiliarios que publican propiedades
+- **admin**: Administradores del sistema
 
-- **Autenticación**: Sistema de login con verificación de email
-- **Autorización**: Control de acceso basado en roles (RBAC)
-- **Validación**: Sanitización de datos de entrada
-- **Tokens**: Sistema de tokens únicos para validaciones
-- **Sesiones**: Configuración segura de sesiones
+## 🎯 Funcionalidades por Rol
 
-## Mantenimiento
+### 👤 Cliente
+- Registro e inicio de sesión
+- Búsqueda de propiedades con filtros
+- Agregar propiedades a favoritos
+- Crear solicitudes de compra
+- Chat con agentes
+- Ver historial de solicitudes
 
-### Tareas Automáticas
+### 🏢 Agente
+- Publicar propiedades con imágenes
+- Gestionar solicitudes de compra
+- Chat con clientes
+- Ver estadísticas de propiedades
+- Agendar citas con clientes
 
-El sistema incluye eventos MySQL para:
-- Limpieza automática de tokens expirados
-- Mantenimiento de la base de datos
+### 👨‍💼 Administrador
+- Gestión de usuarios
+- Validación de propiedades
+- Reportes del sistema
+- Configuración general
+- Gestión de irregularidades
+
+## 🔒 Seguridad
+
+- Autenticación con sesiones seguras
+- Validación de CSRF tokens
+- Sanitización de datos de entrada
+- Control de acceso por roles
+- Encriptación de contraseñas
+- Validación de archivos subidos
+
+## 📧 Sistema de Emails
+
+El sistema incluye notificaciones por email para:
+- Verificación de cuentas
+- Recuperación de contraseñas
+- Notificaciones de solicitudes
+- Actualizaciones de estado
+
+**Nota**: La configuración de email es opcional. El sistema funciona sin emails.
+
+## 🐛 Debugging
+
+### Modo Desarrollo
+```php
+define('APP_ENV', 'development');
+```
 
 ### Logs
+Los logs se guardan en `logs/error.log`
 
-- **Errores**: `logs/error.log`
-- **Actividad**: Tabla `logs_actividad` en la base de datos
+### Errores
+En modo desarrollo se muestran errores detallados
+En producción se muestran páginas de error genéricas
 
-## API (Futuro)
+## 📊 Base de Datos
 
-El sistema está preparado para incluir una API REST que permitirá:
-- Integración con aplicaciones móviles
-- Webhooks para notificaciones
-- Integración con sistemas externos
+### Tablas Principales
+- `usuarios`: Usuarios del sistema
+- `propiedades`: Propiedades inmobiliarias
+- `solicitudes_compra`: Solicitudes de compra
+- `favoritos_propiedades`: Favoritos de usuarios
+- `mensajes_chat`: Mensajes del chat
+- `imagenes_propiedades`: Imágenes de propiedades
 
-## Contribución
+### Backup
+```bash
+mysqldump -u usuario -p propeasy_db > backup.sql
+```
+
+## 🚀 Despliegue
+
+### Producción
+1. Cambiar `APP_ENV` a `production`
+2. Configurar HTTPS
+3. Optimizar base de datos
+4. Configurar backup automático
+5. Configurar monitoreo de logs
+
+### Optimizaciones
+- Habilitar caché de PHP
+- Optimizar imágenes
+- Configurar CDN para archivos estáticos
+- Optimizar consultas de base de datos
+
+## 🤝 Contribución
 
 1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+2. Crear una rama para tu feature
+3. Commit tus cambios
+4. Push a la rama
+5. Abrir un Pull Request
 
-## Licencia
+## 📝 Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
-## Soporte
+## 📞 Soporte
 
 Para soporte técnico o preguntas:
 - Email: soporte@propeasy.com
-- Documentación: [Wiki del proyecto]
-- Issues: [GitHub Issues]
+- Documentación: [URL_DOCUMENTACION]
+- Issues: [URL_REPOSITORIO]/issues
 
-## Changelog
+## 🔄 Changelog
 
-### v1.0.0 (2025-01-14)
-- Sistema de autenticación completo
+### v1.0.0
+- Sistema base completo
 - Gestión de propiedades
-- Sistema de validación por tokens
-- Dashboard para agentes
-- Interfaz responsiva con Tailwind CSS
-- Sistema de roles y permisos
-- Sistema de favoritos completo
-- Chat interno entre usuarios
-- Sistema de notificaciones por email 
+- Sistema de usuarios y roles
+- Chat interno
+- Solicitudes de compra
+- Sistema de favoritos
+- Dashboard por roles
+- Validación de propiedades
+
+---
+
+**PropEasy** - Simplificando la venta de bienes raíces 🏠 

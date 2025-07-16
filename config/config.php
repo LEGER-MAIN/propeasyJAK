@@ -75,6 +75,53 @@ if (!defined('APP_NAME')) define('APP_NAME', 'PropEasy');
 if (!defined('APP_URL')) define('APP_URL', 'http://localhost');
 if (!defined('APP_VERSION')) define('APP_VERSION', '1.0.0');
 
+// Configuración de entorno
+if (!defined('APP_ENV')) define('APP_ENV', 'development');
+
+// Función para mostrar errores detallados en modo desarrollo
+function showDetailedError($error, $file = '', $line = '') {
+    if (APP_ENV === 'development') {
+        echo '<div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin: 10px; border-radius: 5px; font-family: monospace;">';
+        echo '<h3>Error en modo desarrollo:</h3>';
+        echo '<p><strong>Mensaje:</strong> ' . htmlspecialchars($error) . '</p>';
+        if ($file) echo '<p><strong>Archivo:</strong> ' . htmlspecialchars($file) . '</p>';
+        if ($line) echo '<p><strong>Línea:</strong> ' . htmlspecialchars($line) . '</p>';
+        echo '<p><strong>Backtrace:</strong></p>';
+        echo '<pre>' . htmlspecialchars(print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5), true)) . '</pre>';
+        echo '</div>';
+    }
+}
+
+// Manejador de errores personalizado
+function customErrorHandler($errno, $errstr, $errfile, $errline) {
+    $error_message = date('Y-m-d H:i:s') . " - Error [$errno]: $errstr in $errfile on line $errline\n";
+    error_log($error_message, 3, __DIR__ . '/../logs/error.log');
+    
+    if (APP_ENV === 'development') {
+        showDetailedError($errstr, $errfile, $errline);
+    }
+    
+    return true;
+}
+
+// Manejador de excepciones personalizado
+function customExceptionHandler($exception) {
+    $error_message = date('Y-m-d H:i:s') . " - Exception: " . $exception->getMessage() . " in " . $exception->getFile() . " on line " . $exception->getLine() . "\n";
+    error_log($error_message, 3, __DIR__ . '/../logs/error.log');
+    
+    if (APP_ENV === 'development') {
+        showDetailedError($exception->getMessage(), $exception->getFile(), $exception->getLine());
+    } else {
+        // En producción, mostrar página de error genérica
+        http_response_code(500);
+        include APP_PATH . '/views/errors/500.php';
+    }
+}
+
+// Configurar manejadores de errores
+set_error_handler('customErrorHandler');
+set_exception_handler('customExceptionHandler');
+
 // Configuración de archivos
 if (!defined('MAX_FILE_SIZE')) define('MAX_FILE_SIZE', 5 * 1024 * 1024);
 if (!defined('ALLOWED_EXTENSIONS')) define('ALLOWED_EXTENSIONS', ['jpg', 'jpeg', 'png', 'gif', 'pdf']);
@@ -174,7 +221,9 @@ function getFlashMessages() {
  * Función para verificar si el usuario está autenticado
  */
 function isAuthenticated() {
-    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+    $authenticated = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+    error_log("isAuthenticated() - Session ID: " . session_id() . ", User ID: " . ($_SESSION['user_id'] ?? 'NO SET') . ", Result: " . ($authenticated ? 'TRUE' : 'FALSE'));
+    return $authenticated;
 }
 
 /**

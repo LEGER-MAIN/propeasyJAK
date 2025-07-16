@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `citas` (
   CONSTRAINT `citas_ibfk_2` FOREIGN KEY (`agente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `citas_ibfk_3` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `citas_ibfk_4` FOREIGN KEY (`propiedad_id`) REFERENCES `propiedades` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -170,6 +170,23 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Dumping structure for table propeasy_db.favoritos_propiedades
+CREATE TABLE IF NOT EXISTS `favoritos_propiedades` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `usuario_id` int NOT NULL,
+  `propiedad_id` int NOT NULL,
+  `fecha_agregado` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_usuario_propiedad` (`usuario_id`,`propiedad_id`),
+  KEY `idx_usuario_id` (`usuario_id`),
+  KEY `idx_propiedad_id` (`propiedad_id`),
+  KEY `idx_fecha_agregado` (`fecha_agregado`),
+  CONSTRAINT `favoritos_propiedades_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `favoritos_propiedades_ibfk_2` FOREIGN KEY (`propiedad_id`) REFERENCES `propiedades` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Data exporting was unselected.
+
 -- Dumping structure for table propeasy_db.imagenes_propiedades
 CREATE TABLE IF NOT EXISTS `imagenes_propiedades` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -184,7 +201,7 @@ CREATE TABLE IF NOT EXISTS `imagenes_propiedades` (
   KEY `idx_es_principal` (`es_principal`),
   KEY `idx_orden` (`orden`),
   CONSTRAINT `imagenes_propiedades_ibfk_1` FOREIGN KEY (`propiedad_id`) REFERENCES `propiedades` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -306,7 +323,7 @@ CREATE TABLE IF NOT EXISTS `propiedades` (
   KEY `idx_fecha_creacion` (`fecha_creacion`),
   CONSTRAINT `propiedades_ibfk_1` FOREIGN KEY (`agente_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
   CONSTRAINT `propiedades_ibfk_2` FOREIGN KEY (`cliente_vendedor_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -360,7 +377,7 @@ CREATE TABLE IF NOT EXISTS `solicitudes_compra` (
   CONSTRAINT `solicitudes_compra_ibfk_1` FOREIGN KEY (`propiedad_id`) REFERENCES `propiedades` (`id`) ON DELETE CASCADE,
   CONSTRAINT `solicitudes_compra_ibfk_2` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `solicitudes_compra_ibfk_3` FOREIGN KEY (`agente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -390,7 +407,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   KEY `idx_fecha_registro` (`fecha_registro`),
   KEY `idx_ciudad` (`ciudad`),
   KEY `idx_sector` (`sector`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -435,6 +452,34 @@ CREATE TABLE `vista_estadisticas_usuarios` (
 	`usuarios_verificados` BIGINT NOT NULL
 ) ENGINE=MyISAM;
 
+-- Dumping structure for view propeasy_db.vista_favoritos_usuario
+-- Creating temporary table to overcome VIEW dependency errors
+CREATE TABLE `vista_favoritos_usuario` (
+	`favorito_id` INT NOT NULL,
+	`usuario_id` INT NOT NULL,
+	`propiedad_id` INT NOT NULL,
+	`fecha_agregado` DATETIME NOT NULL,
+	`titulo` VARCHAR(1) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`descripcion` TEXT NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`tipo` ENUM('casa','apartamento','terreno','local_comercial','oficina') NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`precio` DECIMAL(12,2) NOT NULL,
+	`moneda` ENUM('USD','DOP','EUR') NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`ciudad` VARCHAR(1) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`sector` VARCHAR(1) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`direccion` TEXT NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`metros_cuadrados` DECIMAL(8,2) NOT NULL,
+	`habitaciones` INT NOT NULL,
+	`banos` INT NOT NULL,
+	`estacionamientos` INT NOT NULL,
+	`estado_propiedad` ENUM('excelente','bueno','regular','necesita_reparacion') NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`estado_publicacion` ENUM('en_revision','activa','vendida','rechazada') NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`fecha_creacion` DATETIME NOT NULL,
+	`agente_nombre` VARCHAR(1) NULL COLLATE 'utf8mb4_unicode_ci',
+	`agente_apellido` VARCHAR(1) NULL COLLATE 'utf8mb4_unicode_ci',
+	`agente_telefono` VARCHAR(1) NULL COLLATE 'utf8mb4_unicode_ci',
+	`imagen_principal` VARCHAR(1) NULL COLLATE 'utf8mb4_unicode_ci'
+) ENGINE=MyISAM;
+
 -- Dumping structure for view propeasy_db.vista_propiedades_agente
 -- Creating temporary table to overcome VIEW dependency errors
 CREATE TABLE `vista_propiedades_agente` (
@@ -476,6 +521,10 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_estadisticas_propied
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `vista_estadisticas_usuarios`;
 CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_estadisticas_usuarios` AS select count(0) AS `total_usuarios`,count((case when (`usuarios`.`rol` = 'cliente') then 1 end)) AS `total_clientes`,count((case when (`usuarios`.`rol` = 'agente') then 1 end)) AS `total_agentes`,count((case when (`usuarios`.`rol` = 'admin') then 1 end)) AS `total_admins`,count((case when (`usuarios`.`estado` = 'activo') then 1 end)) AS `usuarios_activos`,count((case when (`usuarios`.`email_verificado` = 1) then 1 end)) AS `usuarios_verificados` from `usuarios`;
+
+-- Removing temporary table and create final VIEW structure
+DROP TABLE IF EXISTS `vista_favoritos_usuario`;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_favoritos_usuario` AS select `f`.`id` AS `favorito_id`,`f`.`usuario_id` AS `usuario_id`,`f`.`propiedad_id` AS `propiedad_id`,`f`.`fecha_agregado` AS `fecha_agregado`,`p`.`titulo` AS `titulo`,`p`.`descripcion` AS `descripcion`,`p`.`tipo` AS `tipo`,`p`.`precio` AS `precio`,`p`.`moneda` AS `moneda`,`p`.`ciudad` AS `ciudad`,`p`.`sector` AS `sector`,`p`.`direccion` AS `direccion`,`p`.`metros_cuadrados` AS `metros_cuadrados`,`p`.`habitaciones` AS `habitaciones`,`p`.`banos` AS `banos`,`p`.`estacionamientos` AS `estacionamientos`,`p`.`estado_propiedad` AS `estado_propiedad`,`p`.`estado_publicacion` AS `estado_publicacion`,`p`.`fecha_creacion` AS `fecha_creacion`,`u`.`nombre` AS `agente_nombre`,`u`.`apellido` AS `agente_apellido`,`u`.`telefono` AS `agente_telefono`,(select `imagenes_propiedades`.`ruta` from `imagenes_propiedades` where ((`imagenes_propiedades`.`propiedad_id` = `p`.`id`) and (`imagenes_propiedades`.`es_principal` = 1)) limit 1) AS `imagen_principal` from ((`favoritos_propiedades` `f` join `propiedades` `p` on((`f`.`propiedad_id` = `p`.`id`))) left join `usuarios` `u` on((`p`.`agente_id` = `u`.`id`))) where (`p`.`estado_publicacion` = 'activa') order by `f`.`fecha_agregado` desc;
 
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `vista_propiedades_agente`;

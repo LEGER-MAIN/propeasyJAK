@@ -562,6 +562,8 @@ class User {
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['user_nombre'] = $user['nombre'];
         $_SESSION['user_apellido'] = $user['apellido'];
+        $_SESSION['user_telefono'] = $user['telefono'] ?? '';
+        $_SESSION['user_ciudad'] = $user['ciudad'] ?? '';
         $_SESSION['user_rol'] = $user['rol'];
         $_SESSION['user_logged_in'] = true;
         $_SESSION['login_time'] = time();
