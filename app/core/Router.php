@@ -247,6 +247,13 @@ class Router {
         $this->post('/agente/propiedades/rechazar', 'AgenteController@rechazarPropiedad');
         $this->post('/agente/propiedades/eliminar', 'AgenteController@eliminarPropiedad');
         
+        // Rutas de perfil público del agente
+        $this->get('/agente/perfil', 'AgenteController@perfilPublico');
+        $this->get('/agente/{id}/perfil', 'AgenteController@perfilPublico');
+        $this->get('/agente/perfil/editar', 'AgenteController@editarPerfilPublico');
+        $this->post('/agente/perfil/actualizar', 'AgenteController@actualizarPerfilPublico');
+        $this->get('/agentes', 'AgenteController@listarAgentes');
+        
         // Rutas de propiedades
         $this->get('/properties', 'PropertyController@index');
         $this->get('/properties/list', 'PropertyController@list');

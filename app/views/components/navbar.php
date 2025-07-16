@@ -33,6 +33,11 @@
                     <span>Propiedades</span>
                 </a>
                 
+                <a href="/agentes" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2">
+                    <i class="fas fa-users"></i>
+                    <span>Agentes</span>
+                </a>
+                
                 <?php if (isAuthenticated()): ?>
                     <a href="/favorites" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2">
                         <i class="fas fa-heart"></i>
@@ -52,6 +57,10 @@
                         <a href="/properties/pending-validation" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2">
                             <i class="fas fa-clock"></i>
                             <span>Pendientes</span>
+                        </a>
+                        <a href="/agente/perfil" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Mi Perfil Público</span>
                         </a>
                     <?php endif; ?>
                     
@@ -134,6 +143,9 @@
                 </a>
                 <a href="/properties" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                     <i class="fas fa-building mr-2"></i>Propiedades
+                </a>
+                <a href="/agentes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                    <i class="fas fa-users mr-2"></i>Agentes
                 </a>
                 <?php if (isAuthenticated()): ?>
                     <a href="/favorites" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">

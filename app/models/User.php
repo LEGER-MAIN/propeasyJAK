@@ -852,4 +852,359 @@ class User {
         $resultado = $this->db->selectOne($query, [$rol]);
         return $resultado ? (int)$resultado['total'] : 0;
     }
+
+    /**
+     * Obtener perfil público de un agente
+     * 
+     * @param int $agenteId ID del agente
+     * @return array|null Datos del perfil público o null si no existe
+     */
+    public function getPerfilPublicoAgente($agenteId) {
+        try {
+            $query = "SELECT 
+                        id,
+                        nombre,
+                        apellido,
+                        email,
+                        telefono,
+                        ciudad,
+                        sector,
+                        biografia,
+                        experiencia_anos,
+                        especialidades,
+                        foto_perfil,
+                        licencia_inmobiliaria,
+                        horario_disponibilidad,
+                        idiomas,
+                        redes_sociales,
+                        perfil_publico_activo,
+                        fecha_registro,
+                        ultimo_acceso
+                      FROM {$this->table} 
+                      WHERE id = ? AND rol = 'agente' AND estado = 'activo' AND perfil_publico_activo = 1";
+            
+            $agente = $this->db->selectOne($query, [$agenteId]);
+            
+            if ($agente) {
+                // Decodificar JSON de redes sociales
+                if ($agente['redes_sociales']) {
+                    $agente['redes_sociales'] = json_decode($agente['redes_sociales'], true);
+                }
+                
+                // Convertir especialidades de string a array
+                if ($agente['especialidades']) {
+                    $agente['especialidades'] = explode(',', $agente['especialidades']);
+                    $agente['especialidades'] = array_map('trim', $agente['especialidades']);
+                }
+                
+                // Convertir idiomas de string a array
+                if ($agente['idiomas']) {
+                    $agente['idiomas'] = explode(',', $agente['idiomas']);
+                    $agente['idiomas'] = array_map('trim', $agente['idiomas']);
+                }
+            }
+            
+            return $agente;
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo perfil público del agente: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Obtener estadísticas del agente para el perfil público
+     * 
+     * @param int $agenteId ID del agente
+     * @return array Estadísticas del agente
+     */
+    public function getEstadisticasAgente($agenteId) {
+        try {
+            // Obtener estadísticas de propiedades
+            $queryPropiedades = "SELECT 
+                                  COUNT(*) as total_propiedades,
+                                  COUNT(CASE WHEN estado_publicacion = 'activa' THEN 1 END) as propiedades_activas,
+                                  COUNT(CASE WHEN estado_publicacion = 'vendida' THEN 1 END) as propiedades_vendidas,
+                                  SUM(CASE WHEN estado_publicacion = 'vendida' THEN precio_venta ELSE 0 END) as total_ventas
+                                FROM propiedades 
+                                WHERE agente_id = ?";
+            
+            $statsPropiedades = $this->db->selectOne($queryPropiedades, [$agenteId]);
+            
+            // Obtener estadísticas de solicitudes
+            $querySolicitudes = "SELECT 
+                                  COUNT(*) as total_solicitudes,
+                                  COUNT(CASE WHEN estado = 'cerrado' THEN 1 END) as solicitudes_cerradas
+                                FROM solicitudes_compra 
+                                WHERE agente_id = ?";
+            
+            $statsSolicitudes = $this->db->selectOne($querySolicitudes, [$agenteId]);
+            
+            // Obtener estadísticas de citas
+            $queryCitas = "SELECT 
+                            COUNT(*) as total_citas,
+                            COUNT(CASE WHEN estado = 'realizada' THEN 1 END) as citas_realizadas
+                          FROM citas 
+                          WHERE agente_id = ?";
+            
+            $statsCitas = $this->db->selectOne($queryCitas, [$agenteId]);
+            
+            // Obtener calificación promedio
+            $queryCalificacion = "SELECT 
+                                   AVG(calificacion) as calificacion_promedio,
+                                   COUNT(*) as total_calificaciones
+                                 FROM calificaciones_agentes 
+                                 WHERE agente_id = ?";
+            
+            $statsCalificacion = $this->db->selectOne($queryCalificacion, [$agenteId]);
+            
+            // Combinar todas las estadísticas
+            $estadisticas = array_merge(
+                $statsPropiedades ?: [],
+                $statsSolicitudes ?: [],
+                $statsCitas ?: [],
+                $statsCalificacion ?: []
+            );
+            
+            // Asegurar que todos los valores sean numéricos
+            $estadisticas = array_map(function($value) {
+                return is_numeric($value) ? (float)$value : 0;
+            }, $estadisticas);
+            
+            return $estadisticas;
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo estadísticas del agente: " . $e->getMessage());
+            return [
+                'total_propiedades' => 0,
+                'propiedades_activas' => 0,
+                'propiedades_vendidas' => 0,
+                'total_ventas' => 0,
+                'total_solicitudes' => 0,
+                'solicitudes_cerradas' => 0,
+                'total_citas' => 0,
+                'citas_realizadas' => 0,
+                'calificacion_promedio' => 0,
+                'total_calificaciones' => 0
+            ];
+        }
+    }
+
+    /**
+     * Obtener propiedades recientes del agente
+     * 
+     * @param int $agenteId ID del agente
+     * @param int $limit Límite de propiedades a mostrar
+     * @return array Lista de propiedades recientes
+     */
+    public function getPropiedadesRecientesAgente($agenteId, $limit = 6) {
+        try {
+            $query = "SELECT 
+                        p.id,
+                        p.titulo,
+                        p.descripcion,
+                        p.tipo,
+                        p.precio,
+                        p.moneda,
+                        p.ciudad,
+                        p.sector,
+                        p.metros_cuadrados,
+                        p.habitaciones,
+                        p.banos,
+                        p.estado_publicacion,
+                        p.fecha_creacion,
+                        (SELECT ruta FROM imagenes_propiedades 
+                         WHERE propiedad_id = p.id AND es_principal = 1 
+                         LIMIT 1) as imagen_principal
+                      FROM propiedades p
+                      WHERE p.agente_id = ? AND p.estado_publicacion = 'activa'
+                      ORDER BY p.fecha_creacion DESC
+                      LIMIT ?";
+            
+            return $this->db->select($query, [$agenteId, $limit]);
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo propiedades recientes del agente: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Obtener calificaciones del agente
+     * 
+     * @param int $agenteId ID del agente
+     * @param int $limit Límite de calificaciones a mostrar
+     * @return array Lista de calificaciones
+     */
+    public function getCalificacionesAgente($agenteId, $limit = 5) {
+        try {
+            $query = "SELECT 
+                        ca.id,
+                        ca.calificacion,
+                        ca.comentario,
+                        ca.fecha_calificacion,
+                        c.nombre as cliente_nombre,
+                        c.apellido as cliente_apellido,
+                        p.titulo as propiedad_titulo
+                      FROM calificaciones_agentes ca
+                      JOIN usuarios c ON ca.cliente_id = c.id
+                      JOIN solicitudes_compra sc ON ca.solicitud_id = sc.id
+                      JOIN propiedades p ON sc.propiedad_id = p.id
+                      WHERE ca.agente_id = ?
+                      ORDER BY ca.fecha_calificacion DESC
+                      LIMIT ?";
+            
+            return $this->db->select($query, [$agenteId, $limit]);
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo calificaciones del agente: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Actualizar perfil público del agente
+     * 
+     * @param int $agenteId ID del agente
+     * @param array $data Datos del perfil a actualizar
+     * @return array Resultado de la operación
+     */
+    public function actualizarPerfilPublico($agenteId, $data) {
+        try {
+            // Validar que el usuario existe y es agente
+            $agente = $this->getById($agenteId);
+            if (!$agente || $agente['rol'] !== 'agente') {
+                return [
+                    'success' => false,
+                    'message' => 'Usuario no encontrado o no es agente.'
+                ];
+            }
+            
+            // Preparar datos para actualización
+            $updateData = [];
+            $params = [];
+            
+            // Campos permitidos para actualización
+            $allowedFields = [
+                'biografia', 'experiencia_anos', 'especialidades', 'foto_perfil',
+                'licencia_inmobiliaria', 'horario_disponibilidad', 'idiomas',
+                'redes_sociales', 'perfil_publico_activo'
+            ];
+            
+            foreach ($allowedFields as $field) {
+                if (isset($data[$field])) {
+                    $updateData[] = "{$field} = ?";
+                    
+                    // Procesar campos especiales
+                    if ($field === 'especialidades' && is_array($data[$field])) {
+                        $params[] = implode(', ', array_map('trim', $data[$field]));
+                    } elseif ($field === 'idiomas' && is_array($data[$field])) {
+                        $params[] = implode(', ', array_map('trim', $data[$field]));
+                    } elseif ($field === 'redes_sociales' && is_array($data[$field])) {
+                        $params[] = json_encode($data[$field]);
+                    } elseif ($field === 'experiencia_anos') {
+                        $params[] = intval($data[$field]);
+                    } elseif ($field === 'perfil_publico_activo') {
+                        $params[] = $data[$field] ? 1 : 0;
+                    } else {
+                        $params[] = sanitizeInput($data[$field]);
+                    }
+                }
+            }
+            
+            if (empty($updateData)) {
+                return [
+                    'success' => false,
+                    'message' => 'No se proporcionaron datos para actualizar.'
+                ];
+            }
+            
+            $params[] = $agenteId;
+            
+            $query = "UPDATE {$this->table} SET " . implode(', ', $updateData) . " WHERE id = ?";
+            
+            if ($this->db->update($query, $params)) {
+                return [
+                    'success' => true,
+                    'message' => 'Perfil público actualizado exitosamente.'
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Error al actualizar el perfil público.'
+                ];
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error actualizando perfil público del agente: " . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Error interno del servidor.'
+            ];
+        }
+    }
+
+    /**
+     * Obtener lista de agentes con perfiles públicos activos
+     * 
+     * @param string $ciudad Ciudad para filtrar (opcional)
+     * @param int $limit Límite de resultados
+     * @param int $offset Offset para paginación
+     * @return array Lista de agentes
+     */
+    public function getAgentesConPerfilPublico($ciudad = '', $limit = 12, $offset = 0) {
+        try {
+            $conditions = [
+                "u.rol = 'agente'",
+                "u.estado = 'activo'",
+                "u.perfil_publico_activo = 1"
+            ];
+            $params = [];
+            
+            if (!empty($ciudad)) {
+                $conditions[] = "u.ciudad LIKE ?";
+                $params[] = "%{$ciudad}%";
+            }
+            
+            $whereClause = implode(' AND ', $conditions);
+            
+            $query = "SELECT 
+                        u.id,
+                        u.nombre,
+                        u.apellido,
+                        u.ciudad,
+                        u.sector,
+                        u.experiencia_anos,
+                        u.especialidades,
+                        u.foto_perfil,
+                        u.fecha_registro,
+                        COUNT(p.id) as total_propiedades,
+                        COUNT(CASE WHEN p.estado_publicacion = 'vendida' THEN 1 END) as propiedades_vendidas
+                      FROM {$this->table} u
+                      LEFT JOIN propiedades p ON u.id = p.agente_id
+                      WHERE {$whereClause}
+                      GROUP BY u.id
+                      ORDER BY u.nombre, u.apellido
+                      LIMIT ? OFFSET ?";
+            
+            $params[] = $limit;
+            $params[] = $offset;
+            
+            $agentes = $this->db->select($query, $params);
+            
+            // Procesar especialidades para cada agente
+            foreach ($agentes as &$agente) {
+                if ($agente['especialidades']) {
+                    $agente['especialidades'] = explode(',', $agente['especialidades']);
+                    $agente['especialidades'] = array_map('trim', $agente['especialidades']);
+                }
+            }
+            
+            return $agentes;
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo agentes con perfil público: " . $e->getMessage());
+            return [];
+        }
+    }
 } 

@@ -160,7 +160,7 @@
     <?php include APP_PATH . '/views/components/navbar.php'; ?>
 
     <!-- Contenido principal -->
-    <main class="flex-1 pt-20">
+    <main class="flex-1">
         <!-- Mensajes flash -->
         <?php $flashMessages = getFlashMessages(); ?>
         <?php if (!empty($flashMessages)): ?>
