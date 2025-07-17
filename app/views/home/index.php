@@ -160,20 +160,19 @@ ob_start();
                     <div class="bg-gray-50 rounded-lg p-8">
                         <i class="fas fa-home text-gray-400 text-6xl mb-4"></i>
                         <h3 class="text-xl font-semibold text-gray-900 mb-2">No hay propiedades disponibles</h3>
-                        <p class="text-gray-600 mb-6">Aún no hay propiedades publicadas en la plataforma.</p>
-                        <a href="/properties" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-md transition-colors duration-200">
-                            Ver Propiedades
-                        </a>
+                        <p class="text-gray-600">Aún no hay propiedades publicadas en la plataforma.</p>
                     </div>
                 </div>
             <?php endif; ?>
         </div>
         
+        <?php if (!empty($propiedadesDestacadas)): ?>
         <div class="text-center mt-12">
             <a href="/properties" class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-md text-lg font-medium transition-colors duration-200">
                 Ver Mas Propiedades
             </a>
         </div>
+        <?php endif; ?>
     </div>
 </section>
 

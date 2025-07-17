@@ -156,45 +156,45 @@ class Property {
         
         // Aplicar filtros
         if (!empty($filters['tipo'])) {
-            $whereConditions[] = "tipo = ?";
+            $whereConditions[] = "p.tipo = ?";
             $params[] = $filters['tipo'];
         }
         
         if (!empty($filters['ciudad'])) {
-            $whereConditions[] = "ciudad LIKE ?";
+            $whereConditions[] = "p.ciudad LIKE ?";
             $params[] = '%' . $filters['ciudad'] . '%';
         }
         
         if (!empty($filters['sector'])) {
-            $whereConditions[] = "sector LIKE ?";
+            $whereConditions[] = "p.sector LIKE ?";
             $params[] = '%' . $filters['sector'] . '%';
         }
         
         if (!empty($filters['precio_min'])) {
-            $whereConditions[] = "precio >= ?";
+            $whereConditions[] = "p.precio >= ?";
             $params[] = floatval($filters['precio_min']);
         }
         
         if (!empty($filters['precio_max'])) {
-            $whereConditions[] = "precio <= ?";
+            $whereConditions[] = "p.precio <= ?";
             $params[] = floatval($filters['precio_max']);
         }
         
         if (!empty($filters['habitaciones'])) {
-            $whereConditions[] = "habitaciones >= ?";
+            $whereConditions[] = "p.habitaciones >= ?";
             $params[] = intval($filters['habitaciones']);
         }
         
         if (!empty($filters['banos'])) {
-            $whereConditions[] = "banos >= ?";
+            $whereConditions[] = "p.banos >= ?";
             $params[] = intval($filters['banos']);
         }
         
         // Solo mostrar propiedades activas para el público
         if (!isset($filters['estado_publicacion'])) {
-            $whereConditions[] = "estado_publicacion = 'activa'";
+            $whereConditions[] = "p.estado_publicacion = 'activa'";
         } else {
-            $whereConditions[] = "estado_publicacion = ?";
+            $whereConditions[] = "p.estado_publicacion = ?";
             $params[] = $filters['estado_publicacion'];
         }
         
@@ -216,7 +216,10 @@ class Property {
         $params[] = $limit;
         $params[] = $offset;
         
-        return $this->db->select($query, $params);
+        $result = $this->db->select($query, $params);
+        
+        // Asegurar que siempre retorne un array
+        return $result !== false ? $result : [];
     }
     
     /**
