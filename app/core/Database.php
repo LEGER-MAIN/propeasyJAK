@@ -19,6 +19,9 @@ class Database {
      * Constructor de la clase Database
      */
     public function __construct() {
+        if (!defined('DB_HOST')) {
+            require_once __DIR__ . '/../../config/database.php';
+        }
         $this->host = DB_HOST;
         $this->db_name = DB_NAME;
         $this->username = DB_USER;
@@ -63,16 +66,17 @@ class Database {
     public function select($query, $params = []) {
         try {
             $conn = $this->getConnection();
-            if (!$conn) return false;
+            if (!$conn) return [];
             
             $stmt = $conn->prepare($query);
             $stmt->execute($params);
             
-            return $stmt->fetchAll();
+            $result = $stmt->fetchAll();
+            return $result ?: [];
             
         } catch(PDOException $e) {
             error_log("Error en consulta SELECT: " . $e->getMessage());
-            return false;
+            return [];
         }
     }
     

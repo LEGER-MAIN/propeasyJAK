@@ -38,14 +38,18 @@ class SearchController {
             return;
         }
         
+        // Procesar todos los filtros posibles
         $nombre = trim($_GET['nombre'] ?? '');
-        $ciudad = trim($_GET['ciudad'] ?? '');
+        $ciudad = trim($_GET['ciudad'] ?? $_GET['dudad'] ?? ''); // Manejar error tipográfico
+        $experiencia = trim($_GET['experiencia'] ?? $_GET['experiendia'] ?? ''); // Manejar error tipográfico
+        $idioma = trim($_GET['idioma'] ?? '');
+        $ordenar = trim($_GET['ordenar'] ?? 'nombre');
         $page = max(1, (int)($_GET['page'] ?? 1));
         $limit = 20;
         $offset = ($page - 1) * $limit;
         
         // Realizar búsqueda
-        $agentes = $this->userModel->buscarAgentes($nombre, $ciudad, $limit, $offset);
+        $agentes = $this->userModel->buscarAgentes($nombre, $ciudad, $experiencia, $idioma, $ordenar, $limit, $offset);
         $total = $this->userModel->getEstadisticasBusqueda('agentes', $nombre, $ciudad);
         $totalPages = ceil($total / $limit);
         
@@ -99,11 +103,14 @@ class SearchController {
         }
         
         $nombre = trim($_GET['nombre'] ?? '');
-        $ciudad = trim($_GET['ciudad'] ?? '');
+        $ciudad = trim($_GET['ciudad'] ?? $_GET['dudad'] ?? '');
+        $experiencia = trim($_GET['experiencia'] ?? $_GET['experiendia'] ?? '');
+        $idioma = trim($_GET['idioma'] ?? '');
+        $ordenar = trim($_GET['ordenar'] ?? 'nombre');
         $limit = min(50, max(1, (int)($_GET['limit'] ?? 20)));
         $offset = max(0, (int)($_GET['offset'] ?? 0));
         
-        $agentes = $this->userModel->buscarAgentes($nombre, $ciudad, $limit, $offset);
+        $agentes = $this->userModel->buscarAgentes($nombre, $ciudad, $experiencia, $idioma, $ordenar, $limit, $offset);
         $total = $this->userModel->getEstadisticasBusqueda('agentes', $nombre, $ciudad);
         
         echo json_encode([

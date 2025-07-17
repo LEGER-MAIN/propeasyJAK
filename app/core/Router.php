@@ -241,18 +241,27 @@ class Router {
         $this->post('/admin/users/change-status', 'AuthController@changeUserStatus');
         
         // Rutas de agente
-        $this->get('/agente/dashboard', 'AgenteController@dashboard');
+        $this->get('/agente/dashboard', 'AgenteController@showDashboard');
+        $this->get('/agente/perfil', 'AgenteController@showPerfil');
+        $this->post('/agente/perfil', 'AgenteController@updatePerfil');
+        $this->get('/agente/perfil-publico', 'AgenteController@showPerfilPublico');
+        $this->post('/agente/perfil-publico', 'AgenteController@updatePerfilPublico');
         $this->get('/agente/propiedades', 'AgenteController@propiedadesPendientes');
         $this->post('/agente/propiedades/aprobar', 'AgenteController@aprobarPropiedad');
         $this->post('/agente/propiedades/rechazar', 'AgenteController@rechazarPropiedad');
         $this->post('/agente/propiedades/eliminar', 'AgenteController@eliminarPropiedad');
         
-        // Rutas de perfil público del agente
-        $this->get('/agente/perfil', 'AgenteController@perfilPublico');
+        // Rutas de perfil público del agente (vistas públicas)
         $this->get('/agente/{id}/perfil', 'AgenteController@perfilPublico');
-        $this->get('/agente/perfil/editar', 'AgenteController@editarPerfilPublico');
-        $this->post('/agente/perfil/actualizar', 'AgenteController@actualizarPerfilPublico');
         $this->get('/agentes', 'AgenteController@listarAgentes');
+        
+        // Rutas del cliente
+        $this->get('/cliente/dashboard', 'ClienteController@showDashboard');
+        $this->get('/cliente/perfil', 'ClienteController@showPerfil');
+        $this->post('/cliente/perfil', 'ClienteController@updatePerfil');
+        $this->get('/cliente/historial', 'ClienteController@showHistorial');
+        $this->get('/cliente/configuracion', 'ClienteController@showConfiguracion');
+        $this->post('/cliente/configuracion', 'ClienteController@updateConfiguracion');
         
         // Rutas de propiedades
         $this->get('/properties', 'PropertyController@index');
@@ -324,20 +333,7 @@ class Router {
         $this->get('/favorites/verificar', 'FavoriteController@verificar');
         $this->get('/favorites/estadisticas', 'FavoriteController@estadisticas');
         
-        // Ruta de prueba para favoritos
-        $this->get('/test-favorites', function() {
-            include APP_PATH . '/../test_favorites.html';
-        });
-        
-        // Ruta de prueba del chat real
-        $this->get('/test-chat-real', function() {
-            include APP_PATH . '/../test_chat_real.php';
-        });
-        
-        // Ruta de prueba JavaScript simple
-        $this->get('/test-js-simple', function() {
-            include APP_PATH . '/../test_js_simple.php';
-        });
+
         
 
         

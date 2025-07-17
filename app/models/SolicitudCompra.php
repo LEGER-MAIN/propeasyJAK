@@ -335,4 +335,29 @@ class SolicitudCompra {
         
         return $this->db->select($sql, $params);
     }
+    
+    /**
+     * Obtener solicitudes recientes de un agente para el dashboard
+     * 
+     * @param int $agenteId ID del agente
+     * @param int $limit Límite de resultados
+     * @return array Lista de solicitudes recientes
+     */
+    public function getSolicitudesRecientesPorAgente($agenteId, $limit = 5) {
+        $sql = "SELECT 
+                    sc.id,
+                    sc.estado,
+                    sc.fecha_solicitud,
+                    sc.nombre_cliente,
+                    sc.email_cliente,
+                    p.titulo as titulo_propiedad,
+                    p.precio
+                  FROM solicitudes_compra sc
+                  LEFT JOIN propiedades p ON sc.propiedad_id = p.id
+                  WHERE sc.agente_id = ?
+                  ORDER BY sc.fecha_solicitud DESC
+                  LIMIT ?";
+        
+        return $this->db->select($sql, [$agenteId, $limit]);
+    }
 } 

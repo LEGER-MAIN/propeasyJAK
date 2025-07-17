@@ -2,177 +2,251 @@
 /**
  * Vista del Perfil Público del Agente
  * PropEasy - Sistema Web de Venta de Bienes Raíces
+ * 
+ * Esta vista permite a los agentes gestionar su perfil público
  */
 
 // Asegurar que las variables estén definidas
-$agente = $agente ?? [];
+$perfilPublico = $perfilPublico ?? [];
 $estadisticas = $estadisticas ?? [];
 $propiedadesRecientes = $propiedadesRecientes ?? [];
 $calificaciones = $calificaciones ?? [];
 ?>
 
 <style>
-.perfil-agente {
+.perfil-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 3rem 0;
-    margin-bottom: 2rem;
+    padding: 4rem 0;
+    margin-bottom: 3rem;
     margin-top: 0;
 }
 
-.perfil-header {
-    text-align: center;
-    margin-bottom: 2rem;
+.perfil-header-content {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
 }
 
-.foto-perfil {
-    width: 150px;
-    height: 150px;
+.foto-perfil-grande {
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid white;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    margin-bottom: 1rem;
+    border: 6px solid white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-.foto-perfil-default {
-    width: 150px;
-    height: 150px;
+.foto-perfil-default-grande {
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
-    background: #f8f9fa;
-    border: 4px solid white;
+    background: rgba(255,255,255,0.2);
+    border: 6px solid white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
-    color: #6c757d;
-    margin-bottom: 1rem;
+    font-size: 4rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-.nombre-agente {
+.info-perfil {
+    flex: 1;
+}
+
+.nombre-perfil {
     font-size: 2.5rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.ubicacion-agente {
-    font-size: 1.1rem;
-    opacity: 0.9;
     margin-bottom: 1rem;
 }
 
-.estadisticas-grid {
+.ubicacion-perfil {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badges-perfil {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.badge-perfil {
+    background: rgba(255,255,255,0.2);
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.main-content-perfil {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-}
-
-.estadistica-card {
-    background: rgba(255,255,255,0.1);
-    padding: 1.5rem;
-    border-radius: 10px;
-    text-align: center;
-    backdrop-filter: blur(10px);
-}
-
-.estadistica-numero {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.estadistica-label {
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-.seccion {
+    grid-template-columns: 1fr 2fr;
+    gap: 3rem;
     margin-bottom: 3rem;
 }
 
-.seccion-titulo {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: #333;
-    border-bottom: 2px solid #667eea;
-    padding-bottom: 0.5rem;
-}
-
-.biografia {
+.sidebar-perfil {
     background: white;
+    border-radius: 15px;
     padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    line-height: 1.6;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    height: fit-content;
 }
 
-.especialidades {
+.estadisticas-perfil {
+    margin-bottom: 2rem;
+}
+
+.estadistica-perfil {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.estadistica-perfil:last-child {
+    border-bottom: none;
+}
+
+.estadistica-label {
+    font-weight: 600;
+    color: #333;
+}
+
+.estadistica-valor {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.contacto-perfil {
+    margin-bottom: 2rem;
+}
+
+.contacto-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    color: #666;
+}
+
+.contacto-item i {
+    color: #667eea;
+    width: 20px;
+}
+
+.especialidades-perfil {
+    margin-bottom: 2rem;
+}
+
+.especialidades-titulo {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.especialidades-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-top: 1rem;
 }
 
 .especialidad-tag {
-    background: #667eea;
-    color: white;
+    background: #f8f9fa;
+    color: #667eea;
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 500;
 }
 
-.info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
+.idiomas-perfil {
+    margin-bottom: 2rem;
 }
 
-.info-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.info-item {
-    display: flex;
-    align-items: center;
+.idiomas-titulo {
+    font-weight: 600;
+    color: #333;
     margin-bottom: 1rem;
+    font-size: 1.1rem;
 }
 
-.info-icon {
-    width: 40px;
-    height: 40px;
-    background: #667eea;
-    color: white;
-    border-radius: 50%;
+.idiomas-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.idioma-tag {
+    background: #e8f4fd;
+    color: #2196f3;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.contenido-principal {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.seccion-perfil {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.seccion-titulo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
-    font-size: 1.2rem;
+    gap: 0.75rem;
+}
+
+.descripcion-perfil {
+    line-height: 1.6;
+    color: #666;
+    font-size: 1.1rem;
 }
 
 .propiedades-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
 }
 
 .propiedad-card {
-    background: white;
+    border: 1px solid #eee;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .propiedad-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
 .propiedad-imagen {
@@ -188,7 +262,7 @@ $calificaciones = $calificaciones ?? [];
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6c757d;
+    color: #999;
     font-size: 3rem;
 }
 
@@ -197,47 +271,44 @@ $calificaciones = $calificaciones ?? [];
 }
 
 .propiedad-titulo {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
     color: #333;
+    margin-bottom: 0.5rem;
 }
 
 .propiedad-precio {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: #667eea;
     margin-bottom: 0.5rem;
 }
 
-.propiedad-detalles {
-    display: flex;
-    gap: 1rem;
-    font-size: 0.9rem;
+.propiedad-ubicacion {
     color: #666;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.calificaciones {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+.calificaciones-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .calificacion-item {
-    border-bottom: 1px solid #eee;
-    padding: 1rem 0;
-}
-
-.calificacion-item:last-child {
-    border-bottom: none;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 1.5rem;
 }
 
 .calificacion-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .calificacion-cliente {
@@ -250,275 +321,314 @@ $calificaciones = $calificaciones ?? [];
     font-size: 1.1rem;
 }
 
-.calificacion-fecha {
-    font-size: 0.9rem;
-    color: #666;
-}
-
 .calificacion-comentario {
-    color: #555;
+    color: #666;
     line-height: 1.5;
+    font-style: italic;
 }
 
-.redes-sociales {
-    display: flex;
-    gap: 1rem;
+.calificacion-fecha {
+    color: #999;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.btn-contactar {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: background 0.3s ease;
     margin-top: 1rem;
 }
 
-.red-social {
-    width: 40px;
-    height: 40px;
-    background: #667eea;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    transition: background 0.3s ease;
-}
-
-.red-social:hover {
+.btn-contactar:hover {
     background: #5a6fd8;
     color: white;
+    text-decoration: none;
 }
 
-/* Eliminar márgenes extra */
-.max-w-7xl {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
+.sin-propiedades, .sin-calificaciones {
+    text-align: center;
+    padding: 3rem;
+    color: #666;
+}
+
+.sin-propiedades i, .sin-calificaciones i {
+    font-size: 4rem;
+    color: #ddd;
+    margin-bottom: 1rem;
 }
 
 @media (max-width: 768px) {
-    .perfil-agente {
-        padding: 2rem 0;
+    .perfil-header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 2rem;
     }
     
-    .nombre-agente {
-        font-size: 2rem;
-    }
-    
-    .estadisticas-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-    }
-    
-    .info-grid {
+    .main-content-perfil {
         grid-template-columns: 1fr;
+        gap: 2rem;
     }
     
     .propiedades-grid {
         grid-template-columns: 1fr;
     }
+    
+    .badges-perfil {
+        justify-content: center;
+    }
 }
 </style>
 
-<!-- Contenido del perfil público -->
-<div class="perfil-agente">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="perfil-header">
-            <?php if (!empty($agente['foto_perfil'])): ?>
-                <img src="<?= htmlspecialchars($agente['foto_perfil']) ?>" alt="Foto de perfil" class="foto-perfil">
-            <?php else: ?>
-                <div class="foto-perfil-default">
-                    <i class="fas fa-user"></i>
-                </div>
-            <?php endif; ?>
-            
-            <h1 class="nombre-agente"><?= htmlspecialchars(($agente['nombre'] ?? '') . ' ' . ($agente['apellido'] ?? '')) ?></h1>
-            
-            <?php if (!empty($agente['ciudad']) || !empty($agente['sector'])): ?>
-                <p class="ubicacion-agente">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <?= htmlspecialchars(trim(($agente['ciudad'] ?? '') . ', ' . ($agente['sector'] ?? ''), ', ')) ?>
-                </p>
-            <?php endif; ?>
-            
-            <?php if (!empty($agente['experiencia_anos'])): ?>
-                <p class="ubicacion-agente">
-                    <i class="fas fa-clock"></i>
-                    <?= $agente['experiencia_anos'] ?> años de experiencia
-                </p>
-            <?php endif; ?>
-        </div>
+<!-- Header del perfil -->
+<div class="perfil-header">
+    <div class="perfil-header-content">
+        <?php if (!empty($perfilPublico['foto_perfil'])): ?>
+            <img src="<?= htmlspecialchars($perfilPublico['foto_perfil']) ?>" alt="Foto de perfil" class="foto-perfil-grande">
+        <?php else: ?>
+            <div class="foto-perfil-default-grande">
+                <i class="fas fa-user"></i>
+            </div>
+        <?php endif; ?>
         
-        <div class="estadisticas-grid">
-            <div class="estadistica-card">
-                <div class="estadistica-numero"><?= number_format($estadisticas['total_propiedades'] ?? 0) ?></div>
-                <div class="estadistica-label">Propiedades</div>
-            </div>
-            <div class="estadistica-card">
-                <div class="estadistica-numero"><?= number_format($estadisticas['propiedades_vendidas'] ?? 0) ?></div>
-                <div class="estadistica-label">Ventas Realizadas</div>
-            </div>
-            <div class="estadistica-card">
-                <div class="estadistica-numero"><?= number_format($estadisticas['total_solicitudes'] ?? 0) ?></div>
-                <div class="estadistica-label">Clientes Atendidos</div>
-            </div>
-            <div class="estadistica-card">
-                <div class="estadistica-numero">
-                    <?= ($estadisticas['calificacion_promedio'] ?? 0) > 0 ? number_format($estadisticas['calificacion_promedio'], 1) : 'N/A' ?>
+        <div class="info-perfil">
+            <h1 class="nombre-perfil"><?= htmlspecialchars(($perfilPublico['nombre'] ?? '') . ' ' . ($perfilPublico['apellido'] ?? '')) ?></h1>
+            
+            <?php if (!empty($perfilPublico['ciudad'])): ?>
+                <div class="ubicacion-perfil">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <?= htmlspecialchars($perfilPublico['ciudad']) ?>
+                    <?= !empty($perfilPublico['sector']) ? ', ' . htmlspecialchars($perfilPublico['sector']) : '' ?>
                 </div>
-                <div class="estadistica-label">Calificación Promedio</div>
+            <?php endif; ?>
+            
+            <div class="badges-perfil">
+                <?php if (!empty($perfilPublico['experiencia_anos'])): ?>
+                    <span class="badge-perfil">
+                        <i class="fas fa-clock"></i>
+                        <?= $perfilPublico['experiencia_anos'] ?> años de experiencia
+                    </span>
+                <?php endif; ?>
+                
+                <?php if (!empty($perfilPublico['licencia_inmobiliaria'])): ?>
+                    <span class="badge-perfil">
+                        <i class="fas fa-certificate"></i>
+                        Lic. <?= htmlspecialchars($perfilPublico['licencia_inmobiliaria']) ?>
+                    </span>
+                <?php endif; ?>
+                
+                <?php if (!empty($estadisticas['calificacion_promedio'])): ?>
+                    <span class="badge-perfil">
+                        <i class="fas fa-star"></i>
+                        <?= number_format($estadisticas['calificacion_promedio'], 1) ?> / 5.0
+                    </span>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </div>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <?php if (!empty($agente['biografia'])): ?>
-    <div class="seccion">
-        <h2 class="seccion-titulo">Biografía</h2>
-        <div class="biografia">
-            <?= nl2br(htmlspecialchars($agente['biografia'])) ?>
-        </div>
-    </div>
-    <?php endif; ?>
-    
-    <div class="seccion">
-        <h2 class="seccion-titulo">Información Profesional</h2>
-        <div class="info-grid">
-            <?php 
-            $especialidades = $agente['especialidades'] ?? [];
-            if (!empty($especialidades)):
-            ?>
-            <div class="info-card">
-                <h3><i class="fas fa-star info-icon"></i> Especialidades</h3>
-                <div class="especialidades">
-                    <?php 
-                    if (is_array($especialidades)) {
-                        foreach ($especialidades as $especialidad): ?>
-                            <span class="especialidad-tag"><?= htmlspecialchars($especialidad) ?></span>
-                        <?php endforeach;
-                    } else {
-                        $especialidadesArray = explode(',', $especialidades);
-                        foreach ($especialidadesArray as $especialidad): ?>
-                            <span class="especialidad-tag"><?= htmlspecialchars(trim($especialidad)) ?></span>
-                        <?php endforeach;
-                    }
-                    ?>
-                </div>
+<!-- Contenido principal -->
+<div class="main-content-perfil">
+    <!-- Sidebar con información de contacto y estadísticas -->
+    <div class="sidebar-perfil">
+        <!-- Estadísticas -->
+        <div class="estadisticas-perfil">
+            <h3>Estadísticas</h3>
+            <div class="estadistica-perfil">
+                <span class="estadistica-label">Propiedades Activas</span>
+                <span class="estadistica-valor"><?= number_format($estadisticas['propiedades_activas'] ?? 0) ?></span>
             </div>
+            <div class="estadistica-perfil">
+                <span class="estadistica-label">Propiedades Vendidas</span>
+                <span class="estadistica-valor"><?= number_format($estadisticas['propiedades_vendidas'] ?? 0) ?></span>
+            </div>
+            <div class="estadistica-perfil">
+                <span class="estadistica-label">Solicitudes Recibidas</span>
+                <span class="estadistica-valor"><?= number_format($estadisticas['total_solicitudes'] ?? 0) ?></span>
+            </div>
+            <div class="estadistica-perfil">
+                <span class="estadistica-label">Citas Realizadas</span>
+                <span class="estadistica-valor"><?= number_format($estadisticas['total_citas'] ?? 0) ?></span>
+            </div>
+        </div>
+        
+        <!-- Información de contacto -->
+        <div class="contacto-perfil">
+            <h3>Información de Contacto</h3>
+            <?php if (!empty($perfilPublico['email'])): ?>
+                <div class="contacto-item">
+                    <i class="fas fa-envelope"></i>
+                    <span><?= htmlspecialchars($perfilPublico['email']) ?></span>
+                </div>
             <?php endif; ?>
             
-            <?php if (!empty($agente['licencia_inmobiliaria'])): ?>
-            <div class="info-card">
-                <h3><i class="fas fa-certificate info-icon"></i> Licencia Inmobiliaria</h3>
-                <p><?= htmlspecialchars($agente['licencia_inmobiliaria']) ?></p>
-            </div>
+            <?php if (!empty($perfilPublico['telefono'])): ?>
+                <div class="contacto-item">
+                    <i class="fas fa-phone"></i>
+                    <span><?= htmlspecialchars($perfilPublico['telefono']) ?></span>
+                </div>
             <?php endif; ?>
             
-            <?php 
-            $idiomas = $agente['idiomas'] ?? [];
-            if (!empty($idiomas)):
-            ?>
-            <div class="info-card">
-                <h3><i class="fas fa-language info-icon"></i> Idiomas</h3>
-                <div class="especialidades">
-                    <?php 
-                    if (is_array($idiomas)) {
-                        foreach ($idiomas as $idioma): ?>
-                            <span class="especialidad-tag"><?= htmlspecialchars($idioma) ?></span>
-                        <?php endforeach;
-                    } else {
-                        $idiomasArray = explode(',', $idiomas);
-                        foreach ($idiomasArray as $idioma): ?>
-                            <span class="especialidad-tag"><?= htmlspecialchars(trim($idioma)) ?></span>
-                        <?php endforeach;
-                    }
-                    ?>
+            <?php if (!empty($perfilPublico['horario_atencion'])): ?>
+                <div class="contacto-item">
+                    <i class="fas fa-clock"></i>
+                    <span><?= htmlspecialchars($perfilPublico['horario_atencion']) ?></span>
                 </div>
-            </div>
             <?php endif; ?>
+        </div>
+        
+        <!-- Especialidades -->
+        <?php 
+        $especialidades = $perfilPublico['especialidades'] ?? [];
+        $especialidadesValidas = [];
+        if (!empty($especialidades)) {
+            if (is_array($especialidades)) {
+                $especialidadesValidas = array_filter(array_map('trim', $especialidades));
+            } else {
+                $especialidadesArray = explode(',', $especialidades);
+                $especialidadesValidas = array_filter(array_map('trim', $especialidadesArray));
+            }
+        }
+        if (!empty($especialidadesValidas)):
+        ?>
+        <div class="especialidades-perfil">
+            <div class="especialidades-titulo">Especialidades</div>
+            <div class="especialidades-tags">
+                <?php foreach ($especialidadesValidas as $especialidad): ?>
+                    <span class="especialidad-tag"><?= htmlspecialchars($especialidad) ?></span>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
+        
+        <!-- Idiomas -->
+        <?php if (!empty($perfilPublico['idiomas'])): ?>
+        <div class="idiomas-perfil">
+            <div class="idiomas-titulo">Idiomas</div>
+            <div class="idiomas-tags">
+                <?php 
+                $idiomas = is_array($perfilPublico['idiomas']) ? $perfilPublico['idiomas'] : explode(',', $perfilPublico['idiomas']);
+                foreach ($idiomas as $idioma): ?>
+                    <span class="idioma-tag"><?= htmlspecialchars(trim($idioma)) ?></span>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
+        
+        <!-- Botón de contacto -->
+        <a href="/chat/iniciar/<?= $perfilPublico['id'] ?>" class="btn-contactar">
+            <i class="fas fa-comments"></i>
+            Contactar Agente
+        </a>
+    </div>
+    
+    <!-- Contenido principal -->
+    <div class="contenido-principal">
+        <!-- Descripción -->
+        <?php if (!empty($perfilPublico['descripcion_completa'])): ?>
+        <div class="seccion-perfil">
+            <h2 class="seccion-titulo">
+                <i class="fas fa-user-tie"></i>
+                Sobre Mí
+            </h2>
+            <div class="descripcion-perfil">
+                <?= nl2br(htmlspecialchars($perfilPublico['descripcion_completa'])) ?>
+            </div>
+        </div>
+        <?php endif; ?>
+        
+        <!-- Propiedades Recientes -->
+        <div class="seccion-perfil">
+            <h2 class="seccion-titulo">
+                <i class="fas fa-home"></i>
+                Propiedades Recientes
+            </h2>
             
-            <?php if (!empty($agente['horario_disponibilidad'])): ?>
-            <div class="info-card">
-                <h3><i class="fas fa-clock info-icon"></i> Horario de Disponibilidad</h3>
-                <p><?= nl2br(htmlspecialchars($agente['horario_disponibilidad'])) ?></p>
-            </div>
+            <?php if (!empty($propiedadesRecientes)): ?>
+                <div class="propiedades-grid">
+                    <?php foreach ($propiedadesRecientes as $propiedad): ?>
+                    <div class="propiedad-card">
+                        <?php if (!empty($propiedad['imagen_principal'])): ?>
+                            <img src="<?= htmlspecialchars($propiedad['imagen_principal']) ?>" alt="<?= htmlspecialchars($propiedad['titulo']) ?>" class="propiedad-imagen">
+                        <?php else: ?>
+                            <div class="propiedad-imagen-default">
+                                <i class="fas fa-home"></i>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <div class="propiedad-info">
+                            <h3 class="propiedad-titulo"><?= htmlspecialchars($propiedad['titulo']) ?></h3>
+                            <div class="propiedad-precio">
+                                $<?= number_format($propiedad['precio']) ?>
+                                <?= !empty($propiedad['moneda']) ? $propiedad['moneda'] : 'USD' ?>
+                            </div>
+                            <div class="propiedad-ubicacion">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <?= htmlspecialchars($propiedad['ciudad']) ?>
+                                <?= !empty($propiedad['sector']) ? ', ' . htmlspecialchars($propiedad['sector']) : '' ?>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="sin-propiedades">
+                    <i class="fas fa-home"></i>
+                    <h3>No hay propiedades disponibles</h3>
+                    <p>Este agente aún no ha publicado propiedades en el sistema.</p>
+                </div>
+            <?php endif; ?>
+        </div>
+        
+        <!-- Calificaciones -->
+        <div class="seccion-perfil">
+            <h2 class="seccion-titulo">
+                <i class="fas fa-star"></i>
+                Calificaciones y Comentarios
+            </h2>
+            
+            <?php if (!empty($calificaciones)): ?>
+                <div class="calificaciones-lista">
+                    <?php foreach ($calificaciones as $calificacion): ?>
+                    <div class="calificacion-item">
+                        <div class="calificacion-header">
+                            <span class="calificacion-cliente"><?= htmlspecialchars($calificacion['nombre_cliente'] ?? 'Cliente') ?></span>
+                            <span class="calificacion-estrellas">
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <i class="fas fa-star<?= $i <= ($calificacion['calificacion'] ?? 0) ? '' : '-o' ?>"></i>
+                                <?php endfor; ?>
+                            </span>
+                        </div>
+                        <?php if (!empty($calificacion['comentario'])): ?>
+                            <div class="calificacion-comentario">
+                                "<?= htmlspecialchars($calificacion['comentario']) ?>"
+                            </div>
+                        <?php endif; ?>
+                        <div class="calificacion-fecha">
+                            <?= date('d/m/Y', strtotime($calificacion['fecha_calificacion'] ?? 'now')) ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="sin-calificaciones">
+                    <i class="fas fa-star"></i>
+                    <h3>No hay calificaciones aún</h3>
+                    <p>Este agente aún no ha recibido calificaciones de clientes.</p>
+                </div>
             <?php endif; ?>
         </div>
     </div>
-    
-    <?php if (!empty($propiedadesRecientes)): ?>
-    <div class="seccion">
-        <h2 class="seccion-titulo">Propiedades Recientes</h2>
-        <div class="propiedades-grid">
-            <?php foreach ($propiedadesRecientes as $propiedad): ?>
-            <div class="propiedad-card">
-                <?php if (!empty($propiedad['imagen_principal'])): ?>
-                    <img src="<?= htmlspecialchars($propiedad['imagen_principal']) ?>" alt="<?= htmlspecialchars($propiedad['titulo']) ?>" class="propiedad-imagen">
-                <?php else: ?>
-                    <div class="propiedad-imagen-default">
-                        <i class="fas fa-home"></i>
-                    </div>
-                <?php endif; ?>
-                <div class="propiedad-info">
-                    <h3 class="propiedad-titulo"><?= htmlspecialchars($propiedad['titulo']) ?></h3>
-                    <div class="propiedad-precio">$<?= number_format($propiedad['precio']) ?></div>
-                    <div class="propiedad-detalles">
-                        <span><i class="fas fa-bed"></i> <?= $propiedad['habitaciones'] ?> hab.</span>
-                        <span><i class="fas fa-bath"></i> <?= $propiedad['banos'] ?> baños</span>
-                        <span><i class="fas fa-ruler-combined"></i> <?= $propiedad['metros_cuadrados'] ?> m²</span>
-                    </div>
-                </div>
-            </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-    <?php endif; ?>
-    
-    <?php if (!empty($calificaciones)): ?>
-    <div class="seccion">
-        <h2 class="seccion-titulo">Calificaciones de Clientes</h2>
-        <div class="calificaciones">
-            <?php foreach ($calificaciones as $calificacion): ?>
-            <div class="calificacion-item">
-                <div class="calificacion-header">
-                    <span class="calificacion-cliente">
-                        <?= htmlspecialchars($calificacion['cliente_nombre'] . ' ' . $calificacion['cliente_apellido']) ?>
-                    </span>
-                    <div class="calificacion-estrellas">
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <i class="fas fa-star <?= $i <= $calificacion['calificacion'] ? '' : 'text-gray-300' ?>"></i>
-                        <?php endfor; ?>
-                    </div>
-                </div>
-                <div class="calificacion-fecha">
-                    <?= date('d/m/Y', strtotime($calificacion['fecha_calificacion'])) ?>
-                </div>
-                <?php if (!empty($calificacion['comentario'])): ?>
-                <div class="calificacion-comentario">
-                    <?= htmlspecialchars($calificacion['comentario']) ?>
-                </div>
-                <?php endif; ?>
-            </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-    <?php endif; ?>
-    
-    <?php 
-    $redesSociales = $agente['redes_sociales'] ?? [];
-    if (!empty($redesSociales) && is_string($redesSociales)):
-        $redes = json_decode($redesSociales, true);
-        if (!empty($redes)):
-    ?>
-    <div class="seccion">
-        <h2 class="seccion-titulo">Redes Sociales</h2>
-        <div class="redes-sociales">
-            <?php foreach ($redes as $red => $url): ?>
-                <a href="<?= htmlspecialchars($url) ?>" target="_blank" class="red-social" title="<?= ucfirst($red) ?>">
-                    <i class="fab fa-<?= $red ?>"></i>
-                </a>
-            <?php endforeach; ?>
-        </div>
-    </div>
-    <?php 
-        endif;
-    endif; 
-    ?>
 </div>
 
 <script>

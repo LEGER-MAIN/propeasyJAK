@@ -575,9 +575,10 @@ class PropertyController {
                 continue;
             }
             
-            // Generar nombre único
+            // Generar nombre único con microsegundos para evitar duplicados
             $extension = pathinfo($fileName, PATHINFO_EXTENSION);
-            $uniqueName = uniqid() . '_' . time() . '.' . $extension;
+            $microtime = microtime(true);
+            $uniqueName = uniqid() . '_' . str_replace('.', '', $microtime) . '.' . $extension;
             $filePath = $uploadDir . $uniqueName;
             
             // Mover archivo

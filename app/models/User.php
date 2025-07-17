@@ -322,7 +322,7 @@ class User {
      * @return array|false Datos del usuario o false si no existe
      */
     public function getById($id) {
-        $query = "SELECT id, nombre, apellido, email, telefono, rol, estado, 
+        $query = "SELECT id, nombre, apellido, email, telefono, ciudad, sector, rol, estado, 
                          email_verificado, fecha_registro, ultimo_acceso 
                   FROM {$this->table} WHERE id = ?";
         return $this->db->selectOne($query, [$id]);
@@ -368,6 +368,14 @@ class User {
             'telefono' => sanitizeInput($data['telefono'])
         ];
         
+        // Agregar campos opcionales si están presentes
+        if (isset($data['ciudad'])) {
+            $updateData['ciudad'] = sanitizeInput($data['ciudad']);
+        }
+        if (isset($data['sector'])) {
+            $updateData['sector'] = sanitizeInput($data['sector']);
+        }
+        
         // Si se proporciona nueva contraseña, validarla y hashearla
         if (!empty($data['password'])) {
             if (strlen($data['password']) < 8) {
@@ -390,7 +398,38 @@ class User {
         
         $query = "UPDATE {$this->table} SET " . implode(', ', $fields) . " WHERE id = ?";
         
-        if ($this->db->update($query, $values)) {
+        $result = $this->db->update($query, $values);
+        
+        if ($result !== false) {
+            // Actualizar datos de sesión si están disponibles
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            
+            if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == $id) {
+                // Actualizar datos individuales en la sesión
+                if (isset($updateData['nombre'])) {
+                    $_SESSION['user_nombre'] = $updateData['nombre'];
+                }
+                if (isset($updateData['apellido'])) {
+                    $_SESSION['user_apellido'] = $updateData['apellido'];
+                }
+                if (isset($updateData['telefono'])) {
+                    $_SESSION['user_telefono'] = $updateData['telefono'];
+                }
+                if (isset($updateData['ciudad'])) {
+                    $_SESSION['user_ciudad'] = $updateData['ciudad'];
+                }
+                if (isset($updateData['sector'])) {
+                    $_SESSION['user_sector'] = $updateData['sector'];
+                }
+                
+                // Actualizar el array completo de usuario en la sesión
+                if (isset($_SESSION['user'])) {
+                    $_SESSION['user'] = array_merge($_SESSION['user'], $updateData);
+                }
+            }
+            
             return [
                 'success' => true,
                 'message' => 'Perfil actualizado exitosamente.'
@@ -564,9 +603,30 @@ class User {
         $_SESSION['user_apellido'] = $user['apellido'];
         $_SESSION['user_telefono'] = $user['telefono'] ?? '';
         $_SESSION['user_ciudad'] = $user['ciudad'] ?? '';
+        $_SESSION['user_sector'] = $user['sector'] ?? '';
         $_SESSION['user_rol'] = $user['rol'];
+        $_SESSION['user_estado'] = $user['estado'] ?? 'activo';
+        $_SESSION['user_email_verificado'] = $user['email_verificado'] ?? 0;
+        $_SESSION['user_fecha_registro'] = $user['fecha_registro'] ?? '';
+        $_SESSION['user_ultimo_acceso'] = $user['ultimo_acceso'] ?? '';
         $_SESSION['user_logged_in'] = true;
         $_SESSION['login_time'] = time();
+        
+        // Guardar todos los datos del usuario en un array para fácil acceso
+        $_SESSION['user'] = [
+            'id' => $user['id'],
+            'nombre' => $user['nombre'],
+            'apellido' => $user['apellido'],
+            'email' => $user['email'],
+            'telefono' => $user['telefono'] ?? '',
+            'ciudad' => $user['ciudad'] ?? '',
+            'sector' => $user['sector'] ?? '',
+            'rol' => $user['rol'],
+            'estado' => $user['estado'] ?? 'activo',
+            'email_verificado' => $user['email_verificado'] ?? 0,
+            'fecha_registro' => $user['fecha_registro'] ?? '',
+            'ultimo_acceso' => $user['ultimo_acceso'] ?? ''
+        ];
     }
     
     /**
@@ -604,8 +664,8 @@ class User {
      * @param int $offset Offset para paginación
      * @return array Lista de agentes encontrados
      */
-    public function buscarAgentes($nombre = '', $ciudad = '', $limit = 20, $offset = 0) {
-        $conditions = ["u.rol = 'agente'", "u.estado = 'activo'"];
+    public function buscarAgentes($nombre = '', $ciudad = '', $experiencia = '', $idioma = '', $ordenar = 'nombre', $limit = 20, $offset = 0) {
+        $conditions = ["u.rol = 'agente'", "u.estado = 'activo'", "u.perfil_publico_activo = 1"];
         $params = [];
         
         if (!empty($nombre)) {
@@ -619,8 +679,29 @@ class User {
             $params[] = "%{$ciudad}%";
         }
         
+        if (!empty($experiencia)) {
+            $conditions[] = "u.experiencia >= ?";
+            $params[] = (int)$experiencia;
+        }
+        
+        if (!empty($idioma)) {
+            $conditions[] = "u.idiomas LIKE ?";
+            $params[] = "%{$idioma}%";
+        }
+        
         $whereClause = implode(' AND ', $conditions);
         
+        // Determinar el ordenamiento
+        $orderBy = match($ordenar) {
+            'nombre' => 'u.nombre, u.apellido',
+            'experiencia' => 'u.experiencia DESC',
+            'propiedades' => 'total_propiedades DESC',
+            'vendidas' => 'total_vendidas DESC',
+            'fecha' => 'u.fecha_registro DESC',
+            default => 'u.nombre, u.apellido'
+        };
+        
+        // Consulta base para obtener agentes
         $query = "SELECT 
                     u.id,
                     u.nombre,
@@ -630,21 +711,35 @@ class User {
                     u.ciudad,
                     u.sector,
                     u.fecha_registro,
-                    u.ultimo_acceso,
-                    COUNT(DISTINCT p.id) as total_propiedades,
-                    COUNT(DISTINCT sc.id) as total_solicitudes
+                    u.ultimo_acceso
                   FROM {$this->table} u
-                  LEFT JOIN propiedades p ON u.id = p.agente_id AND p.estado_publicacion = 'activa'
-                  LEFT JOIN solicitudes_compra sc ON u.id = sc.agente_id
                   WHERE {$whereClause}
-                  GROUP BY u.id
-                  ORDER BY u.nombre, u.apellido
+                  ORDER BY {$orderBy}
                   LIMIT ? OFFSET ?";
         
         $params[] = $limit;
         $params[] = $offset;
         
-        return $this->db->select($query, $params);
+        $agentes = $this->db->select($query, $params);
+        
+        // Para cada agente, obtener sus estadísticas
+        foreach ($agentes as &$agente) {
+            // Obtener estadísticas de propiedades
+            $queryStats = "SELECT 
+                            COUNT(CASE WHEN estado_publicacion = 'activa' THEN 1 END) as total_propiedades,
+                            COUNT(CASE WHEN estado_publicacion = 'vendida' THEN 1 END) as total_vendidas
+                          FROM propiedades 
+                          WHERE agente_id = ?";
+            
+            $stats = $this->db->selectOne($queryStats, [$agente['id']]);
+            
+            $agente['total_propiedades'] = $stats['total_propiedades'] ?? 0;
+            $agente['total_vendidas'] = $stats['total_vendidas'] ?? 0;
+            
+
+        }
+        
+        return $agentes;
     }
     
     /**
@@ -702,6 +797,11 @@ class User {
     public function getEstadisticasBusqueda($tipo, $nombre = '', $ciudad = '') {
         $conditions = ["rol = ?", "estado = 'activo'"];
         $params = [$tipo === 'agentes' ? 'agente' : 'cliente'];
+        
+        // Para agentes, solo contar los que tienen perfil público activo
+        if ($tipo === 'agentes') {
+            $conditions[] = "perfil_publico_activo = 1";
+        }
         
         if (!empty($nombre)) {
             $conditions[] = "(nombre LIKE ? OR apellido LIKE ?)";
@@ -1172,16 +1272,28 @@ class User {
                         u.id,
                         u.nombre,
                         u.apellido,
+                        u.email,
+                        u.telefono,
                         u.ciudad,
                         u.sector,
                         u.experiencia_anos,
                         u.especialidades,
+                        u.idiomas,
+                        u.biografia,
+                        u.descripcion_corta,
+                        u.licencia_inmobiliaria,
+                        u.horario_atencion,
                         u.foto_perfil,
                         u.fecha_registro,
+                        u.ultimo_acceso,
                         COUNT(p.id) as total_propiedades,
-                        COUNT(CASE WHEN p.estado_publicacion = 'vendida' THEN 1 END) as propiedades_vendidas
+                        COUNT(CASE WHEN p.estado_publicacion = 'activa' THEN 1 END) as propiedades_activas,
+                        COUNT(CASE WHEN p.estado_publicacion = 'vendida' THEN 1 END) as propiedades_vendidas,
+                        COALESCE(AVG(ca.calificacion), 0) as calificacion_promedio,
+                        COUNT(ca.id) as total_calificaciones
                       FROM {$this->table} u
                       LEFT JOIN propiedades p ON u.id = p.agente_id
+                      LEFT JOIN calificaciones_agentes ca ON u.id = ca.agente_id
                       WHERE {$whereClause}
                       GROUP BY u.id
                       ORDER BY u.nombre, u.apellido
@@ -1192,11 +1304,51 @@ class User {
             
             $agentes = $this->db->select($query, $params);
             
-            // Procesar especialidades para cada agente
+            // Verificar si la consulta fue exitosa
+            if ($agentes === false) {
+                error_log("Error en consulta SQL para agentes: " . $query);
+                return [];
+            }
+            
+            // Procesar datos para cada agente
             foreach ($agentes as &$agente) {
+                // Procesar especialidades
                 if ($agente['especialidades']) {
                     $agente['especialidades'] = explode(',', $agente['especialidades']);
                     $agente['especialidades'] = array_map('trim', $agente['especialidades']);
+                }
+                
+                // Procesar idiomas
+                if ($agente['idiomas']) {
+                    $agente['idiomas'] = explode(',', $agente['idiomas']);
+                    $agente['idiomas'] = array_map('trim', $agente['idiomas']);
+                }
+                
+                // Calcular tiempo desde el registro
+                if ($agente['fecha_registro']) {
+                    $fechaRegistro = new DateTime($agente['fecha_registro']);
+                    $ahora = new DateTime();
+                    $diferencia = $fechaRegistro->diff($ahora);
+                    $agente['tiempo_registro'] = $diferencia->y > 0 ? $diferencia->y . ' año' . ($diferencia->y > 1 ? 's' : '') : 
+                                               ($diferencia->m > 0 ? $diferencia->m . ' mes' . ($diferencia->m > 1 ? 'es' : '') : 
+                                               $diferencia->d . ' día' . ($diferencia->d > 1 ? 's' : ''));
+                }
+                
+                // Calcular tiempo desde último acceso
+                if ($agente['ultimo_acceso']) {
+                    $ultimoAcceso = new DateTime($agente['ultimo_acceso']);
+                    $ahora = new DateTime();
+                    $diferencia = $ultimoAcceso->diff($ahora);
+                    $agente['ultimo_acceso_hace'] = $diferencia->y > 0 ? $diferencia->y . ' año' . ($diferencia->y > 1 ? 's' : '') : 
+                                                  ($diferencia->m > 0 ? $diferencia->m . ' mes' . ($diferencia->m > 1 ? 'es' : '') : 
+                                                  ($diferencia->d > 0 ? $diferencia->d . ' día' . ($diferencia->d > 1 ? 's' : '') : 
+                                                  ($diferencia->h > 0 ? $diferencia->h . ' hora' . ($diferencia->h > 1 ? 's' : '') : 
+                                                  $diferencia->i . ' minuto' . ($diferencia->i > 1 ? 's' : ''))));
+                }
+                
+                // Formatear calificación promedio
+                if ($agente['calificacion_promedio']) {
+                    $agente['calificacion_promedio'] = round($agente['calificacion_promedio'], 1);
                 }
             }
             
@@ -1204,6 +1356,100 @@ class User {
             
         } catch (Exception $e) {
             error_log("Error obteniendo agentes con perfil público: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
+     * Obtener lista de agentes con perfiles públicos activos con filtros avanzados
+     * 
+     * @param string $ciudad Ciudad para filtrar (opcional)
+     * @param string $experiencia Experiencia mínima (opcional)
+     * @param string $idioma Idioma para filtrar (opcional)
+     * @param string $ordenar Criterio de ordenamiento
+     * @param int $limit Límite de resultados
+     * @param int $offset Offset para paginación
+     * @return array Lista de agentes
+     */
+    public function getAgentesConPerfilPublicoFiltrados($ciudad = '', $experiencia = '', $idioma = '', $ordenar = 'nombre', $limit = 12, $offset = 0) {
+        try {
+            // Construir condiciones WHERE
+            $conditions = [
+                "rol = 'agente'",
+                "estado = 'activo'",
+                "perfil_publico_activo = 1"
+            ];
+            $params = [];
+            
+            // Filtro por ciudad
+            if (!empty($ciudad)) {
+                $conditions[] = "ciudad LIKE ?";
+                $params[] = "%{$ciudad}%";
+            }
+            
+            // Filtro por experiencia mínima
+            if (!empty($experiencia)) {
+                $conditions[] = "experiencia_anos >= ?";
+                $params[] = intval($experiencia);
+            }
+            
+            // Filtro por idioma
+            if (!empty($idioma)) {
+                $conditions[] = "idiomas LIKE ?";
+                $params[] = "%{$idioma}%";
+            }
+            
+            $whereClause = implode(' AND ', $conditions);
+            
+            // Ordenamiento
+            $orderBy = 'nombre, apellido';
+            switch($ordenar) {
+                case 'experiencia':
+                    $orderBy = 'experiencia_anos DESC, nombre, apellido';
+                    break;
+                case 'reciente':
+                    $orderBy = 'fecha_registro DESC, nombre, apellido';
+                    break;
+                case 'propiedades':
+                    // Por ahora ordenar por experiencia, después se puede mejorar
+                    $orderBy = 'experiencia_anos DESC, nombre, apellido';
+                    break;
+                case 'calificacion':
+                    // Por ahora ordenar por nombre, después se puede mejorar
+                    $orderBy = 'nombre, apellido';
+                    break;
+            }
+            
+            // Consulta con filtros
+            $query = "SELECT id, nombre, apellido, email FROM usuarios WHERE $whereClause ORDER BY $orderBy LIMIT $limit OFFSET $offset";
+            
+            $agentes = $this->db->select($query, $params);
+            
+            foreach ($agentes as &$agente) {
+                // Agregar campos por defecto si no existen
+                $agente['propiedades_activas'] = 0;
+                $agente['propiedades_vendidas'] = 0;
+                $agente['total_propiedades'] = 0;
+                $agente['calificacion_promedio'] = 0;
+                $agente['total_calificaciones'] = 0;
+                $agente['telefono'] = '';
+                $agente['ciudad'] = '';
+                $agente['sector'] = '';
+                $agente['experiencia_anos'] = 0;
+                $agente['especialidades'] = [];
+                $agente['idiomas'] = [];
+                $agente['biografia'] = '';
+                $agente['descripcion_corta'] = '';
+                $agente['licencia_inmobiliaria'] = '';
+                $agente['horario_atencion'] = '';
+                $agente['foto_perfil'] = '';
+                $agente['fecha_registro'] = '';
+                $agente['ultimo_acceso'] = '';
+            }
+            
+            return $agentes;
+        } catch (Exception $e) {
+            error_log("Error obteniendo agentes con perfil público filtrados: " . $e->getMessage());
             return [];
         }
     }

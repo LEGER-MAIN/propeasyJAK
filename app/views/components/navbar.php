@@ -49,7 +49,7 @@
                         <span><?= hasRole(ROLE_AGENTE) ? 'Solicitudes' : 'Mis Solicitudes' ?></span>
                     </a>
                     
-                    <a href="<?= hasRole(ROLE_AGENTE) ? '/agente/dashboard' : '/dashboard' ?>" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2">
+                    <a href="<?= hasRole(ROLE_AGENTE) ? '/agente/dashboard' : (hasRole(ROLE_CLIENTE) ? '/cliente/dashboard' : '/dashboard') ?>" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
@@ -69,18 +69,18 @@
                     <div class="hidden lg:block relative group">
                         <button class="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition-colors">
                             <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
-                                <span class="text-white text-sm font-medium">
-                                    <?= strtoupper(substr($_SESSION['user_name'] ?? 'U', 0, 1)) ?>
-                                </span>
-                            </div>
-                            <span class="text-sm font-medium"><?= $_SESSION['user_name'] ?? 'Usuario' ?></span>
+                                                            <span class="text-white text-sm font-medium">
+                                <?= strtoupper(substr($_SESSION['user_nombre'] ?? 'U', 0, 1)) ?>
+                            </span>
+                        </div>
+                        <span class="text-sm font-medium"><?= ($_SESSION['user_nombre'] ?? '') . ' ' . ($_SESSION['user_apellido'] ?? '') ?: 'Usuario' ?></span>
                             <i class="fas fa-chevron-down text-xs"></i>
                         </button>
                         
                         <!-- Dropdown de Usuario -->
                         <div class="absolute top-full right-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                             <div class="py-2">
-                                <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                <a href="<?= hasRole(ROLE_CLIENTE) ? '/cliente/perfil' : '/profile' ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                     <i class="fas fa-user"></i>
                                     <span>Mi Perfil</span>
                                 </a>
@@ -127,10 +127,10 @@
                     <div class="lg:hidden flex items-center space-x-2">
                         <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
                             <span class="text-white text-sm font-medium">
-                                <?= strtoupper(substr($_SESSION['user_name'] ?? 'U', 0, 1)) ?>
+                                <?= strtoupper(substr($_SESSION['user_nombre'] ?? 'U', 0, 1)) ?>
                             </span>
                         </div>
-                        <span class="hidden sm:block text-sm font-medium text-gray-700"><?= $_SESSION['user_name'] ?? 'Usuario' ?></span>
+                        <span class="hidden sm:block text-sm font-medium text-gray-700"><?= ($_SESSION['user_nombre'] ?? '') . ' ' . ($_SESSION['user_apellido'] ?? '') ?: 'Usuario' ?></span>
                     </div>
                 <?php else: ?>
                     <!-- Botones de Autenticación Desktop -->
@@ -185,7 +185,7 @@
                     <a href="/solicitudes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-handshake mr-3"></i><?= hasRole(ROLE_AGENTE) ? 'Solicitudes' : 'Mis Solicitudes' ?>
                     </a>
-                    <a href="<?= hasRole(ROLE_AGENTE) ? '/agente/dashboard' : '/dashboard' ?>" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                    <a href="<?= hasRole(ROLE_AGENTE) ? '/agente/dashboard' : (hasRole(ROLE_CLIENTE) ? '/cliente/dashboard' : '/dashboard') ?>" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
                     </a>
                     
@@ -211,7 +211,7 @@
                     
                     <hr class="my-2 border-gray-200">
                     <div class="px-3 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Cuenta</div>
-                    <a href="/profile" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                    <a href="<?= hasRole(ROLE_CLIENTE) ? '/cliente/perfil' : '/profile' ?>" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-user mr-3"></i>Mi Perfil
                     </a>
                     <a href="/settings" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">

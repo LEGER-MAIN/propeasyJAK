@@ -33,8 +33,8 @@ $content = ob_start();
                     <div class="text-primary-200">Propiedades</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl font-bold"><?= array_sum(array_column($agentes, 'total_solicitudes')) ?></div>
-                    <div class="text-primary-200">Solicitudes</div>
+                    <div class="text-3xl font-bold"><?= array_sum(array_column($agentes, 'total_vendidas')) ?></div>
+                    <div class="text-primary-200">Vendidas</div>
                 </div>
             </div>
         </div>
@@ -175,11 +175,11 @@ $content = ob_start();
                         <div class="grid grid-cols-2 gap-4 text-center">
                             <div>
                                 <div class="text-2xl font-bold text-primary-600"><?= $agente['total_propiedades'] ?></div>
-                                <div class="text-xs text-gray-600">Propiedades</div>
+                                <div class="text-xs text-gray-600">ACTIVAS</div>
                             </div>
                             <div>
-                                <div class="text-2xl font-bold text-green-600"><?= $agente['total_solicitudes'] ?></div>
-                                <div class="text-xs text-gray-600">Solicitudes</div>
+                                <div class="text-2xl font-bold text-green-600"><?= $agente['total_vendidas'] ?></div>
+                                <div class="text-xs text-gray-600">VENDIDAS</div>
                             </div>
                         </div>
                     </div>

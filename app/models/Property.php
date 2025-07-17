@@ -283,6 +283,26 @@ class Property {
     }
     
     /**
+     * Obtener propiedades por agente (alias para compatibilidad)
+     * 
+     * @param int $agenteId ID del agente
+     * @param int $limit Límite de resultados
+     * @return array Lista de propiedades
+     */
+    public function getPropiedadesPorAgente($agenteId, $limit = 5) {
+        $query = "SELECT p.*, 
+                         (SELECT ruta FROM {$this->tableImages} 
+                          WHERE propiedad_id = p.id AND es_principal = 1 
+                          LIMIT 1) as imagen_principal
+                  FROM {$this->table} p
+                  WHERE p.agente_id = ?
+                  ORDER BY p.fecha_creacion DESC
+                  LIMIT ?";
+        
+        return $this->db->select($query, [$agenteId, $limit]);
+    }
+    
+    /**
      * Obtener propiedades pendientes de validación
      * 
      * @return array Lista de propiedades en revisión
@@ -404,6 +424,8 @@ class Property {
         if ($this->db->update($query, $params)) {
             // Procesar nuevas imágenes si se proporcionaron
             if (isset($data['imagenes']) && is_array($data['imagenes'])) {
+                // Eliminar imágenes anteriores solo si se suben nuevas
+                $this->deleteImages($id);
                 $this->processImages($id, $data['imagenes']);
             }
             
@@ -480,12 +502,12 @@ class Property {
         // Aquí solo las guardamos en la base de datos
         
         foreach ($images as $index => $image) {
-            $isPrincipal = $index === 0; // La primera imagen es la principal
+            $isPrincipal = $index === 0; // Solo la primera es principal
             
             $imageData = [
                 'propiedad_id' => $propertyId,
                 'nombre_archivo' => $image['name'],
-                'ruta' => $image['path'], // Usar la ruta procesada por el controlador
+                'ruta' => $image['path'],
                 'es_principal' => $isPrincipal ? 1 : 0,
                 'orden' => $index + 1,
                 'fecha_subida' => date('Y-m-d H:i:s')

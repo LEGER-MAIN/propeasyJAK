@@ -302,10 +302,18 @@ class AuthController {
             redirect('/dashboard');
         }
         
+        // Asegurar que los datos del usuario estén disponibles en la sesión
+        $_SESSION['user'] = $user;
+        
         $pageTitle = 'Mi Perfil - ' . APP_NAME;
         $csrfToken = generateCSRFToken();
         
+        // Renderizar con el layout
+        ob_start();
         include APP_PATH . '/views/auth/profile.php';
+        $content = ob_get_clean();
+        
+        include APP_PATH . '/views/layouts/main.php';
     }
     
     /**
@@ -332,6 +340,8 @@ class AuthController {
             'nombre' => $_POST['nombre'] ?? '',
             'apellido' => $_POST['apellido'] ?? '',
             'telefono' => $_POST['telefono'] ?? '',
+            'ciudad' => $_POST['ciudad'] ?? '',
+            'sector' => $_POST['sector'] ?? '',
             'password' => $_POST['password'] ?? '',
             'confirm_password' => $_POST['confirm_password'] ?? ''
         ];

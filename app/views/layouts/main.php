@@ -35,6 +35,23 @@
     
     <!-- Estilos personalizados -->
     <style>
+        /* Asegurar que el footer se mantenga al final */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        main {
+            flex: 1 0 auto;
+            min-height: 0;
+        }
+        
+        footer {
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+        
         .fade-in { animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
@@ -155,7 +172,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col <?= isAuthenticated() ? 'user-authenticated' : '' ?>">
+<body class="bg-gray-50 flex flex-col <?= isAuthenticated() ? 'user-authenticated' : '' ?>">
     <!-- Header con Navbar del Cliente -->
     <?php include APP_PATH . '/views/components/navbar.php'; ?>
 
@@ -205,39 +222,108 @@
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <div class="flex items-center space-x-2 mb-4">
-                        <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-home text-white text-sm"></i>
+                <!-- Logo y Descripción -->
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-home text-white text-lg"></i>
                         </div>
-                        <span class="text-xl font-bold"><?= APP_NAME ?></span>
+                        <span class="text-2xl font-bold"><?= APP_NAME ?></span>
                     </div>
-                    <p class="text-gray-300">
-                        Plataforma líder en gestión inmobiliaria, conectando clientes y agentes.
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Plataforma líder en gestión inmobiliaria, conectando clientes y agentes de manera eficiente y segura.
                     </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" title="Facebook">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" title="Twitter">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" title="Instagram">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" title="LinkedIn">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Enlaces</h3>
-                    <ul class="space-y-2">
-                        <li><a href="/" class="text-gray-300 hover:text-white transition-colors">Inicio</a></li>
-                        <li><a href="/properties" class="text-gray-300 hover:text-white transition-colors">Propiedades</a></li>
-                        <li><a href="/about" class="text-gray-300 hover:text-white transition-colors">Acerca de</a></li>
-                        <li><a href="/contact" class="text-gray-300 hover:text-white transition-colors">Contacto</a></li>
+                
+                <!-- Enlaces Rápidos -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-white">Enlaces Rápidos</h3>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="/" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
+                                <i class="fas fa-home mr-2 text-sm"></i>
+                                Inicio
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/properties" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
+                                <i class="fas fa-building mr-2 text-sm"></i>
+                                Propiedades
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/agentes" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
+                                <i class="fas fa-users mr-2 text-sm"></i>
+                                Agentes
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
+                                <i class="fas fa-info-circle mr-2 text-sm"></i>
+                                Acerca de
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/contact" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
+                                <i class="fas fa-envelope mr-2 text-sm"></i>
+                                Contacto
+                            </a>
+                        </li>
                     </ul>
                 </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Contacto</h3>
-                    <div class="space-y-2 text-gray-300">
-                        <p><i class="fas fa-envelope mr-2"></i>info@propeasy.com</p>
-                        <p><i class="fas fa-phone mr-2"></i>+1 809 555 0123</p>
-                        <p><i class="fas fa-map-marker-alt mr-2"></i>Santo Domingo, RD</p>
+                
+                <!-- Información de Contacto -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-white">Contacto</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center text-gray-300">
+                            <i class="fas fa-envelope mr-3 text-primary-400 w-4 text-center"></i>
+                            <span class="text-sm">info@propeasy.com</span>
+                        </div>
+                        <div class="flex items-center text-gray-300">
+                            <i class="fas fa-phone mr-3 text-primary-400 w-4 text-center"></i>
+                            <span class="text-sm">+1 809 555 0123</span>
+                        </div>
+                        <div class="flex items-center text-gray-300">
+                            <i class="fas fa-map-marker-alt mr-3 text-primary-400 w-4 text-center"></i>
+                            <span class="text-sm">Santo Domingo, República Dominicana</span>
+                        </div>
+                        <div class="flex items-center text-gray-300">
+                            <i class="fas fa-clock mr-3 text-primary-400 w-4 text-center"></i>
+                            <span class="text-sm">Lun - Vie: 8:00 AM - 6:00 PM</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
-                <p>&copy; <?= date('Y') ?> <?= APP_NAME ?>. Todos los derechos reservados.</p>
+            
+            <!-- Línea divisoria y copyright -->
+            <div class="border-t border-gray-700 mt-8 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                    <p class="text-gray-300 text-sm">
+                        &copy; <?= date('Y') ?> <?= APP_NAME ?>. Todos los derechos reservados.
+                    </p>
+                    <div class="flex space-x-6 text-sm">
+                        <a href="/privacy" class="text-gray-300 hover:text-white transition-colors duration-200">Política de Privacidad</a>
+                        <a href="/terms" class="text-gray-300 hover:text-white transition-colors duration-200">Términos de Servicio</a>
+                        <a href="/cookies" class="text-gray-300 hover:text-white transition-colors duration-200">Política de Cookies</a>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>

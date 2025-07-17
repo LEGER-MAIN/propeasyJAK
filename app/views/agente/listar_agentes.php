@@ -197,6 +197,45 @@ $ciudad = $ciudad ?? '';
     font-weight: 500;
 }
 
+.descripcion-agente {
+    margin-bottom: 1rem;
+}
+
+.descripcion-agente p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.idiomas-agente {
+    margin-bottom: 1rem;
+}
+
+.idiomas-titulo {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.idiomas-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.idioma-tag {
+    background: #e8f4fd;
+    color: #2196f3;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
 .estadisticas-agente {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -225,10 +264,129 @@ $ciudad = $ciudad ?? '';
     letter-spacing: 0.5px;
 }
 
+.calificacion-agente {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.calificacion-estrellas {
+    color: #ffc107;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.calificacion-numero {
+    color: #333;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.calificacion-total {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.info-adicional-agente {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.info-badge {
+    background: rgba(255,255,255,0.15);
+    padding: 0.4rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: fit-content;
+}
+
+.info-badge.online-status {
+    background: rgba(76, 175, 80, 0.2);
+}
+
+.info-badge.online-status i {
+    color: #4caf50;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
 .agente-footer {
     padding: 1rem 1.5rem;
     background: #f8f9fa;
     border-top: 1px solid #eee;
+}
+
+.horario-atencion {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 8px;
+    border-left: 3px solid #667eea;
+}
+
+.horario-atencion i {
+    color: #667eea;
+}
+
+.acciones-agente {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-ver-perfil {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: background 0.3s ease;
+    flex: 1;
+}
+
+.btn-ver-perfil:hover {
+    background: #5a6fd8;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-contactar-agente {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: background 0.3s ease;
+    flex: 1;
+}
+
+.btn-contactar-agente:hover {
+    background: #218838;
+    color: white;
+    text-decoration: none;
 }
 
 .btn-ver-perfil {
@@ -339,6 +497,38 @@ $ciudad = $ciudad ?? '';
                        value="<?= htmlspecialchars($ciudad) ?>" placeholder="Filtrar por ciudad...">
             </div>
             <div class="form-group">
+                <label for="experiencia">Experiencia mínima</label>
+                <select class="form-control" id="experiencia" name="experiencia">
+                    <option value="">Cualquier experiencia</option>
+                    <option value="1" <?= ($_GET['experiencia'] ?? '') == '1' ? 'selected' : '' ?>>1+ años</option>
+                    <option value="3" <?= ($_GET['experiencia'] ?? '') == '3' ? 'selected' : '' ?>>3+ años</option>
+                    <option value="5" <?= ($_GET['experiencia'] ?? '') == '5' ? 'selected' : '' ?>>5+ años</option>
+                    <option value="10" <?= ($_GET['experiencia'] ?? '') == '10' ? 'selected' : '' ?>>10+ años</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="idioma">Idioma</label>
+                <select class="form-control" id="idioma" name="idioma">
+                    <option value="">Cualquier idioma</option>
+                    <option value="Español" <?= ($_GET['idioma'] ?? '') == 'Español' ? 'selected' : '' ?>>Español</option>
+                    <option value="Inglés" <?= ($_GET['idioma'] ?? '') == 'Inglés' ? 'selected' : '' ?>>Inglés</option>
+                    <option value="Francés" <?= ($_GET['idioma'] ?? '') == 'Francés' ? 'selected' : '' ?>>Francés</option>
+                    <option value="Italiano" <?= ($_GET['idioma'] ?? '') == 'Italiano' ? 'selected' : '' ?>>Italiano</option>
+                    <option value="Alemán" <?= ($_GET['idioma'] ?? '') == 'Alemán' ? 'selected' : '' ?>>Alemán</option>
+                    <option value="Portugués" <?= ($_GET['idioma'] ?? '') == 'Portugués' ? 'selected' : '' ?>>Portugués</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="ordenar">Ordenar por</label>
+                <select class="form-control" id="ordenar" name="ordenar">
+                    <option value="nombre" <?= ($_GET['ordenar'] ?? '') == 'nombre' ? 'selected' : '' ?>>Nombre</option>
+                    <option value="experiencia" <?= ($_GET['ordenar'] ?? '') == 'experiencia' ? 'selected' : '' ?>>Experiencia</option>
+                    <option value="propiedades" <?= ($_GET['ordenar'] ?? '') == 'propiedades' ? 'selected' : '' ?>>Más propiedades</option>
+                    <option value="calificacion" <?= ($_GET['ordenar'] ?? '') == 'calificacion' ? 'selected' : '' ?>>Mejor calificación</option>
+                    <option value="reciente" <?= ($_GET['ordenar'] ?? '') == 'reciente' ? 'selected' : '' ?>>Más reciente</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <button type="submit" class="btn-filtrar">
                     <i class="fas fa-search"></i>
                     Filtrar
@@ -368,6 +558,29 @@ $ciudad = $ciudad ?? '';
                             <?= !empty($agente['sector']) ? ', ' . htmlspecialchars($agente['sector']) : '' ?>
                         </p>
                     <?php endif; ?>
+                    
+                    <div class="info-adicional-agente">
+                        <?php if (!empty($agente['licencia_inmobiliaria'])): ?>
+                            <span class="info-badge">
+                                <i class="fas fa-certificate"></i>
+                                Lic. <?= htmlspecialchars($agente['licencia_inmobiliaria']) ?>
+                            </span>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($agente['tiempo_registro'])): ?>
+                            <span class="info-badge">
+                                <i class="fas fa-calendar-alt"></i>
+                                Miembro desde <?= $agente['tiempo_registro'] ?>
+                            </span>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($agente['ultimo_acceso_hace'])): ?>
+                            <span class="info-badge online-status">
+                                <i class="fas fa-circle"></i>
+                                Activo hace <?= $agente['ultimo_acceso_hace'] ?>
+                            </span>
+                        <?php endif; ?>
+                    </div>
                     <?php if (!empty($agente['experiencia_anos'])): ?>
                         <span class="experiencia-agente">
                             <i class="fas fa-clock"></i>
@@ -409,20 +622,68 @@ $ciudad = $ciudad ?? '';
                     <?php endif; ?>
                     <div class="estadisticas-agente">
                         <div class="estadistica-item">
-                            <div class="estadistica-numero"><?= number_format($agente['total_propiedades'] ?? 0) ?></div>
-                            <div class="estadistica-label">PROPIEDADES</div>
+                            <div class="estadistica-numero"><?= number_format($agente['propiedades_activas'] ?? 0) ?></div>
+                            <div class="estadistica-label">ACTIVAS</div>
                         </div>
                         <div class="estadistica-item">
                             <div class="estadistica-numero"><?= number_format($agente['propiedades_vendidas'] ?? 0) ?></div>
-                            <div class="estadistica-label">VENTAS</div>
+                            <div class="estadistica-label">VENDIDAS</div>
                         </div>
                     </div>
+                    
+                    <?php if (!empty($agente['calificacion_promedio'])): ?>
+                    <div class="calificacion-agente">
+                        <div class="calificacion-estrellas">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <i class="fas fa-star<?= $i <= $agente['calificacion_promedio'] ? '' : '-o' ?>"></i>
+                            <?php endfor; ?>
+                            <span class="calificacion-numero"><?= $agente['calificacion_promedio'] ?></span>
+                        </div>
+                        <div class="calificacion-total">(<?= $agente['total_calificaciones'] ?> reseñas)</div>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <?php if (!empty($agente['descripcion_corta'])): ?>
+                    <div class="descripcion-agente">
+                        <p><?= htmlspecialchars(substr($agente['descripcion_corta'], 0, 120)) ?><?= strlen($agente['descripcion_corta']) > 120 ? '...' : '' ?></p>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <?php if (!empty($agente['idiomas'])): ?>
+                    <div class="idiomas-agente">
+                        <div class="idiomas-titulo">Idiomas</div>
+                        <div class="idiomas-tags">
+                            <?php 
+                            $idiomas = is_array($agente['idiomas']) ? $agente['idiomas'] : explode(',', $agente['idiomas']);
+                            foreach (array_slice($idiomas, 0, 2) as $idioma): ?>
+                                <span class="idioma-tag"><?= htmlspecialchars(trim($idioma)) ?></span>
+                            <?php endforeach; ?>
+                            <?php if (count($idiomas) > 2): ?>
+                                <span class="idioma-tag">+<?= count($idiomas) - 2 ?> más</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 </div>
                 <div class="agente-footer">
-                    <a href="/agente/<?= $agente['id'] ?>/perfil" class="btn-ver-perfil">
-                        <i class="fas fa-eye"></i>
-                        Ver Perfil Completo
-                    </a>
+                    <?php if (!empty($agente['horario_atencion'])): ?>
+                        <div class="horario-atencion">
+                            <i class="fas fa-clock"></i>
+                            <span><?= htmlspecialchars($agente['horario_atencion']) ?></span>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div class="acciones-agente">
+                        <a href="/agente/<?= $agente['id'] ?>/perfil" class="btn-ver-perfil">
+                            <i class="fas fa-eye"></i>
+                            Ver Perfil Completo
+                        </a>
+                        
+                        <a href="/chat/iniciar/<?= $agente['id'] ?>" class="btn-contactar-agente">
+                            <i class="fas fa-comments"></i>
+                            Contactar
+                        </a>
+                    </div>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -430,20 +691,30 @@ $ciudad = $ciudad ?? '';
         <!-- Paginación -->
         <?php if ($totalPages > 1): ?>
         <div class="paginacion">
+            <?php 
+            // Construir parámetros de URL para mantener filtros
+            $params = [];
+            if (!empty($ciudad)) $params['ciudad'] = $ciudad;
+            if (!empty($_GET['experiencia'])) $params['experiencia'] = $_GET['experiencia'];
+            if (!empty($_GET['idioma'])) $params['idioma'] = $_GET['idioma'];
+            if (!empty($_GET['ordenar'])) $params['ordenar'] = $_GET['ordenar'];
+            $queryString = http_build_query($params);
+            ?>
+            
             <?php if ($page > 1): ?>
-                <a href="?page=<?= $page - 1 ?>&ciudad=<?= urlencode($ciudad) ?>" class="pagina-item">
+                <a href="?page=<?= $page - 1 ?>&<?= $queryString ?>" class="pagina-item">
                     <i class="fas fa-chevron-left"></i>
                     Anterior
                 </a>
             <?php endif; ?>
             <?php for ($i = max(1, $page - 2); $i <= min($totalPages, $page + 2); $i++): ?>
-                <a href="?page=<?= $i ?>&ciudad=<?= urlencode($ciudad) ?>" 
+                <a href="?page=<?= $i ?>&<?= $queryString ?>" 
                    class="pagina-item <?= $i == $page ? 'pagina-activa' : '' ?>">
                     <?= $i ?>
                 </a>
             <?php endfor; ?>
             <?php if ($page < $totalPages): ?>
-                <a href="?page=<?= $page + 1 ?>&ciudad=<?= urlencode($ciudad) ?>" class="pagina-item">
+                <a href="?page=<?= $page + 1 ?>&<?= $queryString ?>" class="pagina-item">
                     Siguiente
                     <i class="fas fa-chevron-right"></i>
                 </a>
@@ -493,4 +764,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+</script> 
 </script> 
