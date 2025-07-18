@@ -33,6 +33,7 @@ if (!defined('ROOT_PATH')) define('ROOT_PATH', dirname(__DIR__));
 if (!defined('APP_PATH')) define('APP_PATH', ROOT_PATH . '/app');
 if (!defined('PUBLIC_PATH')) define('PUBLIC_PATH', ROOT_PATH . '/public');
 if (!defined('UPLOAD_PATH')) define('UPLOAD_PATH', ROOT_PATH . '/uploads');
+if (!defined('UPLOADS_URL')) define('UPLOADS_URL', '/uploads');
 
 // Configuración de roles de usuario
 if (!defined('ROLE_CLIENTE')) define('ROLE_CLIENTE', 'cliente');

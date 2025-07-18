@@ -119,19 +119,27 @@
                             <?php foreach ($recentFavorites as $favorito): ?>
                                 <div class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                                     <div class="flex-shrink-0">
-                                        <img src="<?= UPLOADS_URL . '/properties/' . ($favorito['imagen_principal'] ?? 'default.jpg') ?>" 
-                                             alt="<?= htmlspecialchars($favorito['titulo_propiedad']) ?>"
-                                             class="w-16 h-16 object-cover rounded-md">
+                                        <?php
+                                        $img = $favorito['imagen_principal'] ?? 'default.jpg';
+                                        if (strpos($img, '/') === false) {
+                                            // Solo el nombre, agregamos la ruta
+                                            $img = UPLOADS_URL . '/properties/' . $img;
+                                        }
+                                        ?>
+                                        <img src="<?= htmlspecialchars($img) ?>"
+                                             alt="<?= htmlspecialchars($favorito['titulo'] ?? 'Propiedad') ?>"
+                                             class="w-16 h-16 object-cover rounded-md"
+                                             onerror="this.src='<?= UPLOADS_URL ?>/properties/default.jpg'">
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <h3 class="text-sm font-medium text-gray-900 truncate">
-                                            <?= htmlspecialchars($favorito['titulo_propiedad']) ?>
+                                            <?= htmlspecialchars($favorito['titulo'] ?? 'Propiedad') ?>
                                         </h3>
                                         <p class="text-sm text-gray-500">
-                                            <?= htmlspecialchars($favorito['ubicacion'] ?? '') ?>
+                                            <?= htmlspecialchars(($favorito['ciudad'] ?? '') . (!empty($favorito['sector']) ? ', ' . $favorito['sector'] : '')) ?>
                                         </p>
                                         <p class="text-sm font-medium text-primary-600">
-                                            $<?= number_format($favorito['precio'] ?? 0, 0, ',', '.') ?> USD
+                                            $<?= number_format($favorito['precio'] ?? 0, 0, ',', '.') ?> <?= $favorito['moneda'] ?? 'USD' ?>
                                         </p>
                                     </div>
                                     <div class="flex-shrink-0">
@@ -182,25 +190,26 @@
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <h3 class="text-sm font-medium text-gray-900 truncate">
-                                            <?= htmlspecialchars($solicitud['titulo_propiedad']) ?>
+                                            <?= htmlspecialchars($solicitud['titulo_propiedad'] ?? 'Propiedad') ?>
                                         </h3>
                                         <p class="text-sm text-gray-500">
-                                            Agente: <?= htmlspecialchars($solicitud['nombre_agente'] . ' ' . $solicitud['apellido_agente']) ?>
+                                            Agente: <?= htmlspecialchars(($solicitud['nombre_agente'] ?? '') . ' ' . ($solicitud['apellido_agente'] ?? '')) ?>
                                         </p>
                                         <div class="flex items-center space-x-2 mt-1">
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                <?= $solicitud['estado'] === 'pendiente' ? 'bg-yellow-100 text-yellow-800' : 
-                                                   ($solicitud['estado'] === 'aprobada' ? 'bg-green-100 text-green-800' : 
-                                                   'bg-red-100 text-red-800') ?>">
-                                                <?= ucfirst($solicitud['estado']) ?>
+                                                <?= $solicitud['estado'] === 'nuevo' ? 'bg-blue-100 text-blue-800' : 
+                                                   ($solicitud['estado'] === 'en_revision' ? 'bg-yellow-100 text-yellow-800' : 
+                                                   ($solicitud['estado'] === 'reunion_agendada' ? 'bg-green-100 text-green-800' : 
+                                                   'bg-gray-100 text-gray-800')) ?>">
+                                                <?= ucfirst(str_replace('_', ' ', $solicitud['estado'])) ?>
                                             </span>
                                             <span class="text-xs text-gray-500">
-                                                <?= date('d/m/Y', strtotime($solicitud['fecha_creacion'])) ?>
+                                                <?= date('d/m/Y', strtotime($solicitud['fecha_solicitud'])) ?>
                                             </span>
                                         </div>
                                     </div>
                                     <div class="flex-shrink-0">
-                                        <a href="/solicitudes/show/<?= $solicitud['id'] ?>" 
+                                        <a href="/solicitudes/<?= $solicitud['id'] ?>" 
                                            class="text-primary-600 hover:text-primary-500 text-sm font-medium">
                                             Ver
                                         </a>

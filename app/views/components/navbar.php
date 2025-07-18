@@ -88,6 +88,14 @@
                                     <i class="fas fa-cog"></i>
                                     <span>Configuración</span>
                                 </a>
+                                <a href="/reportes/mis-reportes" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    <span>Mis Reportes</span>
+                                </a>
+                                <a href="/reportes/crear" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Reportar Problema</span>
+                                </a>
                                 
                                 <?php if (hasRole(ROLE_AGENTE)): ?>
                                     <hr class="my-1">
@@ -216,6 +224,12 @@
                     </a>
                     <a href="/settings" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-cog mr-3"></i>Configuración
+                    </a>
+                    <a href="/reportes/mis-reportes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                        <i class="fas fa-clipboard-list mr-3"></i>Mis Reportes
+                    </a>
+                    <a href="/reportes/crear" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                        <i class="fas fa-exclamation-triangle mr-3"></i>Reportar Problema
                     </a>
                     <a href="/logout" class="block px-3 py-2 text-red-600 hover:bg-red-50 rounded-md text-base font-medium">
                         <i class="fas fa-sign-out-alt mr-3"></i>Cerrar Sesión

@@ -356,10 +356,14 @@ class Router {
         $this->post('/appointments/{id}/accept', 'AppointmentController@accept');
         $this->post('/appointments/{id}/reject', 'AppointmentController@reject');
         
-        // Rutas de reportes (futuras)
-        $this->get('/reports', 'ReportController@index');
-        $this->post('/reports', 'ReportController@store');
-        $this->get('/reports/{id}', 'ReportController@show');
+        // Rutas de reportes de irregularidades
+        $this->get('/reportes/crear', 'ReporteController@crear');
+        $this->post('/reportes/guardar', 'ReporteController@guardar');
+        $this->get('/reportes/mis-reportes', 'ReporteController@misReportes');
+        $this->get('/reportes/mostrar/{id}', 'ReporteController@mostrar');
+        $this->get('/reportes/admin', 'ReporteController@admin');
+        $this->post('/reportes/actualizar-estado', 'ReporteController@actualizarEstado');
+        $this->post('/reportes/eliminar', 'ReporteController@eliminar');
         
         // API routes (futuras)
         $this->get('/api/properties', 'ApiController@properties');

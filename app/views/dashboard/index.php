@@ -27,6 +27,13 @@ $content = ob_start();
             <a href="/properties/create" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-medium transition-colors">
                 <i class="fas fa-plus mr-2"></i>Publicar Propiedad
             </a>
+            <?php elseif (hasRole(ROLE_ADMIN)): ?>
+            <a href="/reportes/admin" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-md font-medium transition-colors">
+                <i class="fas fa-clipboard-list mr-2"></i>Administrar Reportes
+            </a>
+            <a href="/admin/dashboard" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-md font-medium transition-colors">
+                <i class="fas fa-cog mr-2"></i>Panel de Administración
+            </a>
             <?php endif; ?>
         </div>
     </div>

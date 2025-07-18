@@ -75,7 +75,7 @@
                                 
                                 <div class="flex-shrink-0">
                                     <?php if ($actividad['tipo'] === 'solicitud'): ?>
-                                        <a href="/solicitudes/show/<?= $actividad['data']['id'] ?>" 
+                                        <a href="/solicitudes/<?= $actividad['data']['id'] ?>" 
                                            class="text-primary-600 hover:text-primary-500 text-sm font-medium">
                                             Ver
                                         </a>
