@@ -441,6 +441,12 @@ class AppointmentController {
         // Verificar que el usuario esté autenticado
         requireAuth();
         
+        // Verificar CSRF token
+        if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+            setFlashMessage('error', 'Token de seguridad inválido.');
+            redirect('/appointments/' . $id);
+        }
+        
         // Obtener la cita
         $cita = $this->appointmentModel->getById($id);
         if (!$cita) {
@@ -461,7 +467,9 @@ class AppointmentController {
         }
         
         // Actualizar estado de la cita
-        if ($this->appointmentModel->updateStatus($id, Appointment::STATUS_ACCEPTED)) {
+        $result = $this->appointmentModel->updateStatus($id, Appointment::STATUS_ACCEPTED);
+        
+        if ($result) {
             // Enviar notificación por email
             try {
                 $this->sendAppointmentNotification($id, 'accepted');
@@ -485,6 +493,12 @@ class AppointmentController {
     public function reject($id) {
         // Verificar que el usuario esté autenticado
         requireAuth();
+        
+        // Verificar CSRF token
+        if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+            setFlashMessage('error', 'Token de seguridad inválido.');
+            redirect('/appointments/' . $id);
+        }
         
         // Obtener la cita
         $cita = $this->appointmentModel->getById($id);
@@ -531,6 +545,12 @@ class AppointmentController {
         // Verificar que el usuario esté autenticado
         requireAuth();
         
+        // Verificar CSRF token
+        if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+            setFlashMessage('error', 'Token de seguridad inválido.');
+            redirect('/appointments/' . $id);
+        }
+        
         // Obtener la cita
         $cita = $this->appointmentModel->getById($id);
         if (!$cita) {
@@ -576,6 +596,12 @@ class AppointmentController {
         // Verificar que el usuario esté autenticado y sea agente
         requireAuth();
         requireRole(ROLE_AGENTE);
+        
+        // Verificar CSRF token
+        if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+            setFlashMessage('error', 'Token de seguridad inválido.');
+            redirect('/appointments/' . $id);
+        }
         
         // Obtener la cita
         $cita = $this->appointmentModel->getById($id);
@@ -712,70 +738,508 @@ class AppointmentController {
             return;
         }
         
-        $subject = '';
-        $template = '';
-        $data = [
-            'cita' => $cita,
-            'app_name' => APP_NAME,
-            'app_url' => APP_URL
-        ];
+        // Obtener datos del agente y cliente
+        $agente = $this->userModel->getById($cita['agente_id']);
+        $cliente = $this->userModel->getById($cita['cliente_id']);
         
+        if (!$agente || !$cliente) {
+            error_log("Error: No se encontraron datos del agente o cliente para la cita {$appointmentId}");
+            return;
+        }
+        
+        try {
         switch ($action) {
             case 'created':
-                $subject = 'Nueva cita propuesta - ' . APP_NAME;
-                $template = 'appointment_created';
+                    // Enviar notificación de nueva cita
+                    $this->emailHelper->sendAppointmentNotification($cita, $agente, $cliente);
                 break;
+                    
             case 'updated':
-                $subject = 'Cita actualizada - ' . APP_NAME;
-                $template = 'appointment_updated';
+                    // Enviar notificación de cita actualizada
+                    $this->emailHelper->sendCustomEmail(
+                        $cliente['email'],
+                        'Cita actualizada - ' . APP_NAME,
+                        $this->getAppointmentUpdateEmailTemplate($cita, $agente, $cliente),
+                        $this->getAppointmentUpdateEmailText($cita, $agente, $cliente),
+                        $cliente['nombre'] . ' ' . $cliente['apellido']
+                    );
                 break;
+                    
             case 'accepted':
-                $subject = 'Cita aceptada - ' . APP_NAME;
-                $template = 'appointment_accepted';
+                    // Enviar notificación de cita aceptada
+                    $this->emailHelper->sendCustomEmail(
+                        $agente['email'],
+                        'Cita aceptada - ' . APP_NAME,
+                        $this->getAppointmentAcceptedEmailTemplate($cita, $agente, $cliente),
+                        $this->getAppointmentAcceptedEmailText($cita, $agente, $cliente),
+                        $agente['nombre'] . ' ' . $agente['apellido']
+                    );
                 break;
+                    
             case 'rejected':
-                $subject = 'Cita rechazada - ' . APP_NAME;
-                $template = 'appointment_rejected';
+                    // Enviar notificación de cita rechazada
+                    $this->emailHelper->sendCustomEmail(
+                        $agente['email'],
+                        'Cita rechazada - ' . APP_NAME,
+                        $this->getAppointmentRejectedEmailTemplate($cita, $agente, $cliente),
+                        $this->getAppointmentRejectedEmailText($cita, $agente, $cliente),
+                        $agente['nombre'] . ' ' . $agente['apellido']
+                    );
                 break;
+                    
             case 'cancelled':
-                $subject = 'Cita cancelada - ' . APP_NAME;
-                $template = 'appointment_cancelled';
+                    // Enviar notificación de cita cancelada
+                    $motivo = $_POST['motivo_cancelacion'] ?? '';
+                    $this->emailHelper->sendAppointmentCancellation($cita, $agente, $cliente, $motivo);
                 break;
+                    
             case 'completed':
-                $subject = 'Cita completada - ' . APP_NAME;
-                $template = 'appointment_completed';
+                    // Enviar notificación de cita completada
+                    $this->emailHelper->sendCustomEmail(
+                        $cliente['email'],
+                        'Cita completada - ' . APP_NAME,
+                        $this->getAppointmentCompletedEmailTemplate($cita, $agente, $cliente),
+                        $this->getAppointmentCompletedEmailText($cita, $agente, $cliente),
+                        $cliente['nombre'] . ' ' . $cliente['apellido']
+                    );
                 break;
         }
         
-        if ($template) {
-            // TODO: Implementar envío de emails cuando esté configurado
-            // Por ahora, solo log para desarrollo
-            error_log("EMAIL - {$action} - Cliente: {$cita['cliente_email']} - Agente: {$cita['agente_email']}");
+            error_log("EMAIL ENVIADO - {$action} - Cita: {$appointmentId}");
             
-            // Comentado temporalmente hasta implementar templates de email
-            /*
-            // Enviar email al cliente
-            $this->emailHelper->sendCustomEmail(
-                $cita['cliente_email'],
-                $subject,
-                $this->getEmailTemplate($template, $data),
-                '',
-                $cita['cliente_nombre'] . ' ' . $cita['cliente_apellido']
-            );
-            
-            // Enviar email al agente
-            $this->emailHelper->sendCustomEmail(
-                $cita['agente_email'],
-                $subject,
-                $this->getEmailTemplate($template, $data),
-                '',
-                $cita['agente_nombre'] . ' ' . $cita['agente_apellido']
-            );
-            */
+        } catch (Exception $e) {
+            error_log("Error enviando email de notificación: " . $e->getMessage());
         }
     }
-
-
     
+    /**
+     * Template HTML para cita actualizada
+     */
+    private function getAppointmentUpdateEmailTemplate($cita, $agente, $cliente) {
+        $fecha = date('d/m/Y H:i', strtotime($cita['fecha_cita']));
+        $tipoCita = ucfirst(str_replace('_', ' ', $cita['tipo_cita']));
+        $lugar = $cita['lugar'] ?: 'No especificado';
+        
+        return "
+        <!DOCTYPE html>
+        <html lang='es'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>Cita actualizada - " . APP_NAME . "</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
+                .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; }
+                .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 30px 20px; text-align: center; }
+                .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
+                .content { padding: 40px 30px; background: white; }
+                .appointment-details { background: #f8fafc; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #3b82f6; }
+                .detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+                .detail-row:last-child { border-bottom: none; }
+                .detail-label { font-weight: 600; color: #374151; }
+                .detail-value { color: #1f2937; }
+                .footer { background: #f8fafc; padding: 20px 30px; text-align: center; color: #6b7280; font-size: 14px; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h1>📅 Cita Actualizada</h1>
+                </div>
+                <div class='content'>
+                    <h2>Hola {$cliente['nombre']},</h2>
+                    <p>Tu cita ha sido actualizada con los siguientes detalles:</p>
+                    <div class='appointment-details'>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Fecha y Hora:</span>
+                            <span class='detail-value'>{$fecha}</span>
+                        </div>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Tipo de Cita:</span>
+                            <span class='detail-value'>{$tipoCita}</span>
+                        </div>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Ubicación:</span>
+                            <span class='detail-value'>{$lugar}</span>
+                        </div>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Agente:</span>
+                            <span class='detail-value'>{$agente['nombre']} {$agente['apellido']}</span>
+                        </div>
+                    </div>
+                    <p>Por favor, confirma que estos nuevos detalles te funcionan.</p>
+                    <p>¡Gracias por usar " . APP_NAME . "!</p>
+                </div>
+                <div class='footer'>
+                    <p>Este es un email automático, por favor no respondas a este mensaje.</p>
+                    <p>&copy; " . date('Y') . " " . APP_NAME . ". Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </body>
+        </html>";
+    }
+    
+    /**
+     * Template de texto para cita actualizada
+     */
+    private function getAppointmentUpdateEmailText($cita, $agente, $cliente) {
+        $fecha = date('d/m/Y H:i', strtotime($cita['fecha_cita']));
+        $tipoCita = ucfirst(str_replace('_', ' ', $cita['tipo_cita']));
+        $lugar = $cita['lugar'] ?: 'No especificado';
+        
+        return "Cita actualizada - " . APP_NAME . "
 
+Hola {$cliente['nombre']},
+
+Tu cita ha sido actualizada con los siguientes detalles:
+
+Fecha y Hora: {$fecha}
+Tipo de Cita: {$tipoCita}
+Ubicación: {$lugar}
+Agente: {$agente['nombre']} {$agente['apellido']}
+
+Por favor, confirma que estos nuevos detalles te funcionan.
+
+Saludos,
+El equipo de " . APP_NAME;
+    }
+    
+    /**
+     * Template HTML para cita aceptada
+     */
+    private function getAppointmentAcceptedEmailTemplate($cita, $agente, $cliente) {
+        $fecha = date('d/m/Y H:i', strtotime($cita['fecha_cita']));
+        $tipoCita = ucfirst(str_replace('_', ' ', $cita['tipo_cita']));
+        $lugar = $cita['lugar'] ?: 'No especificado';
+        
+        return "
+        <!DOCTYPE html>
+        <html lang='es'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>Cita aceptada - " . APP_NAME . "</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
+                .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; }
+                .header { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 30px 20px; text-align: center; }
+                .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
+                .content { padding: 40px 30px; background: white; }
+                .success-box { background: #d1fae5; border: 2px solid #059669; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }
+                .success-box h3 { color: #065f46; margin: 0 0 10px 0; font-size: 20px; }
+                .appointment-details { background: #f8fafc; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #059669; }
+                .detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+                .detail-row:last-child { border-bottom: none; }
+                .detail-label { font-weight: 600; color: #374151; }
+                .detail-value { color: #1f2937; }
+                .footer { background: #f8fafc; padding: 20px 30px; text-align: center; color: #6b7280; font-size: 14px; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h1>✅ Cita Aceptada</h1>
+                </div>
+                <div class='content'>
+                    <h2>Hola {$agente['nombre']},</h2>
+                    <div class='success-box'>
+                        <h3>¡Excelente noticia!</h3>
+                        <p>El cliente ha aceptado la cita programada.</p>
+                    </div>
+                    <div class='appointment-details'>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Fecha y Hora:</span>
+                            <span class='detail-value'>{$fecha}</span>
+                        </div>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Tipo de Cita:</span>
+                            <span class='detail-value'>{$tipoCita}</span>
+                        </div>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Ubicación:</span>
+                            <span class='detail-value'>{$lugar}</span>
+                        </div>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Cliente:</span>
+                            <span class='detail-value'>{$cliente['nombre']} {$cliente['apellido']}</span>
+                        </div>
+                    </div>
+                    <p>¡Prepárate para la cita y asegúrate de tener toda la información necesaria!</p>
+                    <p>¡Gracias por usar " . APP_NAME . "!</p>
+                </div>
+                <div class='footer'>
+                    <p>Este es un email automático, por favor no respondas a este mensaje.</p>
+                    <p>&copy; " . date('Y') . " " . APP_NAME . ". Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </body>
+        </html>";
+    }
+    
+    /**
+     * Template de texto para cita aceptada
+     */
+    private function getAppointmentAcceptedEmailText($cita, $agente, $cliente) {
+        $fecha = date('d/m/Y H:i', strtotime($cita['fecha_cita']));
+        $tipoCita = ucfirst(str_replace('_', ' ', $cita['tipo_cita']));
+        $lugar = $cita['lugar'] ?: 'No especificado';
+        
+        return "Cita aceptada - " . APP_NAME . "
+
+Hola {$agente['nombre']},
+
+¡Excelente noticia! El cliente ha aceptado la cita programada.
+
+Fecha y Hora: {$fecha}
+Tipo de Cita: {$tipoCita}
+Ubicación: {$lugar}
+Cliente: {$cliente['nombre']} {$cliente['apellido']}
+
+¡Prepárate para la cita y asegúrate de tener toda la información necesaria!
+
+Saludos,
+El equipo de " . APP_NAME;
+    }
+    
+    /**
+     * Template HTML para cita rechazada
+     */
+    private function getAppointmentRejectedEmailTemplate($cita, $agente, $cliente) {
+        $fecha = date('d/m/Y H:i', strtotime($cita['fecha_cita']));
+        $tipoCita = ucfirst(str_replace('_', ' ', $cita['tipo_cita']));
+        $lugar = $cita['lugar'] ?: 'No especificado';
+        
+        return "
+        <!DOCTYPE html>
+        <html lang='es'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>Cita rechazada - " . APP_NAME . "</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
+                .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; }
+                .header { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 30px 20px; text-align: center; }
+                .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
+                .content { padding: 40px 30px; background: white; }
+                .rejection-box { background: #fef2f2; border: 2px solid #dc2626; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }
+                .rejection-box h3 { color: #991b1b; margin: 0 0 10px 0; font-size: 20px; }
+                .appointment-details { background: #f8fafc; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #dc2626; }
+                .detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+                .detail-row:last-child { border-bottom: none; }
+                .detail-label { font-weight: 600; color: #374151; }
+                .detail-value { color: #1f2937; }
+                .footer { background: #f8fafc; padding: 20px 30px; text-align: center; color: #6b7280; font-size: 14px; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h1>❌ Cita Rechazada</h1>
+                </div>
+                <div class='content'>
+                    <h2>Hola {$agente['nombre']},</h2>
+                    <div class='rejection-box'>
+                        <h3>La cita ha sido rechazada</h3>
+                        <p>El cliente ha rechazado la cita programada.</p>
+                    </div>
+                    <div class='appointment-details'>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Fecha y Hora:</span>
+                            <span class='detail-value'>{$fecha}</span>
+                        </div>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Tipo de Cita:</span>
+                            <span class='detail-value'>{$tipoCita}</span>
+                        </div>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Ubicación:</span>
+                            <span class='detail-value'>{$lugar}</span>
+                        </div>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Cliente:</span>
+                            <span class='detail-value'>{$cliente['nombre']} {$cliente['apellido']}</span>
+                        </div>
+                    </div>
+                    <p>Considera contactar al cliente para proponer una nueva fecha o entender las razones del rechazo.</p>
+                    <p>¡Gracias por usar " . APP_NAME . "!</p>
+                </div>
+                <div class='footer'>
+                    <p>Este es un email automático, por favor no respondas a este mensaje.</p>
+                    <p>&copy; " . date('Y') . " " . APP_NAME . ". Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </body>
+        </html>";
+    }
+    
+    /**
+     * Template de texto para cita rechazada
+     */
+    private function getAppointmentRejectedEmailText($cita, $agente, $cliente) {
+        $fecha = date('d/m/Y H:i', strtotime($cita['fecha_cita']));
+        $tipoCita = ucfirst(str_replace('_', ' ', $cita['tipo_cita']));
+        $lugar = $cita['lugar'] ?: 'No especificado';
+        
+        return "Cita rechazada - " . APP_NAME . "
+
+Hola {$agente['nombre']},
+
+El cliente ha rechazado la cita programada.
+
+Fecha y Hora: {$fecha}
+Tipo de Cita: {$tipoCita}
+Ubicación: {$lugar}
+Cliente: {$cliente['nombre']} {$cliente['apellido']}
+
+Considera contactar al cliente para proponer una nueva fecha o entender las razones del rechazo.
+
+Saludos,
+El equipo de " . APP_NAME;
+    }
+    
+    /**
+     * Template HTML para cita completada
+     */
+    private function getAppointmentCompletedEmailTemplate($cita, $agente, $cliente) {
+        $fecha = date('d/m/Y H:i', strtotime($cita['fecha_cita']));
+        $tipoCita = ucfirst(str_replace('_', ' ', $cita['tipo_cita']));
+        $lugar = $cita['lugar'] ?: 'No especificado';
+        
+        return "
+        <!DOCTYPE html>
+        <html lang='es'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>Cita completada - " . APP_NAME . "</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
+                .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; }
+                .header { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; padding: 30px 20px; text-align: center; }
+                .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
+                .content { padding: 40px 30px; background: white; }
+                .completion-box { background: #d1fae5; border: 2px solid #059669; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }
+                .completion-box h3 { color: #065f46; margin: 0 0 10px 0; font-size: 20px; }
+                .appointment-details { background: #f8fafc; border-radius: 8px; padding: 20px; margin: 20px 0; border-left: 4px solid #059669; }
+                .detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
+                .detail-row:last-child { border-bottom: none; }
+                .detail-label { font-weight: 600; color: #374151; }
+                .detail-value { color: #1f2937; }
+                .footer { background: #f8fafc; padding: 20px 30px; text-align: center; color: #6b7280; font-size: 14px; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h1>✅ Cita Completada</h1>
+                </div>
+                <div class='content'>
+                    <h2>Hola {$cliente['nombre']},</h2>
+                    <div class='completion-box'>
+                        <h3>¡Cita completada exitosamente!</h3>
+                        <p>Tu cita ha sido marcada como completada.</p>
+                    </div>
+                    <div class='appointment-details'>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Fecha y Hora:</span>
+                            <span class='detail-value'>{$fecha}</span>
+                        </div>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Tipo de Cita:</span>
+                            <span class='detail-value'>{$tipoCita}</span>
+                        </div>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Ubicación:</span>
+                            <span class='detail-value'>{$lugar}</span>
+                        </div>
+                        <div class='detail-row'>
+                            <span class='detail-label'>Agente:</span>
+                            <span class='detail-value'>{$agente['nombre']} {$agente['apellido']}</span>
+                        </div>
+                    </div>
+                    <p>Esperamos que la cita haya sido productiva. Si tienes alguna pregunta o necesitas más información, no dudes en contactar al agente.</p>
+                    <p>¡Gracias por usar " . APP_NAME . "!</p>
+                </div>
+                <div class='footer'>
+                    <p>Este es un email automático, por favor no respondas a este mensaje.</p>
+                    <p>&copy; " . date('Y') . " " . APP_NAME . ". Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </body>
+        </html>";
+    }
+    
+    /**
+     * Template de texto para cita completada
+     */
+    private function getAppointmentCompletedEmailText($cita, $agente, $cliente) {
+        $fecha = date('d/m/Y H:i', strtotime($cita['fecha_cita']));
+        $tipoCita = ucfirst(str_replace('_', ' ', $cita['tipo_cita']));
+        $lugar = $cita['lugar'] ?: 'No especificado';
+        
+        return "Cita completada - " . APP_NAME . "
+
+Hola {$cliente['nombre']},
+
+¡Cita completada exitosamente!
+
+Fecha y Hora: {$fecha}
+Tipo de Cita: {$tipoCita}
+Ubicación: {$lugar}
+Agente: {$agente['nombre']} {$agente['apellido']}
+
+Esperamos que la cita haya sido productiva. Si tienes alguna pregunta o necesitas más información, no dudes en contactar al agente.
+
+Saludos,
+El equipo de " . APP_NAME;
+    }
+
+    /**
+     * Obtener citas pendientes de aceptación para el cliente actual
+     * API endpoint para el modal de notificaciones
+     */
+    public function getPendingAppointments() {
+        // Verificar que el usuario esté autenticado
+        requireAuth();
+        
+        // Verificar que sea cliente
+        if ($_SESSION['user_type'] !== 'cliente') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Solo clientes pueden ver citas pendientes']);
+            return;
+        }
+        
+        try {
+            // Obtener citas en estado "propuesta" para el cliente actual
+            $citas = $this->appointmentModel->getByClient($_SESSION['user_id'], Appointment::STATUS_PROPOSED);
+            
+            // Formatear datos para el frontend
+            $formattedAppointments = [];
+            foreach ($citas as $cita) {
+                $formattedAppointments[] = [
+                    'id' => $cita['id'],
+                    'fecha' => date('d/m/Y H:i', strtotime($cita['fecha_cita'])),
+                    'tipo' => ucfirst(str_replace('_', ' ', $cita['tipo_cita'])),
+                    'lugar' => $cita['lugar'],
+                    'agente_nombre' => $cita['agente_nombre'] . ' ' . $cita['agente_apellido'],
+                    'agente_telefono' => $cita['agente_telefono'],
+                    'propiedad_titulo' => $cita['propiedad_titulo'] ?? 'Propiedad',
+                    'observaciones' => $cita['observaciones'] ?? ''
+                ];
+            }
+            
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'citas' => $formattedAppointments,
+                'count' => count($formattedAppointments)
+            ]);
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo citas pendientes: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => 'Error interno del servidor']);
+        }
+    }
 } 

@@ -362,6 +362,7 @@ class Router {
         $this->post('/appointments/{id}/complete', 'AppointmentController@complete');
         $this->get('/appointments/calendar', 'AppointmentController@calendar');
         $this->get('/api/appointments', 'AppointmentController@getAppointments');
+        $this->get('/api/appointments/pending', 'AppointmentController@getPendingAppointments');
 
         
         // Rutas de reportes de irregularidades
@@ -372,6 +373,9 @@ class Router {
         $this->get('/reportes/admin', 'ReporteController@admin');
         $this->post('/reportes/actualizar-estado', 'ReporteController@actualizarEstado');
         $this->post('/reportes/eliminar', 'ReporteController@eliminar');
+        
+        // Rutas de reportes de citas (solo administradores)
+        $this->get('/reportes/citas', 'ReporteController@citas');
         
         // API routes (futuras)
         $this->get('/api/properties', 'ApiController@properties');

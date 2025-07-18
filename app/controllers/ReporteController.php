@@ -266,6 +266,20 @@ class ReporteController {
     }
     
     /**
+     * Reporte de citas (solo para administradores)
+     */
+    public function citas() {
+        // Verificar que el usuario sea administrador
+        if (!hasRole(ROLE_ADMIN)) {
+            setFlashMessage('error', 'No tienes permisos para acceder a esta sección');
+            redirect('/dashboard');
+        }
+        
+        // Incluir la vista de reportes de citas
+        include APP_PATH . '/views/reportes/citas.php';
+    }
+    
+    /**
      * Procesar archivo adjunto
      * 
      * @param array $archivo Datos del archivo subido

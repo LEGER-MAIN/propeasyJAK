@@ -33,6 +33,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Estilos para notificaciones de citas -->
+    <link rel="stylesheet" href="/css/appointment-notifications.css">
+    
     <!-- Estilos personalizados -->
     <style>
         /* Asegurar que el footer se mantenga al final */
@@ -172,7 +175,8 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 flex flex-col <?= isAuthenticated() ? 'user-authenticated' : '' ?>">
+<body class="bg-gray-50 flex flex-col <?= isAuthenticated() ? 'user-authenticated' : '' ?>" 
+      data-user-type="<?= $_SESSION['user_type'] ?? '' ?>">
     <!-- Header con Navbar del Cliente -->
     <?php include APP_PATH . '/views/components/navbar.php'; ?>
 
@@ -582,6 +586,20 @@
             console.error('Error al cargar el sistema de citas');
         };
         document.head.appendChild(appointmentsScript);
+        <?php endif; ?>
+
+        // Cargar sistema de notificaciones de citas
+        <?php if (isAuthenticated() && hasRole(ROLE_CLIENTE)): ?>
+        // Incluir script de notificaciones de citas
+        const appointmentNotificationsScript = document.createElement('script');
+        appointmentNotificationsScript.src = '/js/appointment-notifications.js';
+        appointmentNotificationsScript.onload = function() {
+            console.log('Sistema de notificaciones de citas cargado correctamente');
+        };
+        appointmentNotificationsScript.onerror = function() {
+            console.error('Error al cargar el sistema de notificaciones de citas');
+        };
+        document.head.appendChild(appointmentNotificationsScript);
         <?php endif; ?>
 
     </script>

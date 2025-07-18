@@ -17,7 +17,7 @@ class Appointment {
     const STATUS_PROPOSED = 'propuesta';
     const STATUS_ACCEPTED = 'aceptada';
     const STATUS_REJECTED = 'rechazada';
-    const STATUS_COMPLETED = 'realizada';
+    const STATUS_COMPLETED = 'completada';
     const STATUS_CANCELLED = 'cancelada';
     
     // Tipos de citas
@@ -166,7 +166,8 @@ class Appointment {
                          p.direccion as propiedad_direccion,
                          ag.nombre as agente_nombre,
                          ag.apellido as agente_apellido,
-                         ag.email as agente_email
+                         ag.email as agente_email,
+                         ag.telefono as agente_telefono
                   FROM {$this->table} c
                   LEFT JOIN propiedades p ON c.propiedad_id = p.id
                   LEFT JOIN usuarios ag ON c.agente_id = ag.id
@@ -280,6 +281,8 @@ class Appointment {
      * @return bool True si se actualizó correctamente
      */
     public function updateStatus($id, $estado) {
+        error_log("updateStatus llamado con id: {$id}, estado: {$estado}");
+        
         $estadosValidos = [
             self::STATUS_PROPOSED,
             self::STATUS_ACCEPTED,
@@ -288,7 +291,10 @@ class Appointment {
             self::STATUS_CANCELLED
         ];
         
+        error_log("Estados válidos: " . implode(', ', $estadosValidos));
+        
         if (!in_array($estado, $estadosValidos)) {
+            error_log("Estado '{$estado}' no es válido");
             return false;
         }
         
@@ -296,7 +302,13 @@ class Appointment {
                   SET estado = ?, fecha_actualizacion = NOW() 
                   WHERE id = ?";
         
-        return $this->db->update($query, [$estado, (int)$id]);
+        error_log("Query: {$query}");
+        error_log("Parámetros: " . implode(', ', [$estado, (int)$id]));
+        
+        $result = $this->db->update($query, [$estado, (int)$id]);
+        error_log("Resultado de db->update: " . ($result ? 'true' : 'false'));
+        
+        return $result;
     }
     
     /**
@@ -467,7 +479,7 @@ class Appointment {
                     COUNT(CASE WHEN estado = ? THEN 1 END) as propuestas,
                     COUNT(CASE WHEN estado = ? THEN 1 END) as aceptadas,
                     COUNT(CASE WHEN estado = ? THEN 1 END) as rechazadas,
-                    COUNT(CASE WHEN estado = ? THEN 1 END) as realizadas,
+                    COUNT(CASE WHEN estado = ? THEN 1 END) as completadas,
                     COUNT(CASE WHEN estado = ? THEN 1 END) as canceladas,
                     COUNT(CASE WHEN fecha_cita >= NOW() AND estado IN (?, ?) THEN 1 END) as proximas
                   FROM {$this->table} 
@@ -620,8 +632,149 @@ class Appointment {
             self::STATUS_PROPOSED => 'Propuesta',
             self::STATUS_ACCEPTED => 'Aceptada',
             self::STATUS_REJECTED => 'Rechazada',
-            self::STATUS_COMPLETED => 'Realizada',
+            self::STATUS_COMPLETED => 'Completada',
             self::STATUS_CANCELLED => 'Cancelada'
         ];
+    }
+    
+    /**
+     * Obtener citas filtradas para reportes
+     * 
+     * @param string $fechaInicio Fecha de inicio
+     * @param string $fechaFin Fecha de fin
+     * @param int $agenteId ID del agente (opcional)
+     * @param string $estado Estado de la cita (opcional)
+     * @param string $tipo Tipo de cita (opcional)
+     * @return array Lista de citas filtradas
+     */
+    public function getFilteredForReport($fechaInicio, $fechaFin, $agenteId = null, $estado = null, $tipo = null) {
+        $whereConditions = [];
+        $params = [];
+        
+        // Filtro de fechas
+        $whereConditions[] = "DATE(c.fecha_cita) BETWEEN ? AND ?";
+        $params[] = $fechaInicio;
+        $params[] = $fechaFin;
+        
+        // Filtro de agente
+        if ($agenteId) {
+            $whereConditions[] = "c.agente_id = ?";
+            $params[] = (int)$agenteId;
+        }
+        
+        // Filtro de estado
+        if ($estado) {
+            $whereConditions[] = "c.estado = ?";
+            $params[] = $estado;
+        }
+        
+        // Filtro de tipo
+        if ($tipo) {
+            $whereConditions[] = "c.tipo_cita = ?";
+            $params[] = $tipo;
+        }
+        
+        $whereClause = implode(' AND ', $whereConditions);
+        
+        $query = "SELECT c.*, 
+                         p.titulo as propiedad_titulo,
+                         ag.nombre as agente_nombre,
+                         ag.apellido as agente_apellido,
+                         ag.email as agente_email,
+                         cl.nombre as cliente_nombre,
+                         cl.apellido as cliente_apellido,
+                         cl.email as cliente_email
+                  FROM {$this->table} c
+                  LEFT JOIN propiedades p ON c.propiedad_id = p.id
+                  LEFT JOIN usuarios ag ON c.agente_id = ag.id
+                  LEFT JOIN usuarios cl ON c.cliente_id = cl.id
+                  WHERE {$whereClause}
+                  ORDER BY c.fecha_cita DESC";
+        
+        return $this->db->select($query, $params);
+    }
+    
+    /**
+     * Obtener estadísticas para reportes
+     * 
+     * @param string $fechaInicio Fecha de inicio
+     * @param string $fechaFin Fecha de fin
+     * @param int $agenteId ID del agente (opcional)
+     * @return array Estadísticas
+     */
+    public function getReportStats($fechaInicio, $fechaFin, $agenteId = null) {
+        $whereConditions = [];
+        $params = [];
+        
+        // Filtro de fechas
+        $whereConditions[] = "DATE(fecha_cita) BETWEEN ? AND ?";
+        $params[] = $fechaInicio;
+        $params[] = $fechaFin;
+        
+        // Filtro de agente
+        if ($agenteId) {
+            $whereConditions[] = "agente_id = ?";
+            $params[] = (int)$agenteId;
+        }
+        
+        $whereClause = implode(' AND ', $whereConditions);
+        
+        $query = "SELECT 
+                    COUNT(*) as total,
+                    SUM(CASE WHEN estado = 'propuesta' THEN 1 ELSE 0 END) as propuestas,
+                    SUM(CASE WHEN estado = 'aceptada' THEN 1 ELSE 0 END) as aceptadas,
+                    SUM(CASE WHEN estado = 'rechazada' THEN 1 ELSE 0 END) as rechazadas,
+                    SUM(CASE WHEN estado = 'cancelada' THEN 1 ELSE 0 END) as canceladas,
+                    SUM(CASE WHEN estado = 'completada' THEN 1 ELSE 0 END) as completadas
+                  FROM {$this->table}
+                  WHERE {$whereClause}";
+        
+        $result = $this->db->selectOne($query, $params);
+        
+        return $result ?: [
+            'total' => 0,
+            'propuestas' => 0,
+            'aceptadas' => 0,
+            'rechazadas' => 0,
+            'canceladas' => 0,
+            'completadas' => 0
+        ];
+    }
+    
+    /**
+     * Obtener citas recientes para el dashboard
+     * 
+     * @param int $limit Número de citas a obtener
+     * @return array Lista de citas recientes
+     */
+    public function getRecent($limit = 10) {
+        $query = "SELECT c.*, 
+                         p.titulo as propiedad_titulo,
+                         ag.nombre as agente_nombre,
+                         ag.apellido as agente_apellido,
+                         ag.email as agente_email,
+                         cl.nombre as cliente_nombre,
+                         cl.apellido as cliente_apellido,
+                         cl.email as cliente_email
+                  FROM {$this->table} c
+                  LEFT JOIN propiedades p ON c.propiedad_id = p.id
+                  LEFT JOIN usuarios ag ON c.agente_id = ag.id
+                  LEFT JOIN usuarios cl ON c.cliente_id = cl.id
+                  ORDER BY c.fecha_cita DESC
+                  LIMIT ?";
+        
+        return $this->db->select($query, [(int)$limit]);
+    }
+    
+    /**
+     * Obtener total de citas en el sistema
+     * 
+     * @return int Total de citas
+     */
+    public function getTotalCount() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table}";
+        $result = $this->db->selectOne($query);
+        
+        return $result ? (int)$result['total'] : 0;
     }
 } 

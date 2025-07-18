@@ -138,6 +138,9 @@
                 <?php endif; ?>
             </div>
 
+            <!-- CSRF Token -->
+            <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
+            
             <!-- Acciones -->
             <div class="mt-8 flex justify-center space-x-4">
                 <?php if ($cita['estado'] === 'propuesta'): ?>
@@ -196,20 +199,35 @@ function aceptarCita(citaId) {
         fetch(`/appointments/${citaId}/accept`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-            }
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            credentials: 'include',
+            body: 'csrf_token=' + (document.querySelector('input[name="csrf_token"]')?.value || '')
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            // Si es un redirect (302), recargar la página
+            if (response.status === 302 || response.redirected) {
+                location.reload();
+                return;
+            }
+            
+            // Si es una respuesta exitosa
+            if (response.ok) {
                 location.reload();
             } else {
-                alert('Error al aceptar la cita: ' + data.message);
+                // Intentar leer el texto de la respuesta para debug
+                return response.text().then(text => {
+                    console.log('Error response:', text);
+                    alert('Error al aceptar la cita: ' + response.status);
+                });
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error al aceptar la cita');
+            alert('Error al aceptar la cita: ' + error.message);
         });
     }
 }
@@ -219,20 +237,34 @@ function rechazarCita(citaId) {
         fetch(`/appointments/${citaId}/reject`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-            }
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            credentials: 'include',
+            body: 'csrf_token=' + (document.querySelector('input[name="csrf_token"]')?.value || '')
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+        .then(response => {
+            console.log('Response status:', response.status);
+            
+            // Si es un redirect (302), recargar la página
+            if (response.status === 302 || response.redirected) {
+                location.reload();
+                return;
+            }
+            
+            // Si es una respuesta exitosa
+            if (response.ok) {
                 location.reload();
             } else {
-                alert('Error al rechazar la cita: ' + data.message);
+                // Intentar leer el texto de la respuesta para debug
+                return response.text().then(text => {
+                    console.log('Error response:', text);
+                    alert('Error al rechazar la cita: ' + response.status);
+                });
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error al rechazar la cita');
+            alert('Error al rechazar la cita: ' + error.message);
         });
     }
 }
@@ -242,20 +274,34 @@ function completarCita(citaId) {
         fetch(`/appointments/${citaId}/complete`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-            }
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            credentials: 'include',
+            body: 'csrf_token=' + (document.querySelector('input[name="csrf_token"]')?.value || '')
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+        .then(response => {
+            console.log('Response status:', response.status);
+            
+            // Si es un redirect (302), recargar la página
+            if (response.status === 302 || response.redirected) {
+                location.reload();
+                return;
+            }
+            
+            // Si es una respuesta exitosa
+            if (response.ok) {
                 location.reload();
             } else {
-                alert('Error al completar la cita: ' + data.message);
+                // Intentar leer el texto de la respuesta para debug
+                return response.text().then(text => {
+                    console.log('Error response:', text);
+                    alert('Error al completar la cita: ' + response.status);
+                });
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error al completar la cita');
+            alert('Error al completar la cita: ' + error.message);
         });
     }
 }
@@ -265,20 +311,34 @@ function cancelarCita(citaId) {
         fetch(`/appointments/${citaId}/cancel`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-            }
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            credentials: 'include',
+            body: 'csrf_token=' + (document.querySelector('input[name="csrf_token"]')?.value || '')
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
+        .then(response => {
+            console.log('Response status:', response.status);
+            
+            // Si es un redirect (302), recargar la página
+            if (response.status === 302 || response.redirected) {
+                location.reload();
+                return;
+            }
+            
+            // Si es una respuesta exitosa
+            if (response.ok) {
                 location.reload();
             } else {
-                alert('Error al cancelar la cita: ' + data.message);
+                // Intentar leer el texto de la respuesta para debug
+                return response.text().then(text => {
+                    console.log('Error response:', text);
+                    alert('Error al cancelar la cita: ' + response.status);
+                });
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error al cancelar la cita');
+            alert('Error al cancelar la cita: ' + error.message);
         });
     }
 }
