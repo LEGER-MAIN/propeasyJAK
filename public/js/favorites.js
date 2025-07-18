@@ -270,25 +270,35 @@ class FavoritesManager {
             const isListButton = !text;
             
             if (isFavorite) {
-                // Estado favorito (rojo sólido)
+                // Estado favorito (verde esmeralda sólido con texto blanco)
                 if (isListButton) {
-                    button.className = 'favorite-toggle bg-red-600 hover:bg-red-700 text-white border border-red-600 hover:border-red-700 rounded-full p-2 transition-colors duration-200';
+                    button.className = 'favorite-toggle rounded-full p-2 transition-all duration-200 hover:transform hover:scale-105';
+                    button.style.cssText = 'background-color: var(--color-verde-esmeralda); color: var(--text-light); border: 2px solid var(--color-verde-esmeralda); box-shadow: 0 2px 4px rgba(42, 157, 143, 0.3);';
                     if (icon) icon.className = 'fas fa-heart text-sm';
                 } else {
-                    button.className = 'favorite-toggle bg-red-600 hover:bg-red-700 text-white border border-red-600 hover:border-red-700 rounded-md px-4 py-2 transition-colors duration-200 flex items-center';
+                    button.className = 'favorite-toggle rounded-md px-4 py-2 transition-all duration-200 hover:transform hover:scale-105 flex items-center';
+                    button.style.cssText = 'background-color: var(--color-verde-esmeralda); color: var(--text-light); border: 2px solid var(--color-verde-esmeralda); box-shadow: 0 2px 4px rgba(42, 157, 143, 0.3);';
                     if (icon) icon.className = 'fas fa-heart mr-2';
-                    if (text) text.textContent = 'En Favoritos';
+                    if (text) {
+                        text.textContent = 'En Favoritos';
+                        text.style.color = 'var(--text-light)';
+                    }
                 }
                 button.title = 'Eliminar de favoritos';
             } else {
-                // Estado no favorito (contorno rojo)
+                // Estado no favorito (contorno verde esmeralda)
                 if (isListButton) {
-                    button.className = 'favorite-toggle bg-white hover:bg-red-50 text-red-600 hover:text-red-700 border border-red-600 hover:border-red-700 rounded-full p-2 transition-colors duration-200';
+                    button.className = 'favorite-toggle rounded-full p-2 transition-all duration-200 hover:transform hover:scale-105';
+                    button.style.cssText = 'background-color: var(--bg-light); color: var(--color-verde-esmeralda); border: 2px solid var(--color-verde-esmeralda);';
                     if (icon) icon.className = 'far fa-heart text-sm';
                 } else {
-                    button.className = 'favorite-toggle bg-white hover:bg-red-50 text-red-600 hover:text-red-700 border border-red-600 hover:border-red-700 rounded-md px-4 py-2 transition-colors duration-200 flex items-center';
+                    button.className = 'favorite-toggle rounded-md px-4 py-2 transition-all duration-200 hover:transform hover:scale-105 flex items-center';
+                    button.style.cssText = 'background-color: var(--bg-light); color: var(--color-verde-esmeralda); border: 2px solid var(--color-verde-esmeralda);';
                     if (icon) icon.className = 'far fa-heart mr-2';
-                    if (text) text.textContent = 'Agregar a Favoritos';
+                    if (text) {
+                        text.textContent = 'Agregar a Favoritos';
+                        text.style.color = 'var(--color-verde-esmeralda)';
+                    }
                 }
                 button.title = 'Agregar a favoritos';
             }

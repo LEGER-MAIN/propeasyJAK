@@ -17,27 +17,27 @@ $pageTitle = $title;
 ?>
 
 <!-- Contenido principal -->
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+<div class="min-h-screen" style="background-color: var(--bg-primary);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header con breadcrumb -->
         <div class="mb-8">
-            <nav class="flex items-center space-x-2 text-sm text-gray-500 mb-4">
-                <a href="/" class="hover:text-primary-600 transition-colors">Inicio</a>
+            <nav class="flex items-center space-x-2 text-sm mb-4" style="color: var(--text-secondary);">
+                <a href="/" class="transition-colors" style="color: var(--text-secondary);" onmouseover="this.style.color='var(--color-azul-marino)'" onmouseout="this.style.color='var(--text-secondary)'">Inicio</a>
                 <i class="fas fa-chevron-right text-xs"></i>
-                <span class="text-gray-900 font-medium">Mis Favoritos</span>
+                <span class="font-medium" style="color: var(--text-primary);">Mis Favoritos</span>
             </nav>
             
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                        <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <h1 class="text-3xl font-bold flex items-center gap-3" style="color: var(--text-primary);">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg" style="background: linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%);">
                             <i class="fas fa-heart text-white text-xl"></i>
                         </div>
                         Mis Propiedades Favoritas
                     </h1>
-                    <p class="text-gray-600 mt-2 text-lg">
+                    <p class="mt-2 text-lg" style="color: var(--text-secondary);">
                         <?php if ($totalFavoritos > 0): ?>
-                            Tienes <span class="font-semibold text-primary-600"><?= $totalFavoritos ?></span> propiedad<?= $totalFavoritos != 1 ? 'es' : '' ?> guardada<?= $totalFavoritos != 1 ? 's' : '' ?> en tu lista
+                            Tienes <span class="font-semibold" style="color: var(--color-azul-marino);"><?= $totalFavoritos ?></span> propiedad<?= $totalFavoritos != 1 ? 'es' : '' ?> guardada<?= $totalFavoritos != 1 ? 's' : '' ?> en tu lista
                         <?php else: ?>
                             Tu lista de favoritos está vacía
                         <?php endif; ?>
@@ -45,12 +45,12 @@ $pageTitle = $title;
                 </div>
                 
                 <div class="flex flex-col sm:flex-row gap-3">
-                    <a href="/properties" class="inline-flex items-center gap-2 px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium shadow-sm hover:bg-gray-50 transition-all duration-200">
+                    <a href="/properties" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium shadow-sm transition-all duration-200" style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); color: white; border: 1px solid var(--color-azul-marino);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(29, 53, 87, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
                         <i class="fas fa-search"></i>
                         Explorar Propiedades
                     </a>
                     <?php if ($totalFavoritos > 0): ?>
-                    <button id="clearAllFavorites" class="inline-flex items-center gap-2 px-6 py-3 bg-red-50 border border-red-200 text-red-600 rounded-lg font-medium shadow-sm hover:bg-red-100 transition-all duration-200">
+                    <button id="clearAllFavorites" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium shadow-sm transition-all duration-200" style="background-color: var(--color-gris-claro); color: var(--text-primary); border: 1px solid var(--color-gris-claro);" onmouseover="this.style.backgroundColor='var(--color-azul-marino-light)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(29, 53, 87, 0.3)'" onmouseout="this.style.backgroundColor='var(--color-gris-claro)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
                         <i class="fas fa-trash-alt"></i>
                         Limpiar Todo
                     </button>
@@ -62,50 +62,50 @@ $pageTitle = $title;
         <!-- Estadísticas mejoradas -->
         <?php if (!empty($estadisticas) && $totalFavoritos > 0): ?>
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+            <div class="rounded-xl shadow-sm border p-6 hover:shadow-md transition-shadow" style="background-color: var(--bg-light); border-color: var(--color-gris-claro);">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-600">Total Favoritos</p>
-                        <p class="text-2xl font-bold text-gray-900"><?= $estadisticas['total_favoritos'] ?? 0 ?></p>
+                        <p class="text-sm font-medium" style="color: var(--text-secondary);">Total Favoritos</p>
+                        <p class="text-2xl font-bold" style="color: var(--text-primary);"><?= $estadisticas['total_favoritos'] ?? 0 ?></p>
                     </div>
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-heart text-blue-600"></i>
+                    <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background-color: rgba(42, 157, 143, 0.1);">
+                        <i class="fas fa-heart" style="color: var(--color-verde-esmeralda);"></i>
                     </div>
                 </div>
             </div>
             
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+            <div class="rounded-xl shadow-sm border p-6 hover:shadow-md transition-shadow" style="background-color: var(--bg-light); border-color: var(--color-gris-claro);">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-600">Ciudades</p>
-                        <p class="text-2xl font-bold text-gray-900"><?= $estadisticas['ciudades_diferentes'] ?? 0 ?></p>
+                        <p class="text-sm font-medium" style="color: var(--text-secondary);">Ciudades</p>
+                        <p class="text-2xl font-bold" style="color: var(--text-primary);"><?= $estadisticas['ciudades_diferentes'] ?? 0 ?></p>
                     </div>
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-map-marker-alt text-green-600"></i>
+                    <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background-color: rgba(42, 157, 143, 0.1);">
+                        <i class="fas fa-map-marker-alt" style="color: var(--color-verde-esmeralda);"></i>
                     </div>
                 </div>
             </div>
             
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+            <div class="rounded-xl shadow-sm border p-6 hover:shadow-md transition-shadow" style="background-color: var(--bg-light); border-color: var(--color-gris-claro);">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-600">Tipos</p>
-                        <p class="text-2xl font-bold text-gray-900"><?= $estadisticas['tipos_diferentes'] ?? 0 ?></p>
+                        <p class="text-sm font-medium" style="color: var(--text-secondary);">Tipos</p>
+                        <p class="text-2xl font-bold" style="color: var(--text-primary);"><?= $estadisticas['tipos_diferentes'] ?? 0 ?></p>
                     </div>
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-home text-purple-600"></i>
+                    <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background-color: rgba(29, 53, 87, 0.1);">
+                        <i class="fas fa-home" style="color: var(--color-azul-marino);"></i>
                     </div>
                 </div>
             </div>
             
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+            <div class="rounded-xl shadow-sm border p-6 hover:shadow-md transition-shadow" style="background-color: var(--bg-light); border-color: var(--color-gris-claro);">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-gray-600">Precio Promedio</p>
-                        <p class="text-2xl font-bold text-gray-900">$<?= number_format($estadisticas['precio_promedio'] ?? 0, 0, ',', '.') ?></p>
+                        <p class="text-sm font-medium" style="color: var(--text-secondary);">Precio Promedio</p>
+                        <p class="text-2xl font-bold" style="color: var(--text-primary);">$<?= number_format($estadisticas['precio_promedio'] ?? 0, 0, ',', '.') ?></p>
                     </div>
-                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-dollar-sign text-yellow-600"></i>
+                    <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background-color: rgba(233, 196, 106, 0.1);">
+                        <i class="fas fa-dollar-sign" style="color: var(--color-dorado-suave);"></i>
                     </div>
                 </div>
             </div>
@@ -116,7 +116,7 @@ $pageTitle = $title;
         <?php if (!empty($favoritos)): ?>
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             <?php foreach ($favoritos as $favorito): ?>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 group">
+            <div class="rounded-xl shadow-sm border overflow-hidden hover:shadow-lg transition-all duration-300 group" style="background-color: var(--bg-light); border-color: var(--color-gris-claro);">
                 <!-- Imagen de la propiedad -->
                 <div class="relative h-56 bg-gray-100 overflow-hidden">
                     <?php if (!empty($favorito['imagen_principal'])): ?>
@@ -134,18 +134,21 @@ $pageTitle = $title;
                     
                     <!-- Badges superiores -->
                     <div class="absolute top-3 left-3 flex gap-2">
-                        <span class="bg-primary-600 text-white text-xs px-3 py-1 rounded-full font-medium shadow-lg">
+                        <span class="text-white text-xs px-3 py-1 rounded-full font-medium shadow-lg" style="background-color: var(--color-azul-marino);">
                             <?= ucfirst($favorito['tipo']) ?>
                         </span>
                         <?php if ($favorito['estado_publicacion'] === 'activa'): ?>
-                        <span class="bg-green-500 text-white text-xs px-3 py-1 rounded-full font-medium shadow-lg">
+                        <span class="text-white text-xs px-3 py-1 rounded-full font-medium shadow-lg" style="background-color: var(--color-verde-esmeralda);">
                             Disponible
                         </span>
                         <?php endif; ?>
                     </div>
                     
                     <!-- Botón eliminar -->
-                    <button class="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm border border-red-200 text-red-500 hover:bg-red-500 hover:text-white rounded-full flex items-center justify-center transition-all duration-200 shadow-lg remove-favorite" 
+                    <button class="absolute top-3 right-3 w-8 h-8 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-200 shadow-lg remove-favorite" 
+                            style="background-color: rgba(255, 255, 255, 0.9); border: 1px solid var(--color-gris-claro); color: var(--text-secondary);"
+                            onmouseover="this.style.backgroundColor='var(--color-gris-claro)'; this.style.color='var(--text-primary)'"
+                            onmouseout="this.style.backgroundColor='rgba(255, 255, 255, 0.9)'; this.style.color='var(--text-secondary)'"
                             data-favorito-id="<?= $favorito['favorito_id'] ?>" 
                             data-propiedad-titulo="<?= htmlspecialchars($favorito['titulo']) ?>"
                             title="Eliminar de favoritos">
@@ -154,9 +157,9 @@ $pageTitle = $title;
                     
                     <!-- Precio -->
                     <div class="absolute bottom-3 left-3 right-3">
-                        <div class="bg-white/95 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg">
-                            <div class="text-2xl font-bold text-gray-900">$<?= number_format($favorito['precio'], 0, ',', '.') ?></div>
-                            <div class="text-xs text-gray-500">Precio</div>
+                        <div class="backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg" style="background-color: rgba(255, 255, 255, 0.95);">
+                            <div class="text-2xl font-bold" style="color: var(--text-primary);">$<?= number_format($favorito['precio'], 0, ',', '.') ?></div>
+                            <div class="text-xs" style="color: var(--text-secondary);">Precio</div>
                         </div>
                     </div>
                 </div>
@@ -165,56 +168,59 @@ $pageTitle = $title;
                 <div class="p-6">
                     <!-- Título y ubicación -->
                     <a href="/properties/show/<?= $favorito['id'] ?>" class="block group">
-                        <h3 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-2 line-clamp-2">
+                        <h3 class="text-lg font-bold transition-colors mb-2 line-clamp-2" style="color: var(--text-primary);" onmouseover="this.style.color='var(--color-azul-marino)'" onmouseout="this.style.color='var(--text-primary)'">
                             <?= htmlspecialchars($favorito['titulo']) ?>
                         </h3>
                     </a>
                     
-                    <div class="flex items-center gap-2 text-gray-600 mb-4">
-                        <i class="fas fa-map-marker-alt text-primary-500"></i>
+                    <div class="flex items-center gap-2 mb-4" style="color: var(--text-secondary);">
+                        <i class="fas fa-map-marker-alt" style="color: var(--color-azul-marino);"></i>
                         <span class="text-sm"><?= htmlspecialchars($favorito['ciudad']) ?><?= !empty($favorito['sector']) ? ', ' . htmlspecialchars($favorito['sector']) : '' ?></span>
                     </div>
                     
                     <!-- Características -->
                     <div class="grid grid-cols-3 gap-4 mb-4">
                         <div class="text-center">
-                            <div class="text-lg font-bold text-gray-900"><?= $favorito['habitaciones'] ?? 'N/A' ?></div>
-                            <div class="text-xs text-gray-500">Habitaciones</div>
+                            <div class="text-lg font-bold" style="color: var(--text-primary);"><?= $favorito['habitaciones'] ?? 'N/A' ?></div>
+                            <div class="text-xs" style="color: var(--text-secondary);">Habitaciones</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-lg font-bold text-gray-900"><?= $favorito['banos'] ?? 'N/A' ?></div>
-                            <div class="text-xs text-gray-500">Baños</div>
+                            <div class="text-lg font-bold" style="color: var(--text-primary);"><?= $favorito['banos'] ?? 'N/A' ?></div>
+                            <div class="text-xs" style="color: var(--text-secondary);">Baños</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-lg font-bold text-gray-900"><?= $favorito['metros_cuadrados'] ?? 'N/A' ?> m²</div>
-                            <div class="text-xs text-gray-500">Área</div>
+                            <div class="text-lg font-bold" style="color: var(--text-primary);"><?= $favorito['metros_cuadrados'] ?? 'N/A' ?> m²</div>
+                            <div class="text-xs" style="color: var(--text-secondary);">Área</div>
                         </div>
                     </div>
                     
                     <!-- Agente -->
                     <?php if (!empty($favorito['agente_nombre'])): ?>
-                    <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg mb-4">
-                        <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user-tie text-primary-600 text-sm"></i>
+                    <div class="flex items-center gap-3 p-3 rounded-lg mb-4" style="background-color: var(--bg-secondary);">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background-color: rgba(29, 53, 87, 0.1);">
+                            <i class="fas fa-user-tie text-sm" style="color: var(--color-azul-marino);"></i>
                         </div>
                         <div class="flex-1">
-                            <div class="text-sm font-medium text-gray-900">
+                            <div class="text-sm font-medium" style="color: var(--text-primary);">
                                 <?= htmlspecialchars($favorito['agente_nombre'] . ' ' . $favorito['agente_apellido']) ?>
                             </div>
-                            <div class="text-xs text-gray-500">Agente Inmobiliario</div>
+                            <div class="text-xs" style="color: var(--text-secondary);">Agente Inmobiliario</div>
                         </div>
                         <?php if (!empty($favorito['agente_telefono'])): ?>
                         <a href="tel:<?= $favorito['agente_telefono'] ?>" 
-                           class="w-8 h-8 bg-green-100 hover:bg-green-200 rounded-full flex items-center justify-center transition-colors"
+                           class="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                           style="background-color: rgba(42, 157, 143, 0.1);"
+                           onmouseover="this.style.backgroundColor='var(--color-verde-esmeralda-light)'"
+                           onmouseout="this.style.backgroundColor='rgba(42, 157, 143, 0.1)'"
                            title="Llamar al agente">
-                            <i class="fas fa-phone text-green-600 text-sm"></i>
+                            <i class="fas fa-phone text-sm" style="color: var(--color-verde-esmeralda);"></i>
                         </a>
                         <?php endif; ?>
                     </div>
                     <?php endif; ?>
                     
                     <!-- Fecha de agregado -->
-                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
+                    <div class="flex items-center gap-2 text-xs mb-4" style="color: var(--text-muted);">
                         <i class="fas fa-calendar-plus"></i>
                         <span>Agregado el <?= date('d/m/Y', strtotime($favorito['fecha_agregado'])) ?></span>
                     </div>
@@ -222,11 +228,17 @@ $pageTitle = $title;
                     <!-- Botones de acción -->
                     <div class="flex gap-2">
                         <a href="/properties/show/<?= $favorito['id'] ?>" 
-                           class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors text-center">
+                           class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 text-center"
+                           style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); color: white;"
+                           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(29, 53, 87, 0.3)'"
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
                             <i class="fas fa-eye"></i>
                             Ver Detalles
                         </a>
-                        <button class="w-10 h-10 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg flex items-center justify-center transition-colors remove-favorite"
+                        <button class="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 remove-favorite"
+                                style="background-color: var(--color-gris-claro); color: var(--text-secondary);"
+                                onmouseover="this.style.backgroundColor='var(--color-azul-marino-light)'; this.style.color='var(--text-primary)'; this.style.transform='translateY(-2px)'"
+                                onmouseout="this.style.backgroundColor='var(--color-gris-claro)'; this.style.color='var(--text-secondary)'; this.style.transform='translateY(0)'"
                                 data-favorito-id="<?= $favorito['favorito_id'] ?>"
                                 data-propiedad-titulo="<?= htmlspecialchars($favorito['titulo']) ?>"
                                 title="Eliminar de favoritos">

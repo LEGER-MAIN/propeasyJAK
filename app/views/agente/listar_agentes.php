@@ -13,7 +13,7 @@ $ciudad = $ciudad ?? '';
 
 <style>
 .agentes-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%);
     color: white;
     padding: 3rem 0;
     margin-bottom: 2rem;
@@ -23,11 +23,14 @@ $ciudad = $ciudad ?? '';
 .agentes-header h1 {
     text-align: center;
     margin-bottom: 1rem;
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
 }
 
 .agentes-header p {
     text-align: center;
-    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.9);
     font-size: 1.1rem;
 }
 
@@ -58,17 +61,20 @@ $ciudad = $ciudad ?? '';
 }
 
 .btn-filtrar {
-    background: #667eea;
+    background: var(--color-azul-marino);
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;
     border-radius: 8px;
     cursor: pointer;
     font-weight: 500;
+    transition: all 0.3s ease;
 }
 
 .btn-filtrar:hover {
-    background: #5a6fd8;
+    background: var(--color-azul-marino-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(29, 53, 87, 0.3);
 }
 
 .main-content-agentes {
@@ -107,7 +113,7 @@ $ciudad = $ciudad ?? '';
 }
 
 .agente-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%);
     color: white;
     padding: 2rem;
     text-align: center;
@@ -140,16 +146,18 @@ $ciudad = $ciudad ?? '';
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
+    color: white;
 }
 
 .ubicacion-agente {
     font-size: 1rem;
-    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.9);
     margin-bottom: 1rem;
 }
 
 .experiencia-agente {
     background: rgba(255,255,255,0.2);
+    color: white;
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
@@ -158,6 +166,7 @@ $ciudad = $ciudad ?? '';
 
 .licencia-agente {
     background: rgba(255,255,255,0.15);
+    color: white;
     padding: 0.4rem 0.8rem;
     border-radius: 15px;
     font-size: 0.8rem;
@@ -189,8 +198,8 @@ $ciudad = $ciudad ?? '';
 }
 
 .especialidad-tag {
-    background: #f8f9fa;
-    color: #667eea;
+    background: rgba(29, 53, 87, 0.1);
+    color: var(--color-azul-marino);
     padding: 0.25rem 0.75rem;
     border-radius: 15px;
     font-size: 0.8rem;
@@ -253,7 +262,7 @@ $ciudad = $ciudad ?? '';
 .estadistica-numero {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #667eea;
+    color: var(--color-azul-marino);
     margin-bottom: 0.25rem;
 }
 
@@ -335,11 +344,11 @@ $ciudad = $ciudad ?? '';
     padding: 0.5rem;
     background: white;
     border-radius: 8px;
-    border-left: 3px solid #667eea;
+    border-left: 3px solid var(--color-azul-marino);
 }
 
 .horario-atencion i {
-    color: #667eea;
+    color: var(--color-azul-marino);
 }
 
 .acciones-agente {
@@ -348,7 +357,7 @@ $ciudad = $ciudad ?? '';
 }
 
 .btn-ver-perfil {
-    background: #667eea;
+    background: var(--color-azul-marino);
     color: white;
     border: none;
     padding: 0.75rem 1rem;
@@ -358,18 +367,20 @@ $ciudad = $ciudad ?? '';
     text-decoration: none;
     display: inline-block;
     text-align: center;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
     flex: 1;
 }
 
 .btn-ver-perfil:hover {
-    background: #5a6fd8;
+    background: var(--color-azul-marino-hover);
     color: white;
     text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(29, 53, 87, 0.3);
 }
 
 .btn-contactar-agente {
-    background: #28a745;
+    background: var(--color-verde-esmeralda);
     color: white;
     border: none;
     padding: 0.75rem 1rem;
@@ -379,18 +390,20 @@ $ciudad = $ciudad ?? '';
     text-decoration: none;
     display: inline-block;
     text-align: center;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
     flex: 1;
 }
 
 .btn-contactar-agente:hover {
-    background: #218838;
+    background: var(--color-verde-esmeralda-hover);
     color: white;
     text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(42, 157, 143, 0.3);
 }
 
 .btn-ver-perfil {
-    background: #667eea;
+    background: var(--color-azul-marino);
     color: white;
     border: none;
     padding: 0.75rem 1.5rem;
@@ -401,13 +414,15 @@ $ciudad = $ciudad ?? '';
     text-decoration: none;
     display: inline-block;
     text-align: center;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .btn-ver-perfil:hover {
-    background: #5a6fd8;
+    background: var(--color-azul-marino-hover);
     color: white;
     text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(29, 53, 87, 0.3);
 }
 
 .paginacion {
@@ -423,20 +438,22 @@ $ciudad = $ciudad ?? '';
     border: 2px solid #e9ecef;
     border-radius: 5px;
     text-decoration: none;
-    color: #667eea;
+    color: var(--color-azul-marino);
     transition: all 0.3s ease;
 }
 
 .pagina-item:hover {
-    background: #667eea;
+    background: var(--color-azul-marino);
     color: white;
-    border-color: #667eea;
+    border-color: var(--color-azul-marino);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(29, 53, 87, 0.3);
 }
 
 .pagina-activa {
-    background: #667eea;
+    background: var(--color-azul-marino);
     color: white;
-    border-color: #667eea;
+    border-color: var(--color-azul-marino);
 }
 
 .sin-resultados {

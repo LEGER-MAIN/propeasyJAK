@@ -15,7 +15,7 @@ $calificaciones = $calificaciones ?? [];
 
 <style>
 .perfil-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%);
     color: white;
     padding: 4rem 0;
     margin-bottom: 3rem;
@@ -61,11 +61,12 @@ $calificaciones = $calificaciones ?? [];
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
+    color: white;
 }
 
 .ubicacion-perfil {
     font-size: 1.2rem;
-    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.9);
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
@@ -80,6 +81,7 @@ $calificaciones = $calificaciones ?? [];
 
 .badge-perfil {
     background: rgba(255,255,255,0.2);
+    color: white;
     padding: 0.75rem 1.5rem;
     border-radius: 25px;
     font-size: 1rem;
@@ -124,13 +126,13 @@ $calificaciones = $calificaciones ?? [];
 
 .estadistica-label {
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .estadistica-valor {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #667eea;
+    color: var(--color-azul-marino);
 }
 
 .contacto-perfil {
@@ -142,11 +144,11 @@ $calificaciones = $calificaciones ?? [];
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 0;
-    color: #666;
+    color: var(--text-secondary);
 }
 
 .contacto-item i {
-    color: #667eea;
+    color: var(--color-azul-marino);
     width: 20px;
 }
 
@@ -156,7 +158,7 @@ $calificaciones = $calificaciones ?? [];
 
 .especialidades-titulo {
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 1rem;
     font-size: 1.1rem;
 }
@@ -168,8 +170,8 @@ $calificaciones = $calificaciones ?? [];
 }
 
 .especialidad-tag {
-    background: #f8f9fa;
-    color: #667eea;
+    background: rgba(29, 53, 87, 0.1);
+    color: var(--color-azul-marino);
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
@@ -182,7 +184,7 @@ $calificaciones = $calificaciones ?? [];
 
 .idiomas-titulo {
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 1rem;
     font-size: 1.1rem;
 }
@@ -194,8 +196,8 @@ $calificaciones = $calificaciones ?? [];
 }
 
 .idioma-tag {
-    background: #e8f4fd;
-    color: #2196f3;
+    background: rgba(42, 157, 143, 0.1);
+    color: var(--color-verde-esmeralda);
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
@@ -218,7 +220,7 @@ $calificaciones = $calificaciones ?? [];
 .seccion-titulo {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
@@ -227,7 +229,7 @@ $calificaciones = $calificaciones ?? [];
 
 .descripcion-perfil {
     line-height: 1.6;
-    color: #666;
+    color: var(--text-secondary);
     font-size: 1.1rem;
 }
 
@@ -273,19 +275,19 @@ $calificaciones = $calificaciones ?? [];
 .propiedad-titulo {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
 .propiedad-precio {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #667eea;
+    color: var(--color-azul-marino);
     margin-bottom: 0.5rem;
 }
 
 .propiedad-ubicacion {
-    color: #666;
+    color: var(--text-secondary);
     font-size: 0.9rem;
     display: flex;
     align-items: center;
@@ -313,7 +315,7 @@ $calificaciones = $calificaciones ?? [];
 
 .calificacion-cliente {
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .calificacion-estrellas {
@@ -322,19 +324,19 @@ $calificaciones = $calificaciones ?? [];
 }
 
 .calificacion-comentario {
-    color: #666;
+    color: var(--text-secondary);
     line-height: 1.5;
     font-style: italic;
 }
 
 .calificacion-fecha {
-    color: #999;
+    color: var(--text-muted);
     font-size: 0.9rem;
     margin-top: 0.5rem;
 }
 
 .btn-contactar {
-    background: #667eea;
+    background: var(--color-azul-marino);
     color: white;
     border: none;
     padding: 1rem 2rem;
@@ -345,25 +347,27 @@ $calificaciones = $calificaciones ?? [];
     text-decoration: none;
     display: inline-block;
     text-align: center;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
     margin-top: 1rem;
 }
 
 .btn-contactar:hover {
-    background: #5a6fd8;
+    background: var(--color-azul-marino-hover);
     color: white;
     text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(29, 53, 87, 0.3);
 }
 
 .sin-propiedades, .sin-calificaciones {
     text-align: center;
     padding: 3rem;
-    color: #666;
+    color: var(--text-secondary);
 }
 
 .sin-propiedades i, .sin-calificaciones i {
     font-size: 4rem;
-    color: #ddd;
+    color: var(--color-gris-claro);
     margin-bottom: 1rem;
 }
 

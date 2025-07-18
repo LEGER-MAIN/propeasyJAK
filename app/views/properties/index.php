@@ -11,31 +11,38 @@ $content = ob_start();
 ?>
 
 <!-- Hero Section -->
-<div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white">
+<div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white" style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div class="text-center">
-            <h1 class="text-4xl font-bold mb-4">Encuentra tu Propiedad Ideal</h1>
-            <p class="text-xl text-primary-100 mb-8">
+            <h1 class="text-4xl font-bold mb-4" style="color: white !important;">Encuentra tu <span style="color: var(--color-dorado-suave);">Propiedad Ideal</span></h1>
+            <p class="text-xl text-primary-100 mb-8" style="color: var(--text-light);">
                 Explora nuestra amplia selección de propiedades en venta
             </p>
+            
+            <!-- Debug: Verificar estadísticas -->
+            <?php if (isset($stats) && is_array($stats)): ?>
+                <!-- Debug: Stats disponibles - Total: <?= $stats['total'] ?? 'N/A' ?>, Activas: <?= $stats['activas'] ?? 'N/A' ?>, Vendidas: <?= $stats['vendidas'] ?? 'N/A' ?>, En Revisión: <?= $stats['en_revision'] ?? 'N/A' ?> -->
+            <?php else: ?>
+                <!-- Debug: Stats no disponibles -->
+            <?php endif; ?>
             
             <!-- Estadísticas rápidas -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
                 <div class="text-center">
-                    <div class="text-3xl font-bold"><?= number_format($stats['total']) ?></div>
-                    <div class="text-primary-200">Propiedades</div>
+                    <div class="text-3xl font-bold" style="color: white !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 800;"><?= number_format($stats['total']) ?></div>
+                    <div class="text-primary-200" style="color: var(--text-light) !important; font-weight: 600;">Propiedades</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl font-bold"><?= number_format($stats['activas']) ?></div>
-                    <div class="text-primary-200">Disponibles</div>
+                    <div class="text-3xl font-bold" style="color: white !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 800;"><?= number_format($stats['activas']) ?></div>
+                    <div class="text-primary-200" style="color: var(--text-light) !important; font-weight: 600;">Disponibles</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl font-bold"><?= number_format($stats['vendidas']) ?></div>
-                    <div class="text-primary-200">Vendidas</div>
+                    <div class="text-3xl font-bold" style="color: white !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 800;"><?= number_format($stats['vendidas']) ?></div>
+                    <div class="text-primary-200" style="color: var(--text-light) !important; font-weight: 600;">Vendidas</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-3xl font-bold"><?= number_format($stats['en_revision']) ?></div>
-                    <div class="text-primary-200">En Revisión</div>
+                    <div class="text-3xl font-bold" style="color: white !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 800;"><?= number_format($stats['en_revision']) ?></div>
+                    <div class="text-primary-200" style="color: var(--text-light) !important; font-weight: 600;">En Revisión</div>
                 </div>
             </div>
         </div>
@@ -46,16 +53,16 @@ $content = ob_start();
 <div class="bg-gradient-to-br from-gray-50 to-blue-50 border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Buscar Propiedades</h2>
-            <p class="text-gray-600">Encuentra la propiedad perfecta con nuestros filtros avanzados</p>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2" style="color: var(--color-azul-marino);">Buscar Propiedades</h2>
+            <p class="text-gray-600" style="color: var(--text-secondary);">Encuentra la propiedad perfecta con nuestros filtros avanzados</p>
         </div>
         
         <form method="GET" action="/properties" class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Tipo de Propiedad -->
                 <div class="space-y-2">
-                    <label for="tipo" class="block text-sm font-semibold text-gray-800">
-                        <i class="fas fa-home text-primary-600 mr-2"></i>
+                    <label for="tipo" class="block text-sm font-semibold text-gray-800" style="color: var(--text-primary);">
+                        <i class="fas fa-home text-primary-600 mr-2" style="color: var(--color-azul-marino);"></i>
                         Tipo de Propiedad
                     </label>
                     <select name="tipo" id="tipo" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 bg-white shadow-sm">
@@ -70,8 +77,8 @@ $content = ob_start();
                 
                 <!-- Ciudad -->
                 <div class="space-y-2">
-                    <label for="ciudad" class="block text-sm font-semibold text-gray-800">
-                        <i class="fas fa-city text-primary-600 mr-2"></i>
+                    <label for="ciudad" class="block text-sm font-semibold text-gray-800" style="color: var(--text-primary);">
+                        <i class="fas fa-city text-primary-600 mr-2" style="color: var(--color-azul-marino);"></i>
                         Ciudad
                     </label>
                     <input type="text" name="ciudad" id="ciudad" value="<?= htmlspecialchars($filters['ciudad']) ?>" 
@@ -81,8 +88,8 @@ $content = ob_start();
                 
                 <!-- Sector -->
                 <div class="space-y-2">
-                    <label for="sector" class="block text-sm font-semibold text-gray-800">
-                        <i class="fas fa-map-marker-alt text-primary-600 mr-2"></i>
+                    <label for="sector" class="block text-sm font-semibold text-gray-800" style="color: var(--text-primary);">
+                        <i class="fas fa-map-marker-alt text-primary-600 mr-2" style="color: var(--color-azul-marino);"></i>
                         Sector
                     </label>
                     <input type="text" name="sector" id="sector" value="<?= htmlspecialchars($filters['sector']) ?>" 
@@ -92,8 +99,8 @@ $content = ob_start();
                 
                 <!-- Precio Mínimo -->
                 <div class="space-y-2">
-                    <label for="precio_min" class="block text-sm font-semibold text-gray-800">
-                        <i class="fas fa-dollar-sign text-green-600 mr-2"></i>
+                    <label for="precio_min" class="block text-sm font-semibold text-gray-800" style="color: var(--text-primary);">
+                        <i class="fas fa-dollar-sign text-green-600 mr-2" style="color: var(--color-verde-esmeralda);"></i>
                         Precio Mínimo
                     </label>
                     <input type="number" name="precio_min" id="precio_min" value="<?= htmlspecialchars($filters['precio_min']) ?>" 
@@ -103,8 +110,8 @@ $content = ob_start();
                 
                 <!-- Precio Máximo -->
                 <div class="space-y-2">
-                    <label for="precio_max" class="block text-sm font-semibold text-gray-800">
-                        <i class="fas fa-dollar-sign text-green-600 mr-2"></i>
+                    <label for="precio_max" class="block text-sm font-semibold text-gray-800" style="color: var(--text-primary);">
+                        <i class="fas fa-dollar-sign text-green-600 mr-2" style="color: var(--color-verde-esmeralda);"></i>
                         Precio Máximo
                     </label>
                     <input type="number" name="precio_max" id="precio_max" value="<?= htmlspecialchars($filters['precio_max']) ?>" 
@@ -114,8 +121,8 @@ $content = ob_start();
                 
                 <!-- Habitaciones -->
                 <div class="space-y-2">
-                    <label for="habitaciones" class="block text-sm font-semibold text-gray-800">
-                        <i class="fas fa-bed text-purple-600 mr-2"></i>
+                    <label for="habitaciones" class="block text-sm font-semibold text-gray-800" style="color: var(--text-primary);">
+                        <i class="fas fa-bed text-purple-600 mr-2" style="color: var(--color-dorado-suave);"></i>
                         Mín. Habitaciones
                     </label>
                     <select name="habitaciones" id="habitaciones" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm">
@@ -130,8 +137,8 @@ $content = ob_start();
                 
                 <!-- Baños -->
                 <div class="space-y-2">
-                    <label for="banos" class="block text-sm font-semibold text-gray-800">
-                        <i class="fas fa-bath text-purple-600 mr-2"></i>
+                    <label for="banos" class="block text-sm font-semibold text-gray-800" style="color: var(--text-primary);">
+                        <i class="fas fa-bath text-purple-600 mr-2" style="color: var(--color-dorado-suave);"></i>
                         Mín. Baños
                     </label>
                     <select name="banos" id="banos" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 bg-white shadow-sm">
@@ -146,11 +153,11 @@ $content = ob_start();
             
             <!-- Botones de acción -->
             <div class="flex flex-col sm:flex-row gap-4 mt-6 pt-6 border-t border-gray-200">
-                <button type="submit" class="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                <button type="submit" class="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5" style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%);">
                     <i class="fas fa-search mr-2"></i>
                     Buscar Propiedades
                 </button>
-                <a href="/properties" class="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-center">
+                <a href="/properties" class="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-center" style="background: linear-gradient(135deg, var(--color-gris-claro) 0%, #cbd5e0 100%); color: var(--text-primary);">
                     <i class="fas fa-times mr-2"></i>
                     Limpiar Filtros
                 </a>
@@ -164,10 +171,10 @@ $content = ob_start();
     <!-- Resultados -->
     <div class="flex justify-between items-center mb-6">
         <div>
-            <h2 class="text-2xl font-bold text-gray-900">
+            <h2 class="text-2xl font-bold text-gray-900" style="color: var(--color-azul-marino);">
                 Propiedades Disponibles
             </h2>
-            <p class="text-gray-600 mt-1">
+            <p class="text-gray-600 mt-1" style="color: var(--text-secondary);">
                 <?php if (!empty(array_filter($filters))): ?>
                     <?= $totalProperties ?> resultados encontrados
                 <?php else: ?>
@@ -180,7 +187,7 @@ $content = ob_start();
         </div>
         
         <?php if (isAuthenticated()): ?>
-            <a href="/properties/create" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
+            <a href="/properties/create" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium transition-colors" style="background-color: var(--color-azul-marino);">
                 <i class="fas fa-plus mr-2"></i>Publicar Propiedad
             </a>
         <?php endif; ?>

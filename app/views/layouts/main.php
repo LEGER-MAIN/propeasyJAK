@@ -13,16 +13,52 @@
                 extend: {
                     colors: {
                         primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
+                            50: '#f8f9fa',
+                            100: '#e9ecef',
+                            200: '#dee2e6',
+                            300: '#ced4da',
+                            400: '#adb5bd',
+                            500: '#6c757d',
+                            600: '#495057',
+                            700: '#343a40',
+                            800: '#1D3557',
+                            900: '#152a47',
+                        },
+                        azul: {
+                            50: '#f8f9fa',
+                            100: '#e9ecef',
+                            200: '#dee2e6',
+                            300: '#ced4da',
+                            400: '#adb5bd',
+                            500: '#6c757d',
+                            600: '#495057',
+                            700: '#343a40',
+                            800: '#1D3557',
+                            900: '#152a47',
+                        },
+                        verde: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#2A9D8F',
+                            600: '#238c7f',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        },
+                        dorado: {
+                            50: '#fefce8',
+                            100: '#fef9c3',
+                            200: '#fef08a',
+                            300: '#fde047',
+                            400: '#facc15',
+                            500: '#E9C46A',
+                            600: '#d4b55a',
+                            700: '#a16207',
+                            800: '#854d0e',
+                            900: '#713f12',
                         }
                     }
                 }
@@ -32,6 +68,9 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Estilos principales con nueva paleta de colores -->
+    <link rel="stylesheet" href="/css/main.css">
     
     <!-- Estilos para notificaciones de citas -->
     <link rel="stylesheet" href="/css/appointment-notifications.css">
@@ -62,7 +101,7 @@
         @keyframes slideIn { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
         .chat-tab.active {
-            background-color: #3b82f6;
+            background-color: var(--color-azul-marino);
             color: white;
         }
         
@@ -72,14 +111,14 @@
         }
         
         .chat-message.sent {
-            background-color: #3b82f6;
+            background-color: var(--color-azul-marino);
             color: white;
             border-radius: 18px 18px 4px 18px;
         }
         
         .chat-message.received {
-            background-color: #f3f4f6;
-            color: #374151;
+            background-color: var(--color-gris-claro);
+            color: var(--text-primary);
             border-radius: 18px 18px 18px 4px;
         }
         
@@ -104,20 +143,20 @@
         }
         
         .btn-outline-danger {
-            color: #dc2626;
-            border-color: #dc2626;
+            color: var(--danger);
+            border-color: var(--danger);
             background-color: transparent;
         }
         
         .btn-outline-danger:hover {
             color: white;
-            background-color: #dc2626;
+            background-color: var(--danger);
         }
         
         .btn-danger {
             color: white;
-            border-color: #dc2626;
-            background-color: #dc2626;
+            border-color: var(--danger);
+            background-color: var(--danger);
         }
         
         .btn-danger:hover {
@@ -176,7 +215,7 @@
     </style>
 </head>
 <body class="bg-gray-50 flex flex-col <?= isAuthenticated() ? 'user-authenticated' : '' ?>" 
-      data-user-type="<?= $_SESSION['user_type'] ?? '' ?>">
+      data-user-type="<?= $_SESSION['user_type'] ?? '' ?>" style="background-color: var(--bg-primary);">
     <!-- Header con Navbar del Cliente -->
     <?php include APP_PATH . '/views/components/navbar.php'; ?>
 
@@ -189,18 +228,18 @@
                 <?php foreach ($flashMessages as $message): ?>
                     <div class="fade-in mb-4 p-4 rounded-md 
                         <?php if ($message['type'] === 'success'): ?>
-                            bg-green-50 border border-green-200 text-green-800
+                            alert-success
                         <?php elseif ($message['type'] === 'info'): ?>
-                            bg-blue-50 border border-blue-200 text-blue-800
+                            alert-info
                         <?php else: ?>
                             bg-red-50 border border-red-200 text-red-800
                         <?php endif; ?>">
                         <div class="flex">
                             <div class="flex-shrink-0">
                                 <?php if ($message['type'] === 'success'): ?>
-                                    <i class="fas fa-check-circle text-green-400"></i>
+                                    <i class="fas fa-check-circle" style="color: var(--color-verde-esmeralda);"></i>
                                 <?php elseif ($message['type'] === 'info'): ?>
-                                    <i class="fas fa-info-circle text-blue-400"></i>
+                                    <i class="fas fa-info-circle" style="color: var(--color-azul-marino);"></i>
                                 <?php else: ?>
                                     <i class="fas fa-exclamation-circle text-red-400"></i>
                                 <?php endif; ?>
@@ -226,31 +265,31 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white mt-auto">
+    <footer class="bg-gray-800 text-white mt-auto" style="background-color: var(--color-azul-marino) !important;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Logo y Descripción -->
                 <div class="space-y-4">
                     <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-home text-white text-lg"></i>
+                        <div class="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center" style="background-color: var(--color-dorado-suave);">
+                            <i class="fas fa-home text-white text-lg" style="color: var(--color-azul-marino);"></i>
                         </div>
-                        <span class="text-2xl font-bold"><?= APP_NAME ?></span>
+                        <span class="text-2xl font-bold" style="color: var(--text-light);"><?= APP_NAME ?></span>
                     </div>
-                    <p class="text-gray-300 text-sm leading-relaxed">
+                    <p class="text-gray-300 text-sm leading-relaxed" style="color: var(--text-light);">
                         Plataforma líder en gestión inmobiliaria, conectando clientes y agentes de manera eficiente y segura.
                     </p>
                     <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" title="Facebook">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" title="Facebook" style="color: var(--text-light);">
                             <i class="fab fa-facebook text-xl"></i>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" title="Twitter">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" title="Twitter" style="color: var(--text-light);">
                             <i class="fab fa-twitter text-xl"></i>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" title="Instagram">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" title="Instagram" style="color: var(--text-light);">
                             <i class="fab fa-instagram text-xl"></i>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" title="LinkedIn">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" title="LinkedIn" style="color: var(--text-light);">
                             <i class="fab fa-linkedin text-xl"></i>
                         </a>
                     </div>
@@ -258,35 +297,35 @@
                 
                 <!-- Enlaces Rápidos -->
                 <div class="space-y-4">
-                    <h3 class="text-lg font-semibold text-white">Enlaces Rápidos</h3>
+                    <h3 class="text-lg font-semibold text-white" style="color: var(--text-light);">Enlaces Rápidos</h3>
                     <ul class="space-y-3">
                         <li>
-                            <a href="/" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
-                                <i class="fas fa-home mr-2 text-sm"></i>
+                            <a href="/" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center" style="color: var(--text-light);">
+                                <i class="fas fa-home mr-2 text-sm" style="color: var(--color-dorado-suave);"></i>
                                 Inicio
                             </a>
                         </li>
                         <li>
-                            <a href="/properties" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
-                                <i class="fas fa-building mr-2 text-sm"></i>
+                            <a href="/properties" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center" style="color: var(--text-light);">
+                                <i class="fas fa-building mr-2 text-sm" style="color: var(--color-dorado-suave);"></i>
                                 Propiedades
                             </a>
                         </li>
                         <li>
-                            <a href="/agentes" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
-                                <i class="fas fa-users mr-2 text-sm"></i>
+                            <a href="/agentes" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center" style="color: var(--text-light);">
+                                <i class="fas fa-users mr-2 text-sm" style="color: var(--color-dorado-suave);"></i>
                                 Agentes
                             </a>
                         </li>
                         <li>
-                            <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
-                                <i class="fas fa-info-circle mr-2 text-sm"></i>
+                            <a href="/about" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center" style="color: var(--text-light);">
+                                <i class="fas fa-info-circle mr-2 text-sm" style="color: var(--color-dorado-suave);"></i>
                                 Acerca de
                             </a>
                         </li>
                         <li>
-                            <a href="/contact" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
-                                <i class="fas fa-envelope mr-2 text-sm"></i>
+                            <a href="/contact" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center" style="color: var(--text-light);">
+                                <i class="fas fa-envelope mr-2 text-sm" style="color: var(--color-dorado-suave);"></i>
                                 Contacto
                             </a>
                         </li>
@@ -295,22 +334,22 @@
                 
                 <!-- Información de Contacto -->
                 <div class="space-y-4">
-                    <h3 class="text-lg font-semibold text-white">Contacto</h3>
+                    <h3 class="text-lg font-semibold text-white" style="color: var(--text-light);">Contacto</h3>
                     <div class="space-y-3">
-                        <div class="flex items-center text-gray-300">
-                            <i class="fas fa-envelope mr-3 text-primary-400 w-4 text-center"></i>
+                        <div class="flex items-center text-gray-300" style="color: var(--text-light);">
+                            <i class="fas fa-envelope mr-3 text-primary-400 w-4 text-center" style="color: var(--color-verde-esmeralda);"></i>
                             <span class="text-sm">info@propeasy.com</span>
                         </div>
-                        <div class="flex items-center text-gray-300">
-                            <i class="fas fa-phone mr-3 text-primary-400 w-4 text-center"></i>
+                        <div class="flex items-center text-gray-300" style="color: var(--text-light);">
+                            <i class="fas fa-phone mr-3 text-primary-400 w-4 text-center" style="color: var(--color-verde-esmeralda);"></i>
                             <span class="text-sm">+1 809 555 0123</span>
                         </div>
-                        <div class="flex items-center text-gray-300">
-                            <i class="fas fa-map-marker-alt mr-3 text-primary-400 w-4 text-center"></i>
+                        <div class="flex items-center text-gray-300" style="color: var(--text-light);">
+                            <i class="fas fa-map-marker-alt mr-3 text-primary-400 w-4 text-center" style="color: var(--color-verde-esmeralda);"></i>
                             <span class="text-sm">Santo Domingo, República Dominicana</span>
                         </div>
-                        <div class="flex items-center text-gray-300">
-                            <i class="fas fa-clock mr-3 text-primary-400 w-4 text-center"></i>
+                        <div class="flex items-center text-gray-300" style="color: var(--text-light);">
+                            <i class="fas fa-clock mr-3 text-primary-400 w-4 text-center" style="color: var(--color-verde-esmeralda);"></i>
                             <span class="text-sm">Lun - Vie: 8:00 AM - 6:00 PM</span>
                         </div>
                     </div>
@@ -318,15 +357,15 @@
             </div>
             
             <!-- Línea divisoria y copyright -->
-            <div class="border-t border-gray-700 mt-8 pt-8">
+            <div class="border-t border-gray-700 mt-8 pt-8" style="border-top-color: rgba(255, 255, 255, 0.2);">
                 <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                    <p class="text-gray-300 text-sm">
+                    <p class="text-gray-300 text-sm" style="color: var(--text-light);">
                         &copy; <?= date('Y') ?> <?= APP_NAME ?>. Todos los derechos reservados.
                     </p>
                     <div class="flex space-x-6 text-sm">
-                        <a href="/privacy" class="text-gray-300 hover:text-white transition-colors duration-200">Política de Privacidad</a>
-                        <a href="/terms" class="text-gray-300 hover:text-white transition-colors duration-200">Términos de Servicio</a>
-                        <a href="/cookies" class="text-gray-300 hover:text-white transition-colors duration-200">Política de Cookies</a>
+                        <a href="/privacy" class="text-gray-300 hover:text-white transition-colors duration-200" style="color: var(--text-light);">Política de Privacidad</a>
+                        <a href="/terms" class="text-gray-300 hover:text-white transition-colors duration-200" style="color: var(--text-light);">Términos de Servicio</a>
+                        <a href="/cookies" class="text-gray-300 hover:text-white transition-colors duration-200" style="color: var(--text-light);">Política de Cookies</a>
                     </div>
                 </div>
             </div>
@@ -413,7 +452,7 @@
                     <div class="p-4 text-center text-gray-500">
                         <i class="fas fa-comments text-2xl mb-2"></i>
                         <p class="text-sm">No hay conversaciones</p>
-                        <a href="/chat" class="inline-block mt-2 px-3 py-1 bg-primary-600 text-white rounded text-xs hover:bg-primary-700 transition-colors">
+                        <a href="/chat" class="inline-block mt-2 px-3 py-1 bg-primary-600 text-white rounded text-xs hover:bg-primary-700 transition-colors" style="background-color: var(--color-azul-marino);">
                             Ir al Chat Completo
                         </a>
                     </div>
