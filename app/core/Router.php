@@ -349,12 +349,20 @@ class Router {
         $this->get('/api/ciudades', 'SearchController@getCiudades');
         $this->get('/api/solicitudes-cliente/{id}', 'SearchController@getSolicitudesCliente');
         
-        // Rutas de citas (futuras)
+        // Rutas de citas
         $this->get('/appointments', 'AppointmentController@index');
-        $this->post('/appointments', 'AppointmentController@store');
+        $this->get('/appointments/create', 'AppointmentController@create');
+        $this->post('/appointments/store', 'AppointmentController@store');
         $this->get('/appointments/{id}', 'AppointmentController@show');
+        $this->get('/appointments/{id}/edit', 'AppointmentController@edit');
+        $this->post('/appointments/{id}/update', 'AppointmentController@update');
         $this->post('/appointments/{id}/accept', 'AppointmentController@accept');
         $this->post('/appointments/{id}/reject', 'AppointmentController@reject');
+        $this->post('/appointments/{id}/cancel', 'AppointmentController@cancel');
+        $this->post('/appointments/{id}/complete', 'AppointmentController@complete');
+        $this->get('/appointments/calendar', 'AppointmentController@calendar');
+        $this->get('/api/appointments', 'AppointmentController@getAppointments');
+
         
         // Rutas de reportes de irregularidades
         $this->get('/reportes/crear', 'ReporteController@crear');

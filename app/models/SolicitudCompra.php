@@ -78,6 +78,16 @@ class SolicitudCompra {
     }
     
     /**
+     * Alias para obtenerPorId - mantener compatibilidad
+     * 
+     * @param int $id ID de la solicitud
+     * @return array|false Datos de la solicitud o false si no existe
+     */
+    public function getById($id) {
+        return $this->obtenerPorId($id);
+    }
+    
+    /**
      * Obtener todas las solicitudes de un cliente
      * 
      * @param int $clienteId ID del cliente
@@ -180,6 +190,17 @@ class SolicitudCompra {
                 WHERE id = ?";
         
         return $this->db->update($sql, [$estado, $respuesta, $id]) !== false;
+    }
+    
+    /**
+     * Alias para actualizarEstado - mantener compatibilidad
+     * 
+     * @param int $id ID de la solicitud
+     * @param string $estado Nuevo estado
+     * @return bool True si se actualizó correctamente
+     */
+    public function updateStatus($id, $estado) {
+        return $this->actualizarEstado($id, $estado);
     }
     
     /**
@@ -327,6 +348,45 @@ class SolicitudCompra {
         // Construir WHERE
         if (!empty($where)) {
             $sql .= " WHERE " . implode(" AND ", $where);
+        }
+        
+        $sql .= " ORDER BY sc.fecha_solicitud DESC LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $params[] = $offset;
+        
+        return $this->db->select($sql, $params);
+    }
+    
+    /**
+     * Obtener solicitudes por agente y estado
+     * 
+     * @param int $agenteId ID del agente
+     * @param string $estado Estado de las solicitudes
+     * @param int $limit Límite de resultados
+     * @param int $offset Offset para paginación
+     * @return array Lista de solicitudes
+     */
+    public function getSolicitudesAgente($agenteId, $estado = null, $limit = 10, $offset = 0) {
+        $sql = "SELECT sc.*, 
+                       p.titulo as titulo_propiedad,
+                       p.precio as precio_propiedad,
+                       p.moneda as moneda_propiedad,
+                       p.ciudad as ciudad_propiedad,
+                       p.sector as sector_propiedad,
+                       uc.nombre as nombre_cliente,
+                       uc.apellido as apellido_cliente,
+                       uc.email as email_cliente,
+                       uc.telefono as telefono_cliente
+                FROM solicitudes_compra sc
+                INNER JOIN propiedades p ON sc.propiedad_id = p.id
+                INNER JOIN usuarios uc ON sc.cliente_id = uc.id
+                WHERE sc.agente_id = ?";
+        
+        $params = [$agenteId];
+        
+        if ($estado !== null) {
+            $sql .= " AND sc.estado = ?";
+            $params[] = $estado;
         }
         
         $sql .= " ORDER BY sc.fecha_solicitud DESC LIMIT ? OFFSET ?";

@@ -218,6 +218,7 @@
         <?php else: ?>
             <!-- El contenido se incluye directamente desde la vista -->
         <?php endif; ?>
+
     </main>
 
     <!-- Footer -->
@@ -567,6 +568,20 @@
             console.error('Error al cargar el sistema de favoritos');
         };
         document.head.appendChild(favoritesScript);
+        <?php endif; ?>
+
+        // Cargar sistema de citas
+        <?php if (isAuthenticated() && hasRole(ROLE_AGENTE)): ?>
+        // Incluir script de citas
+        const appointmentsScript = document.createElement('script');
+        appointmentsScript.src = '/js/appointments.js';
+        appointmentsScript.onload = function() {
+            console.log('Sistema de citas cargado correctamente');
+        };
+        appointmentsScript.onerror = function() {
+            console.error('Error al cargar el sistema de citas');
+        };
+        document.head.appendChild(appointmentsScript);
         <?php endif; ?>
 
     </script>
