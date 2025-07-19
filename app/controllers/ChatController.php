@@ -17,7 +17,7 @@ class ChatController {
     }
 
     /**
-     * Página principal del chat
+     * Página principal del chat - Redirige a chat simple
      */
     public function index() {
         // Verificar sesión de forma segura
@@ -30,24 +30,50 @@ class ChatController {
             exit;
         }
 
+        // Redirigir al chat simple que funciona
+        header('Location: /chat/simple');
+        exit;
+    }
+
+    /**
+     * Chat simple desde cero
+     */
+    public function simple() {
+        // Verificar sesión de forma segura
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        // Asegurar que las variables de sesión estén disponibles
         $user_id = $_SESSION['user_id'];
-        $user_role = $_SESSION['role'] ?? 'cliente';
-        $user_name = $_SESSION['nombre'] ?? 'Usuario';
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        $user_nombre = $_SESSION['user_nombre'] ?? $_SESSION['nombre'] ?? 'Usuario';
+        $user_apellido = $_SESSION['user_apellido'] ?? $_SESSION['apellido'] ?? '';
+        $user_email = $_SESSION['user_email'] ?? $_SESSION['email'] ?? '';
 
-        // Obtener conversaciones
-        $conversaciones = $this->chatModel->getConversaciones($user_id, $user_role);
-        
-        // Obtener estadísticas
-        $stats = $this->getChatStats($user_id, $user_role);
+        // Si no hay nombre, intentar obtenerlo de la base de datos
+        if (empty($user_nombre) || $user_nombre === 'Usuario') {
+            $user = $this->userModel->getById($user_id);
+            if ($user) {
+                $user_nombre = $user['nombre'] ?? 'Usuario';
+                $user_apellido = $user['apellido'] ?? '';
+                $user_email = $user['email'] ?? '';
+                
+                // Actualizar sesión
+                $_SESSION['user_nombre'] = $user_nombre;
+                $_SESSION['user_apellido'] = $user_apellido;
+                $_SESSION['user_email'] = $user_email;
+                $_SESSION['user_rol'] = $user['rol'] ?? $user_role;
+            }
+        }
 
-        // Cargar vista
-        $this->loadView('chat/index', [
-            'conversaciones' => $conversaciones,
-            'stats' => $stats,
-            'user_id' => $user_id,
-            'user_role' => $user_role,
-            'user_name' => $user_name
-        ]);
+        // Cargar vista del chat simple
+        include APP_PATH . '/views/chat/simple.php';
     }
 
     /**
@@ -65,7 +91,7 @@ class ChatController {
         }
 
         $user_id = $_SESSION['user_id'];
-        $user_role = $_SESSION['role'] ?? 'cliente';
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
         $user_name = $_SESSION['nombre'] ?? 'Usuario';
 
         // Verificar que el usuario tenga acceso a esta conversación
@@ -209,7 +235,7 @@ class ChatController {
         }
 
         $user_id = $_SESSION['user_id'];
-        $user_role = $_SESSION['role'] ?? 'cliente';
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
 
         $mensajesNoLeidos = $this->chatModel->getMensajesNoLeidos($user_id);
         
@@ -282,7 +308,7 @@ class ChatController {
         }
 
         $user_id = $_SESSION['user_id'];
-        $user_role = $_SESSION['role'] ?? 'cliente';
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
 
         $conversaciones = $this->chatModel->getConversaciones($user_id, $user_role);
         
@@ -396,7 +422,7 @@ class ChatController {
         }
 
         // Enviar mensaje
-        $result = $this->chatModel->enviarMensaje($conversation_id, $user_id, $_SESSION['role'] ?? 'cliente', $message);
+        $result = $this->chatModel->enviarMensaje($conversation_id, $user_id, $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente', $message);
         
         header('Content-Type: application/json');
         if ($result) {
@@ -433,7 +459,7 @@ class ChatController {
         }
 
         $user_id = $_SESSION['user_id'];
-        $user_role = $_SESSION['role'] ?? 'cliente';
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
 
         $mensajesNoLeidos = $this->chatModel->getMensajesNoLeidos($user_id);
         $total = count($mensajesNoLeidos);
@@ -480,7 +506,7 @@ class ChatController {
         }
 
         $user_id = $_SESSION['user_id'];
-        $user_role = $_SESSION['role'] ?? 'cliente';
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
 
         $stats = $this->getChatStats($user_id, $user_role);
         
@@ -513,7 +539,7 @@ class ChatController {
         }
 
         $user_id = $_SESSION['user_id'];
-        $user_role = $_SESSION['role'] ?? 'cliente';
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
         $query = $_GET['q'] ?? '';
 
         if (empty($query)) {
@@ -553,7 +579,7 @@ class ChatController {
         }
 
         $user_id = $_SESSION['user_id'];
-        $user_role = $_SESSION['role'] ?? 'cliente';
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
         $query = $_GET['q'] ?? '';
 
         if (empty($query) || strlen($query) < 2) {
@@ -565,8 +591,12 @@ class ChatController {
         // Buscar usuarios según el rol del usuario actual
         $usuarios = [];
         if ($user_role === 'agente') {
-            // Los agentes pueden buscar clientes
-            $usuarios = $this->userModel->searchUsers($query, 'cliente', $user_id);
+            // Los agentes pueden buscar clientes Y otros agentes
+            $usuarios = $this->userModel->searchUsers($query, null, $user_id);
+            // Filtrar para excluir al usuario actual y solo mostrar clientes y otros agentes
+            $usuarios = array_filter($usuarios, function($user) use ($user_id) {
+                return $user['id'] != $user_id && ($user['rol'] === 'cliente' || $user['rol'] === 'agente');
+            });
         } elseif ($user_role === 'cliente') {
             // Los clientes pueden buscar agentes
             $usuarios = $this->userModel->searchUsers($query, 'agente', $user_id);
@@ -578,9 +608,21 @@ class ChatController {
         // Formatear resultados
         $formatted_users = [];
         foreach ($usuarios as $user) {
+            // Manejar nombres nulos o vacíos
+            $nombre = $user['nombre'] ?? '';
+            $apellido = $user['apellido'] ?? '';
+            $nombreCompleto = trim($nombre . ' ' . $apellido);
+            
+            // Si no hay nombre, usar email como fallback
+            if (empty($nombreCompleto)) {
+                $nombreCompleto = $user['email'] ?? 'Usuario sin nombre';
+            }
+            
             $formatted_users[] = [
                 'id' => $user['id'],
-                'name' => $user['nombre'] . ' ' . $user['apellido'],
+                'nombre' => $nombre,
+                'apellido' => $apellido,
+                'name' => $nombreCompleto,
                 'email' => $user['email'],
                 'online' => $this->isUserOnline($user['id']),
                 'role' => $user['rol']
@@ -627,7 +669,7 @@ class ChatController {
         }
 
         $current_user_id = $_SESSION['user_id'];
-        $current_user_role = $_SESSION['role'] ?? 'cliente';
+        $current_user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
 
         // Verificar que el usuario existe y tiene el rol correcto
         $other_user = $this->userModel->getById($other_user_id);
@@ -812,7 +854,7 @@ class ChatController {
         }
 
         $user_id = $_SESSION['user_id'];
-        $user_role = $_SESSION['role'] ?? 'cliente';
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
 
         // Verificar acceso a la conversación directa
         if (!$this->chatModel->tieneAccesoConversacionDirecta($conversation_id, $user_id)) {
@@ -859,7 +901,7 @@ class ChatController {
         }
 
         $user_id = $_SESSION['user_id'];
-        $user_role = $_SESSION['role'] ?? 'cliente';
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
 
         $conversaciones = $this->chatModel->getConversacionesDirectas($user_id, $user_role);
         
@@ -982,7 +1024,7 @@ class ChatController {
         }
 
         $current_user_id = $_SESSION['user_id'];
-        $user_role = $_SESSION['role'] ?? 'cliente';
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
         $search_query = $_GET['search'] ?? '';
 
         // Obtener usuarios disponibles (excluyendo al usuario actual)

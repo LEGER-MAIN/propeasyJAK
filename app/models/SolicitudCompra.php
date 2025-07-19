@@ -420,4 +420,46 @@ class SolicitudCompra {
         
         return $this->db->select($sql, [$agenteId, $limit]);
     }
+    
+    /**
+     * Obtener total de solicitudes
+     * 
+     * @return int Total de solicitudes
+     */
+    public function getTotalSolicitudes() {
+        $query = "SELECT COUNT(*) as total FROM solicitudes_compra";
+        $resultado = $this->db->selectOne($query);
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener solicitudes por estado
+     * 
+     * @param string $status Estado de las solicitudes
+     * @return int Total de solicitudes con ese estado
+     */
+    public function getSolicitudesByStatus($status) {
+        $query = "SELECT COUNT(*) as total FROM solicitudes_compra WHERE estado = ?";
+        $resultado = $this->db->selectOne($query, [$status]);
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener solicitudes recientes
+     * 
+     * @param int $limit Límite de solicitudes
+     * @return array Lista de solicitudes recientes
+     */
+    public function getRecentSolicitudes($limit = 10) {
+        $query = "SELECT sc.*, p.titulo as titulo_propiedad, 
+                         ua.nombre as agente_nombre, ua.apellido as agente_apellido,
+                         uc.nombre as cliente_nombre, uc.apellido as cliente_apellido
+                  FROM solicitudes_compra sc
+                  LEFT JOIN propiedades p ON sc.propiedad_id = p.id
+                  LEFT JOIN usuarios ua ON sc.agente_id = ua.id
+                  LEFT JOIN usuarios uc ON sc.cliente_id = uc.id
+                  ORDER BY sc.fecha_solicitud DESC 
+                  LIMIT ?";
+        return $this->db->select($query, [$limit]);
+    }
 } 

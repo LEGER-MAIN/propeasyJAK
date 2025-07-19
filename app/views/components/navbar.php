@@ -74,10 +74,11 @@
             <div class="flex items-center space-x-2 sm:space-x-4">
                 <?php if (isAuthenticated()): ?>
                     <!-- Chat Rápido - Solo visible en desktop -->
-                    <button id="chat-toggle" class="hidden md:block relative p-2 text-gray-700 hover:text-primary-600 transition-colors" style="color: var(--text-primary);">
+                    <a href="/chat" class="hidden md:block relative p-2 text-gray-700 hover:text-primary-600 transition-colors" style="color: var(--text-primary);" title="Ir al Chat">
                         <i class="fas fa-comments text-lg"></i>
                         <span id="chat-notification" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
-                    </button>
+                        <span id="ws-status" class="absolute -bottom-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+                    </a>
                     
                     <!-- Perfil de Usuario Desktop -->
                     <div class="hidden lg:block relative group">
@@ -109,6 +110,11 @@
                                 <a href="/reportes/crear" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                     <i class="fas fa-exclamation-triangle"></i>
                                     <span>Reportar Problema</span>
+                                </a>
+                                
+                                <a href="/chat" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                    <i class="fas fa-comments"></i>
+                                    <span>Chat</span>
                                 </a>
                                 
                                 <?php if (hasRole(ROLE_AGENTE)): ?>
@@ -226,6 +232,10 @@
                         <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
                     </a>
                     
+                    <a href="/chat" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                        <i class="fas fa-comments mr-3"></i>Chat
+                    </a>
+                    
                     <?php if (hasRole(ROLE_AGENTE)): ?>
                         <hr class="my-2 border-gray-200">
                         <div class="px-3 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Panel de Agente</div>
@@ -267,6 +277,9 @@
                     <a href="/reportes/crear" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-exclamation-triangle mr-3"></i>Reportar Problema
                     </a>
+                    <a href="/chat" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                        <i class="fas fa-comments mr-3"></i>Chat
+                    </a>
                     <a href="/logout" class="block px-3 py-2 text-red-600 hover:bg-red-50 rounded-md text-base font-medium">
                         <i class="fas fa-sign-out-alt mr-3"></i>Cerrar Sesión
                     </a>
@@ -285,20 +298,7 @@
     </div>
 </header>
 
-<!-- Chat Panel Flotante -->
-<?php if (isAuthenticated()): ?>
-<div id="chat-panel" class="fixed bottom-4 right-4 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-lg border border-gray-200 hidden z-50">
-    <div class="flex items-center justify-between p-4 border-b border-gray-200">
-        <h3 class="text-sm font-semibold text-gray-900">Chat Rápido</h3>
-        <button id="chat-close" class="text-gray-400 hover:text-gray-600">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-    <div class="p-4">
-        <p class="text-sm text-gray-500 text-center">Chat en desarrollo</p>
-    </div>
-</div>
-<?php endif; ?>
+
 
 <script>
 // Funcionalidad del navbar
@@ -343,29 +343,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Chat panel
-    const chatToggle = document.getElementById('chat-toggle');
-    const chatPanel = document.getElementById('chat-panel');
-    const chatClose = document.getElementById('chat-close');
+    // Chat notification (mantener funcionalidad de notificaciones)
+    const chatNotification = document.getElementById('chat-notification');
     
-    if (chatToggle && chatPanel) {
-        chatToggle.addEventListener('click', function() {
-            chatPanel.classList.toggle('hidden');
-        });
-        
-        if (chatClose) {
-            chatClose.addEventListener('click', function() {
-                chatPanel.classList.add('hidden');
-            });
-        }
-        
-        // Cerrar chat al hacer clic fuera
-        document.addEventListener('click', function(e) {
-            if (!chatToggle.contains(e.target) && !chatPanel.contains(e.target)) {
-                chatPanel.classList.add('hidden');
-            }
-        });
+    // Función para actualizar notificaciones de chat
+    function updateChatNotifications() {
+        // Aquí puedes agregar lógica para obtener notificaciones no leídas
+        // Por ahora lo dejamos como placeholder
     }
+    
+    // Actualizar notificaciones cada 30 segundos
+    setInterval(updateChatNotifications, 30000);
     
     // Eliminar favoritos rápidos desde el dropdown
     document.querySelectorAll('.remove-favorite-quick').forEach(btn => {

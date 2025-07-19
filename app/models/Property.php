@@ -856,6 +856,15 @@ class Property {
     }
     
     /**
+     * Obtener total de propiedades (alias para compatibilidad)
+     * 
+     * @return int Total de propiedades
+     */
+    public function getTotalProperties() {
+        return $this->getTotalPropiedades();
+    }
+    
+    /**
      * Obtener total de propiedades activas
      * 
      * @return int Total de propiedades activas
@@ -972,5 +981,352 @@ class Property {
             $_SERVER['REMOTE_ADDR'] ?? '',
             $_SERVER['HTTP_USER_AGENT'] ?? ''
         ]);
+    }
+    
+    /**
+     * Obtener propiedades por estado
+     * 
+     * @param string $status Estado de la propiedad
+     * @return int Total de propiedades con ese estado
+     */
+    public function getPropertiesByStatus($status) {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE estado_publicacion = ?";
+        $resultado = $this->db->selectOne($query, [$status]);
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener total de ventas
+     * 
+     * @return float Total de ventas
+     */
+    public function getTotalSales() {
+        $query = "SELECT SUM(precio_venta) as total FROM {$this->table} WHERE estado_publicacion = 'vendida' AND precio_venta IS NOT NULL";
+        $resultado = $this->db->selectOne($query);
+        return $resultado ? (float)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener propiedades más vistas
+     * 
+     * @param int $limit Límite de propiedades
+     * @return array Lista de propiedades más vistas
+     */
+    public function getMostViewedProperties($limit = 5) {
+        $query = "SELECT p.*, p.vistas 
+                  FROM {$this->table} p 
+                  WHERE p.estado_publicacion = 'activa' 
+                  ORDER BY p.vistas DESC 
+                  LIMIT ?";
+        return $this->db->select($query, [$limit]);
+    }
+    
+    /**
+     * Obtener propiedades por mes
+     * 
+     * @param int $months Número de meses
+     * @return array Datos de propiedades por mes
+     */
+    public function getPropertiesByMonth($months = 12) {
+        $query = "SELECT DATE_FORMAT(fecha_creacion, '%Y-%m') as mes, COUNT(*) as total 
+                  FROM {$this->table} 
+                  WHERE fecha_creacion >= DATE_SUB(NOW(), INTERVAL ? MONTH) 
+                  GROUP BY DATE_FORMAT(fecha_creacion, '%Y-%m') 
+                  ORDER BY mes";
+        return $this->db->select($query, [$months]);
+    }
+    
+    /**
+     * Obtener ventas por mes
+     * 
+     * @param int $months Número de meses
+     * @return array Datos de ventas por mes
+     */
+    public function getSalesByMonth($months = 12) {
+        $query = "SELECT DATE_FORMAT(fecha_actualizacion, '%Y-%m') as mes, SUM(precio_venta) as total 
+                  FROM {$this->table} 
+                  WHERE estado_publicacion = 'vendida' 
+                  AND fecha_actualizacion >= DATE_SUB(NOW(), INTERVAL ? MONTH) 
+                  GROUP BY DATE_FORMAT(fecha_actualizacion, '%Y-%m') 
+                  ORDER BY mes";
+        return $this->db->select($query, [$months]);
+    }
+    
+    /**
+     * Obtener propiedades por tipo
+     * 
+     * @return array Datos de propiedades por tipo
+     */
+    public function getPropertiesByType() {
+        $query = "SELECT tipo, COUNT(*) as total 
+                  FROM {$this->table} 
+                  WHERE estado_publicacion = 'activa' 
+                  GROUP BY tipo";
+        return $this->db->select($query);
+    }
+    
+    /**
+     * Obtener propiedades por ciudad
+     * 
+     * @return array Datos de propiedades por ciudad
+     */
+    public function getPropertiesByCity() {
+        $query = "SELECT ciudad, COUNT(*) as total 
+                  FROM {$this->table} 
+                  WHERE estado_publicacion = 'activa' 
+                  GROUP BY ciudad 
+                  ORDER BY total DESC";
+        return $this->db->select($query);
+    }
+    
+    /**
+     * Obtener propiedades recientes
+     * 
+     * @param int $limit Límite de propiedades
+     * @return array Lista de propiedades recientes
+     */
+    public function getRecentProperties($limit = 10) {
+        $query = "SELECT p.*, u.nombre as agente_nombre, u.apellido as agente_apellido 
+                  FROM {$this->table} p 
+                  LEFT JOIN usuarios u ON p.agente_id = u.id 
+                  ORDER BY p.fecha_creacion DESC 
+                  LIMIT ?";
+        return $this->db->select($query, [$limit]);
+    }
+    
+    /**
+     * Obtener ventas por agente
+     * 
+     * @return array Datos de ventas por agente
+     */
+    public function getSalesByAgent() {
+        $query = "SELECT u.nombre as agente_nombre, u.apellido as agente_apellido, 
+                         COUNT(*) as propiedades_vendidas, SUM(p.precio_venta) as total_ventas 
+                  FROM {$this->table} p 
+                  LEFT JOIN usuarios u ON p.agente_id = u.id 
+                  WHERE p.estado_publicacion = 'vendida' 
+                  GROUP BY p.agente_id, u.nombre, u.apellido 
+                  ORDER BY total_ventas DESC";
+        return $this->db->select($query);
+    }
+    
+    /**
+     * Obtener ventas por tipo de propiedad
+     * 
+     * @return array Datos de ventas por tipo
+     */
+    public function getSalesByPropertyType() {
+        $query = "SELECT tipo, COUNT(*) as propiedades_vendidas, SUM(precio_venta) as total_ventas 
+                  FROM {$this->table} 
+                  WHERE estado_publicacion = 'vendida' 
+                  GROUP BY tipo 
+                  ORDER BY total_ventas DESC";
+        return $this->db->select($query);
+    }
+    
+    /**
+     * Obtener propiedades para API
+     * 
+     * @param array $filters Filtros de búsqueda
+     * @return array Lista de propiedades
+     */
+    public function getPropertiesForAPI($filters = []) {
+        $whereConditions = ["p.estado_publicacion = 'activa'"];
+        $params = [];
+        
+        if (!empty($filters['status'])) {
+            $whereConditions[] = "p.estado_publicacion = ?";
+            $params[] = $filters['status'];
+        }
+        
+        if (!empty($filters['type'])) {
+            $whereConditions[] = "p.tipo = ?";
+            $params[] = $filters['type'];
+        }
+        
+        if (!empty($filters['city'])) {
+            $whereConditions[] = "p.ciudad LIKE ?";
+            $params[] = '%' . $filters['city'] . '%';
+        }
+        
+        if (!empty($filters['min_price'])) {
+            $whereConditions[] = "p.precio >= ?";
+            $params[] = floatval($filters['min_price']);
+        }
+        
+        if (!empty($filters['max_price'])) {
+            $whereConditions[] = "p.precio <= ?";
+            $params[] = floatval($filters['max_price']);
+        }
+        
+        $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+        $limit = $filters['limit'] ?? 10;
+        $offset = (($filters['page'] ?? 1) - 1) * $limit;
+        
+        $query = "SELECT p.*, u.nombre as agente_nombre, u.apellido as agente_apellido 
+                  FROM {$this->table} p 
+                  LEFT JOIN usuarios u ON p.agente_id = u.id 
+                  {$whereClause} 
+                  ORDER BY p.fecha_creacion DESC 
+                  LIMIT ? OFFSET ?";
+        
+        $params[] = $limit;
+        $params[] = $offset;
+        
+        return $this->db->select($query, $params);
+    }
+    
+    /**
+     * Obtener total de propiedades para API
+     * 
+     * @param array $filters Filtros de búsqueda
+     * @return int Total de propiedades
+     */
+    public function getTotalPropertiesForAPI($filters = []) {
+        $whereConditions = ["estado_publicacion = 'activa'"];
+        $params = [];
+        
+        if (!empty($filters['status'])) {
+            $whereConditions[] = "estado_publicacion = ?";
+            $params[] = $filters['status'];
+        }
+        
+        if (!empty($filters['type'])) {
+            $whereConditions[] = "tipo = ?";
+            $params[] = $filters['type'];
+        }
+        
+        if (!empty($filters['city'])) {
+            $whereConditions[] = "ciudad LIKE ?";
+            $params[] = '%' . $filters['city'] . '%';
+        }
+        
+        if (!empty($filters['min_price'])) {
+            $whereConditions[] = "precio >= ?";
+            $params[] = floatval($filters['min_price']);
+        }
+        
+        if (!empty($filters['max_price'])) {
+            $whereConditions[] = "precio <= ?";
+            $params[] = floatval($filters['max_price']);
+        }
+        
+        $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+        
+        $query = "SELECT COUNT(*) as total FROM {$this->table} {$whereClause}";
+        $resultado = $this->db->selectOne($query, $params);
+        
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener imágenes de una propiedad
+     * 
+     * @param int $propertyId ID de la propiedad
+     * @return array Lista de imágenes
+     */
+    public function getPropertyImages($propertyId) {
+        $query = "SELECT * FROM imagenes_propiedades WHERE propiedad_id = ? ORDER BY es_principal DESC, id ASC";
+        return $this->db->select($query, [$propertyId]);
+    }
+    
+    /**
+     * Obtener ciudades disponibles
+     * 
+     * @return array Lista de ciudades
+     */
+    public function getAvailableCities() {
+        $query = "SELECT DISTINCT ciudad FROM {$this->table} WHERE estado_publicacion = 'activa' AND ciudad IS NOT NULL ORDER BY ciudad";
+        $result = $this->db->select($query);
+        return array_column($result, 'ciudad');
+    }
+    
+    /**
+     * Obtener tipos de propiedades disponibles
+     * 
+     * @return array Lista de tipos
+     */
+    public function getAvailablePropertyTypes() {
+        $query = "SELECT DISTINCT tipo FROM {$this->table} WHERE estado_publicacion = 'activa' AND tipo IS NOT NULL ORDER BY tipo";
+        $result = $this->db->select($query);
+        return array_column($result, 'tipo');
+    }
+    
+    /**
+     * Buscar propiedades
+     * 
+     * @param string $query Término de búsqueda
+     * @param array $filters Filtros adicionales
+     * @return array Lista de propiedades
+     */
+    public function searchProperties($query, $filters = []) {
+        $whereConditions = ["p.estado_publicacion = 'activa'"];
+        $params = [];
+        
+        if (!empty($query)) {
+            $whereConditions[] = "(p.titulo LIKE ? OR p.descripcion LIKE ? OR p.ciudad LIKE ? OR p.sector LIKE ?)";
+            $searchTerm = '%' . $query . '%';
+            $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm, $searchTerm]);
+        }
+        
+        if (!empty($filters['type'])) {
+            $whereConditions[] = "p.tipo = ?";
+            $params[] = $filters['type'];
+        }
+        
+        if (!empty($filters['city'])) {
+            $whereConditions[] = "p.ciudad LIKE ?";
+            $params[] = '%' . $filters['city'] . '%';
+        }
+        
+        if (!empty($filters['min_price'])) {
+            $whereConditions[] = "p.precio >= ?";
+            $params[] = floatval($filters['min_price']);
+        }
+        
+        if (!empty($filters['max_price'])) {
+            $whereConditions[] = "p.precio <= ?";
+            $params[] = floatval($filters['max_price']);
+        }
+        
+        if (!empty($filters['bedrooms'])) {
+            $whereConditions[] = "p.habitaciones >= ?";
+            $params[] = intval($filters['bedrooms']);
+        }
+        
+        if (!empty($filters['bathrooms'])) {
+            $whereConditions[] = "p.banos >= ?";
+            $params[] = intval($filters['bathrooms']);
+        }
+        
+        $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+        
+        $query = "SELECT p.*, u.nombre as agente_nombre, u.apellido as agente_apellido 
+                  FROM {$this->table} p 
+                  LEFT JOIN usuarios u ON p.agente_id = u.id 
+                  {$whereClause} 
+                  ORDER BY p.fecha_creacion DESC 
+                  LIMIT 20";
+        
+        return $this->db->select($query, $params);
+    }
+    
+    /**
+     * Obtener propiedades por agente
+     * 
+     * @param int $agentId ID del agente
+     * @param array $statuses Estados de propiedades a incluir
+     * @return array Lista de propiedades
+     */
+    public function getPropertiesByAgent($agentId, $statuses = ['activa']) {
+        $placeholders = str_repeat('?,', count($statuses) - 1) . '?';
+        $query = "SELECT p.*, u.nombre as agente_nombre, u.apellido as agente_apellido 
+                  FROM {$this->table} p 
+                  LEFT JOIN usuarios u ON p.agente_id = u.id 
+                  WHERE p.agente_id = ? AND p.estado_publicacion IN ({$placeholders}) 
+                  ORDER BY p.fecha_creacion DESC";
+        
+        $params = array_merge([$agentId], $statuses);
+        return $this->db->select($query, $params);
     }
 } 

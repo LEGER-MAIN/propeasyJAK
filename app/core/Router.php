@@ -237,8 +237,11 @@ class Router {
         
         // Rutas de administrador
         $this->get('/admin/dashboard', 'AdminController@dashboard');
-        $this->get('/admin/users', 'AuthController@showUsers');
-        $this->post('/admin/users/change-status', 'AuthController@changeUserStatus');
+        $this->get('/admin/users', 'AdminController@manageUsers');
+        $this->post('/admin/users/change-status', 'AdminController@changeUserStatus');
+        $this->get('/admin/reports', 'AdminController@reports');
+        $this->get('/admin/config', 'AdminController@systemConfig');
+        $this->post('/admin/config', 'AdminController@systemConfig');
         
         // Rutas de agente
         $this->get('/agente/dashboard', 'AgenteController@showDashboard');
@@ -322,6 +325,10 @@ class Router {
         $this->post('/chat/create-direct-conversation', 'ChatController@createDirectConversation');
         $this->get('/chat/users-for-direct-chat', 'ChatController@usersForDirectChat');
         
+        // Chat simple desde cero
+        $this->get('/chat-simple', 'ChatController@simple');
+        $this->get('/chat/simple', 'ChatController@simple');
+        
         // Rutas de favoritos
         $this->get('/favorites', 'FavoriteController@index');
         $this->post('/favorites/agregar', 'FavoriteController@agregar');
@@ -369,10 +376,16 @@ class Router {
         // Rutas de reportes de citas (solo administradores)
         $this->get('/reportes/citas', 'ReporteController@citas');
         
-        // API routes (futuras)
+        // API routes
         $this->get('/api/properties', 'ApiController@properties');
         $this->get('/api/properties/{id}', 'ApiController@property');
         $this->post('/api/requests', 'ApiController@createRequest');
+        $this->get('/api/stats', 'ApiController@stats');
+        $this->get('/api/cities', 'ApiController@cities');
+        $this->get('/api/property-types', 'ApiController@propertyTypes');
+        $this->get('/api/search-properties', 'ApiController@searchProperties');
+        $this->get('/api/agents', 'ApiController@agents');
+        $this->get('/api/agents/{id}/profile', 'ApiController@agentProfile');
         
         // Configurar página 404
         $this->notFound(function() {

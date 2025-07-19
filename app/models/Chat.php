@@ -478,13 +478,13 @@ class Chat {
      */
     public function enviarMensajeDirecto($conversacionId, $remitenteId, $remitenteRol, $mensaje) {
         try {
-            $sql = "INSERT INTO mensajes_directos (conversacion_id, remitente_id, remitente_rol, mensaje, fecha_envio) 
-                    VALUES (?, ?, ?, ?, NOW())";
+            $sql = "INSERT INTO mensajes_directos (conversacion_id, remitente_id, remitente_rol, mensaje) 
+                    VALUES (?, ?, ?, ?)";
             
             $result = $this->db->insert($sql, [$conversacionId, $remitenteId, $remitenteRol, $mensaje]);
             
             if ($result !== false) {
-                return $this->getLastInsertId();
+                return $result;
             }
             
             return false;

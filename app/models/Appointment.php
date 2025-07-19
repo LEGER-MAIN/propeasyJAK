@@ -782,4 +782,76 @@ class Appointment {
         
         return $result ? (int)$result['total'] : 0;
     }
+    
+    /**
+     * Obtener total de citas (alias para compatibilidad)
+     * 
+     * @return int Total de citas
+     */
+    public function getTotalAppointments() {
+        return $this->getTotalCount();
+    }
+    
+    /**
+     * Obtener citas por estado
+     * 
+     * @param string $status Estado de las citas
+     * @return int Total de citas con ese estado
+     */
+    public function getAppointmentsByStatus($status) {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE estado = ?";
+        $resultado = $this->db->selectOne($query, [$status]);
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener citas recientes
+     * 
+     * @param int $limit Límite de citas
+     * @return array Lista de citas recientes
+     */
+    public function getRecentAppointments($limit = 10) {
+        return $this->getRecent($limit);
+    }
+    
+    /**
+     * Obtener citas por mes
+     * 
+     * @param int $months Número de meses
+     * @return array Datos de citas por mes
+     */
+    public function getAppointmentsByMonth($months = 12) {
+        $query = "SELECT DATE_FORMAT(fecha_cita, '%Y-%m') as mes, COUNT(*) as total 
+                  FROM {$this->table} 
+                  WHERE fecha_cita >= DATE_SUB(NOW(), INTERVAL ? MONTH) 
+                  GROUP BY DATE_FORMAT(fecha_cita, '%Y-%m') 
+                  ORDER BY mes";
+        return $this->db->select($query, [$months]);
+    }
+    
+    /**
+     * Obtener citas por agente
+     * 
+     * @return array Datos de citas por agente
+     */
+    public function getAppointmentsByAgent() {
+        $query = "SELECT u.nombre as agente_nombre, u.apellido as agente_apellido, 
+                         COUNT(*) as total_citas,
+                         COUNT(CASE WHEN c.estado = 'completada' THEN 1 END) as citas_completadas
+                  FROM {$this->table} c
+                  LEFT JOIN usuarios u ON c.agente_id = u.id
+                  GROUP BY c.agente_id, u.nombre, u.apellido
+                  ORDER BY total_citas DESC";
+        return $this->db->select($query);
+    }
+    
+    /**
+     * Obtener citas por tipo
+     * 
+     * @return array Datos de citas por tipo
+     */
+    public function getAppointmentsByType() {
+        $query = "SELECT tipo_cita, COUNT(*) as total FROM {$this->table} GROUP BY tipo_cita ORDER BY total DESC";
+        return $this->db->select($query);
+    }
 } 

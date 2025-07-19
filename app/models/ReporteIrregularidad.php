@@ -275,4 +275,42 @@ class ReporteIrregularidad {
         
         return $errores;
     }
+    
+    /**
+     * Obtener total de reportes
+     * 
+     * @return int Total de reportes
+     */
+    public function getTotalReportes() {
+        $query = "SELECT COUNT(*) as total FROM reportes_irregularidades";
+        $resultado = $this->db->selectOne($query);
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener reportes por estado
+     * 
+     * @param string $status Estado de los reportes
+     * @return int Total de reportes con ese estado
+     */
+    public function getReportesByStatus($status) {
+        $query = "SELECT COUNT(*) as total FROM reportes_irregularidades WHERE estado = ?";
+        $resultado = $this->db->selectOne($query, [$status]);
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener reportes recientes
+     * 
+     * @param int $limit Límite de reportes
+     * @return array Lista de reportes recientes
+     */
+    public function getRecentReportes($limit = 10) {
+        $query = "SELECT r.*, u.nombre, u.apellido, u.email 
+                  FROM reportes_irregularidades r
+                  LEFT JOIN usuarios u ON r.usuario_id = u.id
+                  ORDER BY r.fecha_reporte DESC 
+                  LIMIT ?";
+        return $this->db->select($query, [$limit]);
+    }
 } 

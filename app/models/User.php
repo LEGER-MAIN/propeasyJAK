@@ -592,6 +592,17 @@ class User {
     }
     
     /**
+     * Actualizar última actividad del usuario (método público)
+     * 
+     * @param int $userId ID del usuario
+     * @return bool Resultado de la actualización
+     */
+    public function updateLastActivity($userId) {
+        $query = "UPDATE {$this->table} SET ultimo_acceso = NOW() WHERE id = ?";
+        return $this->db->update($query, [$userId]);
+    }
+    
+    /**
      * Crear sesión del usuario
      * 
      * @param array $user Datos del usuario
@@ -850,7 +861,7 @@ class User {
      */
     public function searchUsers($query, $role = null, $excludeUserId = null) {
         $params = [];
-        $conditions = ["estado = 'activo'", "email_verificado = 1"];
+        $conditions = ["estado = 'activo'"];
         
         // Excluir usuario actual
         if ($excludeUserId) {
@@ -864,12 +875,16 @@ class User {
             $params[] = $role;
         }
         
-        // Agregar término de búsqueda
+        // Agregar término de búsqueda - manejar nombres nulos
         $searchConditions = [
-            "CONCAT(nombre, ' ', apellido) LIKE ?",
+            "COALESCE(nombre, '') LIKE ?",
+            "COALESCE(apellido, '') LIKE ?",
+            "CONCAT(COALESCE(nombre, ''), ' ', COALESCE(apellido, '')) LIKE ?",
             "email LIKE ?"
         ];
         $searchTerm = '%' . sanitizeInput($query) . '%';
+        $params[] = $searchTerm;
+        $params[] = $searchTerm;
         $params[] = $searchTerm;
         $params[] = $searchTerm;
         
@@ -878,7 +893,7 @@ class User {
         $query = "SELECT id, nombre, apellido, email, rol, ultimo_acceso 
                   FROM {$this->table} 
                   WHERE {$whereClause} 
-                  ORDER BY nombre, apellido 
+                  ORDER BY COALESCE(nombre, ''), COALESCE(apellido, '') 
                   LIMIT 10";
         
         return $this->db->select($query, $params);
@@ -1452,5 +1467,156 @@ class User {
             error_log("Error obteniendo agentes con perfil público filtrados: " . $e->getMessage());
             return [];
         }
+    }
+    
+    /**
+     * Obtener usuarios por rol
+     * 
+     * @param string $role Rol del usuario
+     * @return int Total de usuarios con ese rol
+     */
+    public function getUsersByRole($role) {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE rol = ?";
+        $resultado = $this->db->selectOne($query, [$role]);
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener usuarios activos
+     * 
+     * @return int Total de usuarios activos
+     */
+    public function getActiveUsers() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE estado = 'activo'";
+        $resultado = $this->db->selectOne($query);
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener usuarios nuevos este mes
+     * 
+     * @return int Total de usuarios nuevos este mes
+     */
+    public function getNewUsersThisMonth() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE MONTH(fecha_registro) = MONTH(NOW()) AND YEAR(fecha_registro) = YEAR(NOW())";
+        $resultado = $this->db->selectOne($query);
+        return $resultado ? (int)$resultado['total'] : 0;
+    }
+    
+    /**
+     * Obtener todos los usuarios
+     * 
+     * @return array Lista de todos los usuarios
+     */
+    public function getAllUsers() {
+        $query = "SELECT * FROM {$this->table} ORDER BY fecha_registro DESC";
+        return $this->db->select($query);
+    }
+    
+    /**
+     * Cambiar estado de usuario
+     * 
+     * @param int $userId ID del usuario
+     * @param string $newStatus Nuevo estado
+     * @return bool True si se actualizó correctamente
+     */
+    public function changeUserStatus($userId, $newStatus) {
+        $query = "UPDATE {$this->table} SET estado = ? WHERE id = ?";
+        return $this->db->update($query, [$newStatus, $userId]);
+    }
+    
+    /**
+     * Obtener usuarios por mes
+     * 
+     * @param int $months Número de meses
+     * @return array Datos de usuarios por mes
+     */
+    public function getUsersByMonth($months = 12) {
+        $query = "SELECT DATE_FORMAT(fecha_registro, '%Y-%m') as mes, COUNT(*) as total 
+                  FROM {$this->table} 
+                  WHERE fecha_registro >= DATE_SUB(NOW(), INTERVAL ? MONTH) 
+                  GROUP BY DATE_FORMAT(fecha_registro, '%Y-%m') 
+                  ORDER BY mes";
+        return $this->db->select($query, [$months]);
+    }
+    
+    /**
+     * Obtener usuarios por estado
+     * 
+     * @return array Datos de usuarios por estado
+     */
+    public function getUsersByStatus() {
+        $query = "SELECT estado, COUNT(*) as total FROM {$this->table} GROUP BY estado";
+        return $this->db->select($query);
+    }
+    
+    /**
+     * Obtener usuarios por ciudad
+     * 
+     * @return array Datos de usuarios por ciudad
+     */
+    public function getUsersByCity() {
+        $query = "SELECT ciudad, COUNT(*) as total FROM {$this->table} WHERE ciudad IS NOT NULL GROUP BY ciudad ORDER BY total DESC";
+        return $this->db->select($query);
+    }
+    
+    /**
+     * Obtener usuarios recientes
+     * 
+     * @param int $limit Límite de usuarios
+     * @return array Lista de usuarios recientes
+     */
+    public function getRecentUsers($limit = 10) {
+        $query = "SELECT * FROM {$this->table} ORDER BY fecha_registro DESC LIMIT ?";
+        return $this->db->select($query, [$limit]);
+    }
+    
+    /**
+     * Obtener agentes para API
+     * 
+     * @return array Lista de agentes para API
+     */
+    public function getAgentsForAPI() {
+        $query = "SELECT id, nombre, apellido, email, telefono, ciudad, experiencia_anos 
+                  FROM {$this->table} 
+                  WHERE rol = 'agente' AND estado = 'activo' 
+                  ORDER BY nombre, apellido";
+        return $this->db->select($query);
+    }
+    
+    /**
+     * Obtener perfil público de agente
+     * 
+     * @param int $agentId ID del agente
+     * @return array Perfil del agente
+     */
+    public function getAgentPublicProfile($agentId) {
+        $query = "SELECT id, nombre, apellido, email, telefono, ciudad, sector, 
+                         experiencia_anos, especialidades, idiomas, biografia, 
+                         descripcion_corta, licencia_inmobiliaria, horario_atencion, 
+                         foto_perfil, fecha_registro 
+                  FROM {$this->table} 
+                  WHERE id = ? AND rol = 'agente' AND estado = 'activo'";
+        return $this->db->selectOne($query, [$agentId]);
+    }
+    
+    /**
+     * Obtener estadísticas de agente
+     * 
+     * @param int $agentId ID del agente
+     * @return array Estadísticas del agente
+     */
+    public function getAgentStats($agentId) {
+        $query = "SELECT 
+                    COUNT(p.id) as total_propiedades,
+                    COUNT(CASE WHEN p.estado_publicacion = 'activa' THEN 1 END) as propiedades_activas,
+                    COUNT(CASE WHEN p.estado_publicacion = 'vendida' THEN 1 END) as propiedades_vendidas,
+                    COALESCE(AVG(ca.calificacion), 0) as calificacion_promedio,
+                    COUNT(ca.id) as total_calificaciones
+                  FROM {$this->table} u
+                  LEFT JOIN propiedades p ON u.id = p.agente_id
+                  LEFT JOIN calificaciones_agentes ca ON u.id = ca.agente_id
+                  WHERE u.id = ? AND u.rol = 'agente'";
+        return $this->db->selectOne($query, [$agentId]);
     }
 } 

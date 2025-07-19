@@ -54,6 +54,9 @@ class ChatWebSocket implements MessageComponentInterface {
             case 'message':
                 $this->handleMessage($from, $data);
                 break;
+            case 'direct_message':
+                $this->handleDirectMessage($from, $data);
+                break;
             case 'typing':
                 $this->handleTyping($from, $data);
                 break;
@@ -135,6 +138,38 @@ class ChatWebSocket implements MessageComponentInterface {
         }
     }
 
+    protected function handleDirectMessage($conn, $data) {
+        $conversationId = $data['conversation_id'] ?? null;
+        $userId = $data['user_id'] ?? null;
+        $message = $data['message'] ?? '';
+        
+        if (!$conversationId || !$userId || empty($message)) {
+            return;
+        }
+
+        // Guardar mensaje en base de datos
+        $sql = "INSERT INTO mensajes_directos (conversacion_id, remitente_id, mensaje) VALUES (?, ?, ?)";
+        $messageId = $this->db->insert($sql, [$conversationId, $userId, $message]);
+        
+        if ($messageId) {
+            // Obtener información del usuario
+            $userInfo = $this->userModel->getById($userId);
+            
+            $messageData = [
+                'type' => 'direct_message',
+                'conversation_id' => $conversationId,
+                'message_id' => $messageId,
+                'user_id' => $userId,
+                'user_name' => ($userInfo['nombre'] ?? 'Sin nombre') . ' ' . ($userInfo['apellido'] ?? 'Sin apellido'),
+                'message' => $message,
+                'timestamp' => date('Y-m-d H:i:s')
+            ];
+            
+            // Enviar a todos los usuarios en la conversación directa
+            $this->broadcastToDirectConversation($conversationId, $messageData);
+        }
+    }
+
     protected function handleTyping($conn, $data) {
         $solicitudId = $data['solicitud_id'] ?? null;
         $userId = $data['user_id'] ?? null;
@@ -179,6 +214,24 @@ class ChatWebSocket implements MessageComponentInterface {
         // Obtener usuarios de la conversación
         $sql = "SELECT cliente_id, agente_id FROM solicitudes_compra WHERE id = ?";
         $conversation = $this->db->selectOne($sql, [$solicitudId]);
+        
+        if (!$conversation) {
+            return;
+        }
+        
+        $users = [$conversation['cliente_id'], $conversation['agente_id']];
+        
+        foreach ($users as $userId) {
+            if (isset($this->userConnections[$userId])) {
+                $this->userConnections[$userId]->send(json_encode($data));
+            }
+        }
+    }
+
+    protected function broadcastToDirectConversation($conversationId, $data) {
+        // Obtener usuarios de la conversación directa
+        $sql = "SELECT cliente_id, agente_id FROM conversaciones_directas WHERE id = ?";
+        $conversation = $this->db->selectOne($sql, [$conversationId]);
         
         if (!$conversation) {
             return;
