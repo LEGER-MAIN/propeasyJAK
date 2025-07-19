@@ -1,7 +1,13 @@
 <?php
 // Vista: Editar Cita
 // El controlador ya maneja la captura de contenido, no necesitamos ob_start() aquí
+
+// Generar token CSRF
+$csrfToken = generateCSRFToken();
 ?>
+
+<!-- Token CSRF oculto para JavaScript -->
+<input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
 
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
@@ -21,100 +27,69 @@
                 <form action="/appointments/<?= $cita['id'] ?>/update" method="POST" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="cliente_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="cliente_nombre" class="block text-sm font-medium text-gray-700 mb-2">
                                 Cliente
                             </label>
-                            <select name="cliente_id" id="cliente_id" required 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="">Seleccionar cliente</option>
-                                <?php if (isset($clientes) && is_array($clientes)): ?>
-                                    <?php foreach ($clientes as $cliente): ?>
-                                        <option value="<?= htmlspecialchars($cliente['id']) ?>" 
-                                                <?= ($cliente['id'] == $cita['cliente_id']) ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($cliente['nombre'] . ' ' . $cliente['apellido']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
+                            <input type="text" id="cliente_nombre" 
+                                   value="<?= htmlspecialchars($cita['cliente_nombre'] ?? 'Cliente') ?>"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50" 
+                                   readonly>
+                            <p class="text-sm text-gray-500 mt-1">El cliente no se puede cambiar</p>
                         </div>
 
                         <div>
-                            <label for="fecha" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="fecha_cita" class="block text-sm font-medium text-gray-700 mb-2">
                                 Fecha
                             </label>
-                            <input type="date" name="fecha" id="fecha" required 
-                                   value="<?= htmlspecialchars($cita['fecha']) ?>"
+                            <input type="date" name="fecha_cita" id="fecha_cita" required 
+                                   value="<?= htmlspecialchars(date('Y-m-d', strtotime($cita['fecha_cita'] ?? ''))) ?>"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
-                            <label for="hora" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="hora_cita" class="block text-sm font-medium text-gray-700 mb-2">
                                 Hora
                             </label>
-                            <input type="time" name="hora" id="hora" required 
-                                   value="<?= htmlspecialchars($cita['hora']) ?>"
+                            <input type="time" name="hora_cita" id="hora_cita" required 
+                                   value="<?= htmlspecialchars(date('H:i', strtotime($cita['fecha_cita'] ?? ''))) ?>"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
-                            <label for="duracion" class="block text-sm font-medium text-gray-700 mb-2">
-                                Duración (minutos)
+                            <label for="tipo_cita" class="block text-sm font-medium text-gray-700 mb-2">
+                                Tipo de Cita
                             </label>
-                            <select name="duracion" id="duracion" required 
+                            <select name="tipo_cita" id="tipo_cita" required 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="30" <?= ($cita['duracion'] == 30) ? 'selected' : '' ?>>30 minutos</option>
-                                <option value="60" <?= ($cita['duracion'] == 60) ? 'selected' : '' ?>>1 hora</option>
-                                <option value="90" <?= ($cita['duracion'] == 90) ? 'selected' : '' ?>>1.5 horas</option>
-                                <option value="120" <?= ($cita['duracion'] == 120) ? 'selected' : '' ?>>2 horas</option>
+                                <option value="">Seleccionar tipo</option>
+                                <option value="consulta" <?= ($cita['tipo_cita'] === 'consulta') ? 'selected' : '' ?>>Consulta</option>
+                                <option value="visita_propiedad" <?= ($cita['tipo_cita'] === 'visita_propiedad') ? 'selected' : '' ?>>Visita a Propiedad</option>
+                                <option value="firma_documentos" <?= ($cita['tipo_cita'] === 'firma_documentos') ? 'selected' : '' ?>>Firma de Documentos</option>
+                                <option value="negociacion" <?= ($cita['tipo_cita'] === 'negociacion') ? 'selected' : '' ?>>Negociación</option>
+                                <option value="video_llamada" <?= ($cita['tipo_cita'] === 'video_llamada') ? 'selected' : '' ?>>Video Llamada</option>
+                                <option value="reunion_oficina" <?= ($cita['tipo_cita'] === 'reunion_oficina') ? 'selected' : '' ?>>Reunión Oficina</option>
+                                <option value="otro" <?= ($cita['tipo_cita'] === 'otro') ? 'selected' : '' ?>>Otro</option>
                             </select>
                         </div>
                     </div>
 
                     <div>
-                        <label for="tipo_cita" class="block text-sm font-medium text-gray-700 mb-2">
-                            Tipo de Cita
+                        <label for="lugar" class="block text-sm font-medium text-gray-700 mb-2">
+                            Lugar
                         </label>
-                        <select name="tipo_cita" id="tipo_cita" required 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Seleccionar tipo</option>
-                            <option value="consulta" <?= ($cita['tipo_cita'] === 'consulta') ? 'selected' : '' ?>>Consulta</option>
-                            <option value="visita_propiedad" <?= ($cita['tipo_cita'] === 'visita_propiedad') ? 'selected' : '' ?>>Visita a Propiedad</option>
-                            <option value="firma_documentos" <?= ($cita['tipo_cita'] === 'firma_documentos') ? 'selected' : '' ?>>Firma de Documentos</option>
-                            <option value="negociacion" <?= ($cita['tipo_cita'] === 'negociacion') ? 'selected' : '' ?>>Negociación</option>
-                            <option value="otro" <?= ($cita['tipo_cita'] === 'otro') ? 'selected' : '' ?>>Otro</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="estado" class="block text-sm font-medium text-gray-700 mb-2">
-                            Estado
-                        </label>
-                        <select name="estado" id="estado" required 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="pendiente" <?= ($cita['estado'] === 'pendiente') ? 'selected' : '' ?>>Pendiente</option>
-                            <option value="confirmada" <?= ($cita['estado'] === 'confirmada') ? 'selected' : '' ?>>Confirmada</option>
-                            <option value="completada" <?= ($cita['estado'] === 'completada') ? 'selected' : '' ?>>Completada</option>
-                            <option value="cancelada" <?= ($cita['estado'] === 'cancelada') ? 'selected' : '' ?>>Cancelada</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="ubicacion" class="block text-sm font-medium text-gray-700 mb-2">
-                            Ubicación
-                        </label>
-                        <input type="text" name="ubicacion" id="ubicacion" 
-                               value="<?= htmlspecialchars($cita['ubicacion'] ?? '') ?>"
+                        <input type="text" name="lugar" id="lugar" 
+                               value="<?= htmlspecialchars($cita['lugar'] ?? '') ?>"
                                placeholder="Dirección o lugar de la cita"
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 
                     <div>
-                        <label for="notas" class="block text-sm font-medium text-gray-700 mb-2">
-                            Notas Adicionales
+                        <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-2">
+                            Observaciones
                         </label>
-                        <textarea name="notas" id="notas" rows="4" 
+                        <textarea name="observaciones" id="observaciones" rows="4" 
                                   placeholder="Información adicional sobre la cita..."
-                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"><?= htmlspecialchars($cita['notas'] ?? '') ?></textarea>
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"><?= htmlspecialchars($cita['observaciones'] ?? '') ?></textarea>
                     </div>
 
                     <div class="flex justify-end space-x-4 pt-6">

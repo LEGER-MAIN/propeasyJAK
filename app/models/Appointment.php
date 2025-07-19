@@ -19,6 +19,7 @@ class Appointment {
     const STATUS_REJECTED = 'rechazada';
     const STATUS_COMPLETED = 'completada';
     const STATUS_CANCELLED = 'cancelada';
+    const STATUS_CHANGE_REQUESTED = 'cambio_solicitado';
     
     // Tipos de citas
     const TYPE_PROPERTY_VISIT = 'visita_propiedad';
@@ -288,7 +289,8 @@ class Appointment {
             self::STATUS_ACCEPTED,
             self::STATUS_REJECTED,
             self::STATUS_COMPLETED,
-            self::STATUS_CANCELLED
+            self::STATUS_CANCELLED,
+            self::STATUS_CHANGE_REQUESTED
         ];
         
         error_log("Estados válidos: " . implode(', ', $estadosValidos));
@@ -633,7 +635,8 @@ class Appointment {
             self::STATUS_ACCEPTED => 'Aceptada',
             self::STATUS_REJECTED => 'Rechazada',
             self::STATUS_COMPLETED => 'Completada',
-            self::STATUS_CANCELLED => 'Cancelada'
+            self::STATUS_CANCELLED => 'Cancelada',
+            self::STATUS_CHANGE_REQUESTED => 'Cambio Solicitado'
         ];
     }
     
@@ -725,7 +728,8 @@ class Appointment {
                     SUM(CASE WHEN estado = 'aceptada' THEN 1 ELSE 0 END) as aceptadas,
                     SUM(CASE WHEN estado = 'rechazada' THEN 1 ELSE 0 END) as rechazadas,
                     SUM(CASE WHEN estado = 'cancelada' THEN 1 ELSE 0 END) as canceladas,
-                    SUM(CASE WHEN estado = 'completada' THEN 1 ELSE 0 END) as completadas
+                    SUM(CASE WHEN estado = 'completada' THEN 1 ELSE 0 END) as completadas,
+                    SUM(CASE WHEN estado = 'cambio_solicitado' THEN 1 ELSE 0 END) as cambio_solicitado
                   FROM {$this->table}
                   WHERE {$whereClause}";
         
@@ -737,7 +741,8 @@ class Appointment {
             'aceptadas' => 0,
             'rechazadas' => 0,
             'canceladas' => 0,
-            'completadas' => 0
+            'completadas' => 0,
+            'cambio_solicitado' => 0
         ];
     }
     

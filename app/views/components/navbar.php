@@ -56,6 +56,13 @@
                     </a>
                     <?php endif; ?>
                     
+                    <?php if (hasRole(ROLE_CLIENTE)): ?>
+                    <a href="/appointments" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Mis Citas</span>
+                    </a>
+                    <?php endif; ?>
+                    
                     <a href="<?= hasRole(ROLE_AGENTE) ? '/agente/dashboard' : (hasRole(ROLE_CLIENTE) ? '/cliente/dashboard' : '/dashboard') ?>" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
@@ -131,6 +138,10 @@
                                         <i class="fas fa-search"></i>
                                         <span>Buscar Agentes</span>
                                     </a>
+                                    <a href="/appointments" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <span>Mis Citas</span>
+                                    </a>
                                 <?php endif; ?>
                                 
                                 <hr class="my-1">
@@ -204,6 +215,13 @@
                     <a href="/solicitudes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-handshake mr-3"></i><?= hasRole(ROLE_AGENTE) ? 'Solicitudes' : 'Mis Solicitudes' ?>
                     </a>
+                    
+                    <?php if (hasRole(ROLE_CLIENTE)): ?>
+                    <a href="/appointments" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                        <i class="fas fa-calendar-alt mr-3"></i>Mis Citas
+                    </a>
+                    <?php endif; ?>
+                    
                     <a href="<?= hasRole(ROLE_AGENTE) ? '/agente/dashboard' : (hasRole(ROLE_CLIENTE) ? '/cliente/dashboard' : '/dashboard') ?>" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
                     </a>
@@ -226,8 +244,12 @@
                     <?php endif; ?>
                     
                     <?php if (hasRole(ROLE_CLIENTE)): ?>
+                        <hr class="my-2 border-gray-200">
                         <a href="/buscar-agentes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                             <i class="fas fa-search mr-3"></i>Buscar Agentes
+                        </a>
+                        <a href="/appointments" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                            <i class="fas fa-calendar-alt mr-3"></i>Mis Citas
                         </a>
                     <?php endif; ?>
                     

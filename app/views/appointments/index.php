@@ -1,7 +1,13 @@
 <?php
 // Vista: Listado de Citas
 // El controlador ya maneja la captura de contenido, no necesitamos ob_start() aquí
+
+// Generar token CSRF
+$csrfToken = generateCSRFToken();
 ?>
+
+<!-- Token CSRF oculto para JavaScript -->
+<input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
 
 <div class="container mx-auto px-4 py-8" style="background-color: var(--bg-primary);">
     <div class="max-w-7xl mx-auto">
@@ -39,8 +45,10 @@
                     </label>
                     <select id="filtro_estado" class="w-full px-3 py-2 border rounded-md transition-all duration-200" style="border-color: var(--color-gris-claro);" onfocus="this.style.borderColor='var(--color-azul-marino)'; this.style.boxShadow='0 0 0 3px rgba(29, 53, 87, 0.1)'" onblur="this.style.borderColor='var(--color-gris-claro)'; this.style.boxShadow='none'">
                         <option value="">Todos los estados</option>
-                        <option value="pendiente">Pendiente</option>
-                        <option value="confirmada">Confirmada</option>
+                        <option value="propuesta">Propuesta</option>
+                        <option value="aceptada">Aceptada</option>
+                        <option value="rechazada">Rechazada</option>
+                        <option value="cambio_solicitado">Cambio Solicitado</option>
                         <option value="completada">Completada</option>
                         <option value="cancelada">Cancelada</option>
                     </select>
@@ -148,6 +156,8 @@
                                                onmouseout="this.style.backgroundColor='rgba(29, 53, 87, 0.05)'; this.style.color='var(--color-azul-marino)'; this.style.transform='translateY(0)'">
                                                 Ver
                                             </a>
+                                            <?php if (hasRole(ROLE_AGENTE) && $cita['agente_id'] == $_SESSION['user_id'] && 
+                                                     !in_array($cita['estado'], ['cancelada', 'completada', 'rechazada'])): ?>
                                             <a href="/appointments/<?= $cita['id'] ?>/edit" 
                                                class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 border"
                                                style="border-color: var(--color-verde-esmeralda); color: var(--color-verde-esmeralda); background-color: rgba(42, 157, 143, 0.05);"
@@ -155,6 +165,21 @@
                                                onmouseout="this.style.backgroundColor='rgba(42, 157, 143, 0.05)'; this.style.color='var(--color-verde-esmeralda)'; this.style.transform='translateY(0)'">
                                                 Editar
                                             </a>
+                                            <?php endif; ?>
+                                            
+                                            <?php 
+                                            // Mostrar botón cancelar según rol y estado
+                                            $puedeCancelar = false;
+                                            if (hasRole(ROLE_AGENTE) && $cita['agente_id'] == $_SESSION['user_id']) {
+                                                // Agente puede cancelar citas propuestas, aceptadas o con cambio solicitado
+                                                $puedeCancelar = in_array($cita['estado'], ['propuesta', 'aceptada', 'cambio_solicitado']);
+                                            } elseif (hasRole(ROLE_CLIENTE) && $cita['cliente_id'] == $_SESSION['user_id']) {
+                                                // Cliente solo puede cancelar citas aceptadas
+                                                $puedeCancelar = $cita['estado'] === 'aceptada';
+                                            }
+                                            
+                                            if ($puedeCancelar && $cita['estado'] !== 'cancelada' && $cita['estado'] !== 'completada'):
+                                            ?>
                                             <button onclick="cancelarCita(<?= $cita['id'] ?>)" 
                                                     class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 border"
                                                     style="border-color: var(--color-rojo-error); color: var(--color-rojo-error); background-color: rgba(220, 53, 69, 0.05);"
@@ -162,6 +187,7 @@
                                                     onmouseout="this.style.backgroundColor='rgba(220, 53, 69, 0.05)'; this.style.color='var(--color-rojo-error)'; this.style.transform='translateY(0)'">
                                                 Cancelar
                                             </button>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>
@@ -215,11 +241,16 @@ function getEstadoCitaBadgeStyle($estado) {
             return 'background-color: var(--color-verde-esmeralda); color: white; border: 1px solid var(--color-verde-esmeralda);';
         case 'propuesta':
             return 'background-color: rgba(233, 196, 106, 0.1); color: var(--color-dorado-suave); border: 1px solid var(--color-dorado-suave);';
+        case 'cambio_solicitado':
+            return 'background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid #f59e0b;';
         case 'cancelada':
             return 'background-color: var(--color-rojo-error); color: white; border: 1px solid var(--color-rojo-error);';
+        case 'completada':
+            return 'background-color: rgba(29, 53, 87, 0.1); color: var(--color-azul-marino); border: 1px solid var(--color-azul-marino);';
+        case 'rechazada':
+            return 'background-color: rgba(220, 53, 69, 0.1); color: var(--color-rojo-error); border: 1px solid var(--color-rojo-error);';
         case 'pendiente':
         case 'confirmada':
-        case 'completada':
         default:
             return 'background-color: rgba(221, 226, 230, 0.3); color: var(--text-secondary); border: 1px solid var(--color-gris-claro);';
     }
@@ -229,18 +260,33 @@ function getEstadoCitaBadgeStyle($estado) {
 <script>
 function cancelarCita(citaId) {
     if (confirm('¿Estás seguro de que quieres cancelar esta cita?')) {
+        // Obtener el token CSRF
+        const csrfToken = document.querySelector('input[name="csrf_token"]')?.value || '';
+        
         fetch(`/appointments/${citaId}/cancel`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-            }
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'include',
+            body: 'csrf_token=' + encodeURIComponent(csrfToken)
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.redirected || response.status === 302) {
+                window.location.reload();
+                return;
+            }
+            return response.json();
+        })
         .then(data => {
-            if (data.success) {
+            if (data && data.success) {
+                alert(data.message);
                 location.reload();
-            } else {
+            } else if (data) {
                 alert('Error al cancelar la cita: ' + data.message);
+            } else {
+                location.reload();
             }
         })
         .catch(error => {

@@ -333,14 +333,6 @@ class Router {
         $this->get('/favorites/verificar', 'FavoriteController@verificar');
         $this->get('/favorites/estadisticas', 'FavoriteController@estadisticas');
         
-
-        
-
-        
-
-        
-
-        
         // Rutas de búsqueda
         $this->get('/buscar-agentes', 'SearchController@buscarAgentes');
         $this->get('/buscar-clientes', 'SearchController@buscarClientes');
@@ -358,12 +350,12 @@ class Router {
         $this->post('/appointments/{id}/update', 'AppointmentController@update');
         $this->post('/appointments/{id}/accept', 'AppointmentController@accept');
         $this->post('/appointments/{id}/reject', 'AppointmentController@reject');
+        $this->post('/appointments/{id}/request-change', 'AppointmentController@requestChange');
         $this->post('/appointments/{id}/cancel', 'AppointmentController@cancel');
         $this->post('/appointments/{id}/complete', 'AppointmentController@complete');
         $this->get('/appointments/calendar', 'AppointmentController@calendar');
         $this->get('/api/appointments', 'AppointmentController@getAppointments');
         $this->get('/api/appointments/pending', 'AppointmentController@getPendingAppointments');
-
         
         // Rutas de reportes de irregularidades
         $this->get('/reportes/crear', 'ReporteController@crear');

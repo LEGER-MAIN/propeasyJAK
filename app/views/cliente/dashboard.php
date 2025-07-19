@@ -29,7 +29,7 @@
         <?php include APP_PATH . '/views/components/flash-messages.php'; ?>
 
         <!-- Estadísticas Rápidas -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-white overflow-hidden shadow rounded-lg">
                 <div class="p-5">
                     <div class="flex items-center">
@@ -74,6 +74,31 @@
                 <div class="bg-gray-50 px-5 py-3">
                     <div class="text-sm">
                         <a href="/solicitudes" class="font-medium text-primary-600 hover:text-primary-500">
+                            Ver todas
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-purple-100 rounded-md flex items-center justify-center">
+                                <i class="fas fa-calendar-alt text-purple-600"></i>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Mis Citas</dt>
+                                <dd class="text-lg font-medium text-gray-900"><?= $stats['citas'] ?? 0 ?></dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-5 py-3">
+                    <div class="text-sm">
+                        <a href="/appointments" class="font-medium text-primary-600 hover:text-primary-500">
                             Ver todas
                         </a>
                     </div>
@@ -236,6 +261,74 @@
                         </div>
                     <?php endif; ?>
                 </div>
+            </div>
+        </div>
+
+        <!-- Citas Recientes -->
+        <div class="mt-8 bg-white shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Citas Recientes</h2>
+                <p class="mt-1 text-sm text-gray-600">Tus citas programadas con agentes</p>
+            </div>
+            <div class="p-6">
+                <?php if (!empty($recentCitas)): ?>
+                    <div class="space-y-4">
+                        <?php foreach ($recentCitas as $cita): ?>
+                            <div class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 bg-purple-100 rounded-md flex items-center justify-center">
+                                        <i class="fas fa-calendar-alt text-purple-600"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="text-sm font-medium text-gray-900 truncate">
+                                        <?= htmlspecialchars($cita['propiedad_titulo'] ?? 'Propiedad') ?>
+                                    </h3>
+                                    <p class="text-sm text-gray-500">
+                                        Agente: <?= htmlspecialchars(($cita['agente_nombre'] ?? '') . ' ' . ($cita['agente_apellido'] ?? '')) ?>
+                                    </p>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                            <?= $cita['estado'] === 'propuesta' ? 'bg-yellow-100 text-yellow-800' : 
+                                               ($cita['estado'] === 'aceptada' ? 'bg-green-100 text-green-800' : 
+                                               ($cita['estado'] === 'cambio_solicitado' ? 'bg-orange-100 text-orange-800' : 
+                                               ($cita['estado'] === 'completada' ? 'bg-blue-100 text-blue-800' : 
+                                               ($cita['estado'] === 'cancelada' ? 'bg-red-100 text-red-800' : 
+                                               'bg-gray-100 text-gray-800')))) ?>">
+                                            <?= ucfirst($cita['estado']) ?>
+                                        </span>
+                                        <span class="text-xs text-gray-500">
+                                            <?= date('d/m/Y H:i', strtotime($cita['fecha_cita'])) ?>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <a href="/appointments/<?= $cita['id'] ?>" 
+                                       class="text-primary-600 hover:text-primary-500 text-sm font-medium">
+                                        Ver
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="mt-6 text-center">
+                        <a href="/appointments" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-600 bg-primary-50 hover:bg-primary-100 transition-colors">
+                            Ver todas las citas
+                        </a>
+                    </div>
+                <?php else: ?>
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-calendar-alt text-gray-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No tienes citas</h3>
+                        <p class="text-gray-500 mb-4">Cuando envíes una solicitud de compra, el agente podrá programar una cita contigo</p>
+                        <a href="/properties" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 transition-colors">
+                            <i class="fas fa-search mr-2"></i>
+                            Explorar Propiedades
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
 

@@ -80,8 +80,9 @@ CREATE TABLE IF NOT EXISTS `citas` (
   `fecha_cita` datetime NOT NULL,
   `lugar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tipo_cita` enum('visita_propiedad','reunion_oficina','video_llamada') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'visita_propiedad',
-  `estado` enum('propuesta','aceptada','rechazada','completada','cancelada') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'propuesta',
+  `estado` enum('propuesta','aceptada','rechazada','completada','cancelada','cambio_solicitado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'propuesta',
   `observaciones` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `comentarios_cambio` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `fecha_creacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fecha_actualizacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -93,6 +94,7 @@ CREATE TABLE IF NOT EXISTS `citas` (
   KEY `idx_estado` (`estado`),
   KEY `idx_citas_agente_estado` (`agente_id`,`estado`),
   KEY `idx_citas_agente_fecha` (`agente_id`,`fecha_cita`),
+  KEY `idx_comentarios_cambio` (`comentarios_cambio`(100)),
   CONSTRAINT `citas_ibfk_1` FOREIGN KEY (`solicitud_id`) REFERENCES `solicitudes_compra` (`id`) ON DELETE CASCADE,
   CONSTRAINT `citas_ibfk_2` FOREIGN KEY (`agente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `citas_ibfk_3` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
@@ -213,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `favoritos_propiedades` (
   KEY `idx_fecha_agregado` (`fecha_agregado`),
   CONSTRAINT `favoritos_propiedades_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `favoritos_propiedades_ibfk_2` FOREIGN KEY (`propiedad_id`) REFERENCES `propiedades` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -601,7 +603,7 @@ CREATE TABLE IF NOT EXISTS `reportes_irregularidades` (
   KEY `idx_fecha_reporte` (`fecha_reporte`),
   CONSTRAINT `reportes_irregularidades_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `reportes_irregularidades_ibfk_2` FOREIGN KEY (`admin_responsable_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 

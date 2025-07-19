@@ -70,10 +70,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Estilos principales con nueva paleta de colores -->
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/main.css?v=<?= time() ?>&cb=<?= rand(1000, 9999) ?>&fix=<?= rand(10000, 99999) ?>">
     
     <!-- Estilos para notificaciones de citas -->
-    <link rel="stylesheet" href="/css/appointment-notifications.css">
+    <link rel="stylesheet" href="/css/appointment-notifications.css?v=<?= time() ?>">
     
     <!-- Estilos personalizados -->
     <style>

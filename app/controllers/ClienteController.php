@@ -123,7 +123,8 @@ class ClienteController {
     private function getClienteStats($userId) {
         $stats = [
             'favoritos' => 0,
-            'solicitudes' => 0
+            'solicitudes' => 0,
+            'citas' => 0
         ];
         
         try {
@@ -133,6 +134,11 @@ class ClienteController {
             // Contar solicitudes - usar método correcto
             $solicitudes = $this->solicitudModel->obtenerPorCliente($userId);
             $stats['solicitudes'] = count($solicitudes);
+            
+            // Contar citas
+            require_once APP_PATH . '/models/Appointment.php';
+            $appointmentModel = new Appointment();
+            $stats['citas'] = $appointmentModel->countByClient($userId);
             
         } catch (Exception $e) {
             error_log("Error obteniendo estadísticas del cliente: " . $e->getMessage());
@@ -154,6 +160,11 @@ class ClienteController {
         $recentFavorites = $this->favoriteModel->getFavoritosUsuario($userId, 5);
         $recentSolicitudes = $this->solicitudModel->obtenerPorCliente($userId, 5);
         $stats = $this->getClienteStats($userId);
+        
+        // Obtener citas recientes del cliente
+        require_once APP_PATH . '/models/Appointment.php';
+        $appointmentModel = new Appointment();
+        $recentCitas = $appointmentModel->getByClient($userId, null, 5, 0);
         
         $pageTitle = 'Dashboard del Cliente - ' . APP_NAME;
         
