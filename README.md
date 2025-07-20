@@ -142,13 +142,46 @@ propeasy/
 ## Instalación y Configuración
 
 ### Requisitos del Sistema
-- PHP 8.2 o superior
+- **Laragon** (recomendado) o XAMPP/WAMP
+- PHP 7.4 o superior
 - MySQL 8.0 o superior
-- Apache/Nginx
 - Composer
 - Extensión PHP: mysqli, pdo_mysql, gd, mbstring
 
-### Pasos de Instalación
+### Instalación Rápida con Laragon
+
+1. **Clonar el repositorio en Laragon**
+   ```bash
+   # Navegar a la carpeta www de Laragon
+   cd C:\laragon\www
+   
+   # Clonar el proyecto
+   git clone https://github.com/tu-usuario/propeasy.git
+   ```
+
+2. **Instalar dependencias**
+   ```bash
+   cd propeasy
+   composer install
+   ```
+
+3. **Configurar base de datos**
+   - Abrir HeidiSQL desde Laragon
+   - Crear nueva base de datos llamada `propeasy_db`
+   - Importar el archivo `database/scheme.sql`
+
+4. **Configurar Laragon**
+   - En Laragon, ir a Menú → Preferencias → Document Root
+   - Cambiar a: `C:\laragon\www\propeasy\public`
+   - Reiniciar Laragon
+
+5. **Acceder al proyecto**
+   - Abrir navegador y ir a: `http://propeasy.test` o `http://localhost`
+   - El proyecto estará listo para usar
+
+### Configuración Manual (Alternativa)
+
+Si prefieres configuración manual:
 
 1. **Clonar el repositorio**
    ```bash
@@ -162,28 +195,34 @@ propeasy/
    ```
 
 3. **Configurar base de datos**
-   - Crear base de datos MySQL
+   - Crear base de datos MySQL llamada `propeasy_db`
    - Importar el esquema: `database/scheme.sql`
-   - Configurar conexión en `config/config.php`
 
-4. **Configurar aplicación**
-   - Ajustar configuraciones en `config/config.php`
-   - Configurar SMTP para emails
-
-5. **Configurar servidor web**
+4. **Configurar servidor web**
    - Apuntar document root a la carpeta `public/`
    - Configurar URL rewriting (mod_rewrite)
 
-6. **Permisos de archivos**
+5. **Permisos de archivos** (solo en Linux/Mac)
    ```bash
    chmod 755 public/uploads/
    chmod 755 logs/
    ```
 
-7. **Iniciar servidor WebSocket (opcional)**
+6. **Iniciar servidor WebSocket (opcional)**
    ```bash
    php app/websocket_server.php
    ```
+
+### Configuración Automática
+
+El proyecto está configurado para funcionar inmediatamente después de la instalación:
+
+- ✅ **Base de datos**: Configurada para Laragon (localhost, root, sin contraseña)
+- ✅ **Configuraciones**: Todas las configuraciones están incluidas en el repositorio
+- ✅ **Estructura de carpetas**: Las carpetas de uploads están configuradas
+- ✅ **Dependencias**: Composer.json incluye todas las dependencias necesarias
+
+**Nota**: No es necesario crear archivos de configuración adicionales. El proyecto está listo para usar desde el primer momento.
 
 ## Uso del Sistema
 

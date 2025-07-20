@@ -1,7 +1,3 @@
-# Archivos de configuración sensibles
-config/database.php
-.env
-
 # Archivos de debug y prueba
 debug_*.php
 test_*.php
@@ -23,6 +19,8 @@ sessions/
 # Archivos de uploads (excepto la estructura de carpetas)
 public/uploads/properties/*
 !public/uploads/properties/.gitkeep
+public/uploads/reportes/*
+!public/uploads/reportes/.gitkeep
 
 # Archivos del sistema
 .DS_Store
@@ -46,7 +44,4 @@ yarn-error.log
 # Archivos de backup
 *.bak
 *.backup
-*~
-
-# Archivos de configuración local
-config/local.php 
+*~ 
