@@ -238,20 +238,20 @@ class ReporteController {
         // Verificar que el usuario sea administrador
         if (!hasRole(ROLE_ADMIN)) {
             setFlashMessage('error', 'No tienes permisos para realizar esta acción');
-            redirect('/reportes/admin');
+            redirect('/admin/reports');
         }
         
         // Verificar CSRF token
         if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
             setFlashMessage('error', 'Token de seguridad inválido');
-            redirect('/reportes/admin');
+            redirect('/admin/reports');
         }
         
         $reporteId = intval($_POST['reporte_id'] ?? 0);
         
         if (!$reporteId) {
             setFlashMessage('error', 'ID de reporte inválido');
-            redirect('/reportes/admin');
+            redirect('/admin/reports');
         }
         
         $resultado = $this->reporteModel->eliminar($reporteId);
@@ -262,7 +262,7 @@ class ReporteController {
             setFlashMessage('error', 'Error al eliminar el reporte');
         }
         
-        redirect('/reportes/admin');
+        redirect('/admin/reports');
     }
     
     /**
@@ -435,7 +435,7 @@ class ReporteController {
                         <p><strong>Teléfono:</strong> {$reporte['telefono']}</p>
                     </div>
                     
-                    <p><a href='" . APP_URL . "/reportes/admin' style='background: #1e40af; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Ver en el Panel de Administración</a></p>
+                    <p><a href='" . APP_URL . "/admin/reports' style='background: #1e40af; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Ver en el Panel de Administración</a></p>
                 </div>
                 <div class='footer'>
                     <p>Este es un mensaje automático del sistema PropEasy</p>
@@ -465,7 +465,7 @@ Información del Usuario:
 - Email: {$reporte['email']}
 - Teléfono: {$reporte['telefono']}
 
-Para revisar este reporte, accede al panel de administración: " . APP_URL . "/reportes/admin
+Para revisar este reporte, accede al panel de administración: " . APP_URL . "/admin/reports
 
 Este es un mensaje automático del sistema PropEasy";
     }

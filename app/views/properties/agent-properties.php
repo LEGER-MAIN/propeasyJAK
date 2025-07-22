@@ -6,6 +6,8 @@
  * Esta vista muestra las propiedades asignadas a un agente inmobiliario
  */
 
+require_once APP_PATH . '/helpers/PropertyHelper.php';
+
 // Incluir el layout principal
 $content = ob_start();
 ?>
@@ -186,7 +188,7 @@ $content = ob_start();
                                 
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-primary-100 text-primary-800">
-                                        <?= ucfirst(str_replace('_', ' ', $property['tipo'])) ?>
+                                        <?= getPropertyTypeDisplayName($property['tipo']) ?>
                                     </span>
                                 </td>
                                 

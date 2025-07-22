@@ -102,6 +102,17 @@ class Property {
         $propertyId = $this->db->insert($query, array_values($propertyData));
         
         if ($propertyId) {
+            // Registrar actividad
+            require_once APP_PATH . '/models/ActivityLog.php';
+            $userId = $data['agente_id'] ?? $data['cliente_vendedor_id'] ?? null;
+            if ($userId) {
+                ActivityLog::log($userId, 'create', $this->table, $propertyId, [
+                    'titulo' => $propertyData['titulo'],
+                    'precio' => $propertyData['precio'],
+                    'tipo' => $propertyData['tipo']
+                ]);
+            }
+            
             // Procesar imágenes si se proporcionaron
             if (isset($data['imagenes']) && is_array($data['imagenes'])) {
                 $this->processImages($propertyId, $data['imagenes']);
@@ -190,7 +201,17 @@ class Property {
             $params[] = intval($filters['banos']);
         }
         
-        // Solo mostrar propiedades activas para el público
+        // Filtro de búsqueda
+        if (!empty($filters['search'])) {
+            $whereConditions[] = "(p.titulo LIKE ? OR p.direccion LIKE ? OR p.descripcion LIKE ? OR p.tipo LIKE ?)";
+            $searchTerm = '%' . $filters['search'] . '%';
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+        }
+        
+        // Solo mostrar propiedades activas para el público (excepto para admin)
         if (!isset($filters['estado_publicacion'])) {
             $whereConditions[] = "p.estado_publicacion = 'activa'";
         } else {
@@ -233,7 +254,8 @@ class Property {
                          u.nombre as agente_nombre, 
                          u.apellido as agente_apellido,
                          u.telefono as agente_telefono,
-                         u.email as agente_email
+                         u.email as agente_email,
+                         (SELECT ruta FROM {$this->tableImages} WHERE propiedad_id = p.id AND es_principal = 1 LIMIT 1) as imagen_principal
                   FROM {$this->table} p
                   LEFT JOIN usuarios u ON p.agente_id = u.id
                   WHERE p.id = ?";
@@ -1328,5 +1350,257 @@ class Property {
         
         $params = array_merge([$agentId], $statuses);
         return $this->db->select($query, $params);
+    }
+    
+    /**
+     * Obtener el total de propiedades en el sistema
+     * 
+     * @return int Total de propiedades
+     */
+    public function getTotalCount() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table}";
+        $result = $this->db->selectOne($query);
+        return $result ? (int)$result['total'] : 0;
+    }
+    
+    /**
+     * Obtener propiedades nuevas hoy
+     */
+    public function getNewPropertiesToday() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE DATE(fecha_creacion) = CURDATE()";
+        $result = $this->db->selectOne($query);
+        return $result ? (int)$result['total'] : 0;
+    }
+    
+    /**
+     * Obtener ventas del mes actual
+     */
+    public function getSalesThisMonth() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE estado_publicacion = 'vendida' AND MONTH(fecha_venta) = MONTH(NOW()) AND YEAR(fecha_venta) = YEAR(NOW())";
+        $result = $this->db->selectOne($query);
+        return $result ? (int)$result['total'] : 0;
+    }
+    
+    /**
+     * Obtener datos de propiedades por período (semana, trimestre, año)
+     * @param string $periodType 'week', 'quarter', 'year'
+     * @param int $limit Número de períodos a obtener
+     * @return array ['labels' => [], 'data' => []]
+     */
+    public function getPropertiesByPeriod($periodType, $limit) {
+        $query = "";
+        $labels = [];
+        $data = [];
+        $dateColumn = 'fecha_creacion'; // For properties, use creation date
+
+        switch ($periodType) {
+            case 'week':
+                $query = "SELECT
+                            YEARWEEK({$dateColumn}, 1) as period_key,
+                            COUNT(*) as total
+                          FROM {$this->table}
+                          WHERE {$dateColumn} >= DATE_SUB(CURDATE(), INTERVAL ? WEEK)
+                          GROUP BY period_key
+                          ORDER BY period_key ASC";
+                $results = $this->db->select($query, [$limit]);
+
+                // Generate labels and map data
+                for ($i = $limit - 1; $i >= 0; $i--) {
+                    $labels[] = 'Sem ' . ($limit - $i);
+                    $data[] = 0;
+                }
+
+                // Map actual data
+                foreach ($results as $row) {
+                    $data[] = (int)$row['total'];
+                }
+                
+                while (count($data) < $limit) {
+                    $data[] = 0;
+                }
+                $data = array_slice($data, -$limit);
+                
+                return ['labels' => $labels, 'data' => $data];
+
+            case 'quarter':
+                $query = "SELECT
+                            CONCAT(YEAR({$dateColumn}), '-Q', QUARTER({$dateColumn})) as period_key,
+                            COUNT(*) as total
+                          FROM {$this->table}
+                          WHERE {$dateColumn} >= DATE_SUB(CURDATE(), INTERVAL ? QUARTER)
+                          GROUP BY period_key
+                          ORDER BY period_key ASC";
+                $results = $this->db->select($query, [$limit]);
+
+                $currentQuarter = (int)ceil(date('n') / 3);
+                $currentYear = (int)date('Y');
+                for ($i = $limit - 1; $i >= 0; $i--) {
+                    $qOffset = $i;
+                    $targetQuarter = $currentQuarter - $qOffset;
+                    $targetYear = $currentYear;
+                    while ($targetQuarter <= 0) {
+                        $targetQuarter += 4;
+                        $targetYear--;
+                    }
+                    $labels[] = $targetYear . '-Q' . $targetQuarter;
+                    $data[] = 0;
+                }
+
+                // Map actual data
+                foreach ($results as $row) {
+                    $data[] = (int)$row['total'];
+                }
+                
+                while (count($data) < $limit) {
+                    $data[] = 0;
+                }
+                $data = array_slice($data, -$limit);
+                
+                return ['labels' => $labels, 'data' => $data];
+
+            case 'year':
+                $query = "SELECT
+                            YEAR({$dateColumn}) as period_key,
+                            COUNT(*) as total
+                          FROM {$this->table}
+                          WHERE {$dateColumn} >= DATE_SUB(CURDATE(), INTERVAL ? YEAR)
+                          GROUP BY period_key
+                          ORDER BY period_key ASC";
+                $results = $this->db->select($query, [$limit]);
+
+                $currentYear = (int)date('Y');
+                for ($i = $limit - 1; $i >= 0; $i--) {
+                    $year = $currentYear - $i;
+                    $labels[] = (string)$year;
+                    $data[] = 0;
+                }
+
+                // Map actual data
+                foreach ($results as $row) {
+                    $data[] = (int)$row['total'];
+                }
+                
+                while (count($data) < $limit) {
+                    $data[] = 0;
+                }
+                $data = array_slice($data, -$limit);
+                
+                return ['labels' => $labels, 'data' => $data];
+
+            default:
+                return ['labels' => [], 'data' => []];
+        }
+    }
+    
+    /**
+     * Obtener datos de ventas por período (semana, trimestre, año)
+     * @param string $periodType 'week', 'quarter', 'year'
+     * @param int $limit Número de períodos a obtener
+     * @return array ['labels' => [], 'data' => []]
+     */
+    public function getSalesByPeriod($periodType, $limit) {
+        $query = "";
+        $labels = [];
+        $data = [];
+        $dateColumn = 'fecha_venta'; // For sales, use sale date
+        $statusColumn = 'estado_publicacion'; // Assuming 'vendida' status for sales
+
+        switch ($periodType) {
+            case 'week':
+                $query = "SELECT
+                            YEARWEEK({$dateColumn}, 1) as period_key,
+                            COUNT(*) as total
+                          FROM {$this->table}
+                          WHERE {$statusColumn} = 'vendida' AND {$dateColumn} >= DATE_SUB(CURDATE(), INTERVAL ? WEEK)
+                          GROUP BY period_key
+                          ORDER BY period_key ASC";
+                $results = $this->db->select($query, [$limit]);
+
+                // Generate labels and map data
+                for ($i = $limit - 1; $i >= 0; $i--) {
+                    $labels[] = 'Sem ' . ($limit - $i);
+                    $data[] = 0;
+                }
+
+                // Map actual data
+                foreach ($results as $row) {
+                    $data[] = (int)$row['total'];
+                }
+                
+                while (count($data) < $limit) {
+                    $data[] = 0;
+                }
+                $data = array_slice($data, -$limit);
+                
+                return ['labels' => $labels, 'data' => $data];
+
+            case 'quarter':
+                $query = "SELECT
+                            CONCAT(YEAR({$dateColumn}), '-Q', QUARTER({$dateColumn})) as period_key,
+                            COUNT(*) as total
+                          FROM {$this->table}
+                          WHERE {$statusColumn} = 'vendida' AND {$dateColumn} >= DATE_SUB(CURDATE(), INTERVAL ? QUARTER)
+                          GROUP BY period_key
+                          ORDER BY period_key ASC";
+                $results = $this->db->select($query, [$limit]);
+
+                $currentQuarter = (int)ceil(date('n') / 3);
+                $currentYear = (int)date('Y');
+                for ($i = $limit - 1; $i >= 0; $i--) {
+                    $qOffset = $i;
+                    $targetQuarter = $currentQuarter - $qOffset;
+                    $targetYear = $currentYear;
+                    while ($targetQuarter <= 0) {
+                        $targetQuarter += 4;
+                        $targetYear--;
+                    }
+                    $labels[] = $targetYear . '-Q' . $targetQuarter;
+                    $data[] = 0;
+                }
+
+                // Map actual data
+                foreach ($results as $row) {
+                    $data[] = (int)$row['total'];
+                }
+                
+                while (count($data) < $limit) {
+                    $data[] = 0;
+                }
+                $data = array_slice($data, -$limit);
+                
+                return ['labels' => $labels, 'data' => $data];
+
+            case 'year':
+                $query = "SELECT
+                            YEAR({$dateColumn}) as period_key,
+                            COUNT(*) as total
+                          FROM {$this->table}
+                          WHERE {$statusColumn} = 'vendida' AND {$dateColumn} >= DATE_SUB(CURDATE(), INTERVAL ? YEAR)
+                          GROUP BY period_key
+                          ORDER BY period_key ASC";
+                $results = $this->db->select($query, [$limit]);
+
+                $currentYear = (int)date('Y');
+                for ($i = $limit - 1; $i >= 0; $i--) {
+                    $year = $currentYear - $i;
+                    $labels[] = (string)$year;
+                    $data[] = 0;
+                }
+
+                // Map actual data
+                foreach ($results as $row) {
+                    $data[] = (int)$row['total'];
+                }
+                
+                while (count($data) < $limit) {
+                    $data[] = 0;
+                }
+                $data = array_slice($data, -$limit);
+                
+                return ['labels' => $labels, 'data' => $data];
+
+            default:
+                return ['labels' => [], 'data' => []];
+        }
     }
 } 

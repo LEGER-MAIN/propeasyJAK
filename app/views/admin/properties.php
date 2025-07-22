@@ -1,9 +1,9 @@
 <?php
 /**
- * Gestión Completa de Reportes - Administrador
+ * Gestión Completa de Propiedades - Administrador
  * PropEasy - Sistema Web de Venta de Bienes Raíces
  * 
- * Vista para gestionar reportes con control total (resolver, descartar, eliminar)
+ * Vista para gestionar propiedades con control total (aprobar, rechazar, eliminar, destacar)
  */
 
 // Verificar que el usuario sea administrador
@@ -85,7 +85,7 @@ if (!hasRole(ROLE_ADMIN)) {
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         
-        .report-card {
+        .property-card {
             background: white;
             border-radius: 10px;
             padding: 20px;
@@ -95,20 +95,25 @@ if (!hasRole(ROLE_ADMIN)) {
             transition: transform 0.3s ease;
         }
         
-        .report-card:hover {
+        .property-card:hover {
             transform: translateY(-2px);
         }
         
-        .report-card.pending {
+        .property-card.pending {
             border-left-color: var(--admin-warning);
         }
         
-        .report-card.resolved {
+        .property-card.approved {
             border-left-color: var(--admin-success);
         }
         
-        .report-card.dismissed {
+        .property-card.rejected {
             border-left-color: var(--admin-danger);
+        }
+        
+        .property-card.featured {
+            border-left-color: var(--admin-info);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
         
         .status-badge {
@@ -118,40 +123,50 @@ if (!hasRole(ROLE_ADMIN)) {
             font-weight: 500;
         }
         
-        .status-pendiente {
-            background: var(--admin-warning);
-            color: white;
-        }
-        
-        .status-atendido {
+        .status-activa {
             background: var(--admin-success);
             color: white;
         }
         
-        .status-descartado {
+        .status-en_revision {
+            background: var(--admin-warning);
+            color: white;
+        }
+        
+        .status-rechazada {
             background: var(--admin-danger);
             color: white;
         }
         
-        .priority-badge {
+        .status-vendida {
+            background: var(--admin-info);
+            color: white;
+        }
+        
+        .type-badge {
             padding: 5px 12px;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 500;
         }
         
-        .priority-alta {
-            background: var(--admin-danger);
+        .type-casa {
+            background: var(--admin-primary);
             color: white;
         }
         
-        .priority-media {
-            background: var(--admin-warning);
+        .type-apartamento {
+            background: var(--admin-info);
             color: white;
         }
         
-        .priority-baja {
+        .type-terreno {
             background: var(--admin-success);
+            color: white;
+        }
+        
+        .type-oficina {
+            background: var(--admin-warning);
             color: white;
         }
         
@@ -171,23 +186,28 @@ if (!hasRole(ROLE_ADMIN)) {
             color: white;
         }
         
-        .btn-view {
+        .btn-edit {
             background: var(--admin-info);
             color: white;
         }
         
-        .btn-resolve {
+        .btn-approve {
             background: var(--admin-success);
             color: white;
         }
         
-        .btn-dismiss {
+        .btn-reject {
             background: var(--admin-warning);
             color: white;
         }
         
         .btn-delete {
             background: var(--admin-danger);
+            color: white;
+        }
+        
+        .btn-feature {
+            background: var(--admin-primary);
             color: white;
         }
         
@@ -207,11 +227,17 @@ if (!hasRole(ROLE_ADMIN)) {
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
-        .report-description {
-            max-width: 300px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        .property-image {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .price-highlight {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--admin-success);
         }
         
         @media (max-width: 768px) {
@@ -237,9 +263,9 @@ if (!hasRole(ROLE_ADMIN)) {
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <h1 class="mb-0">
-                        <i class="fas fa-flag"></i> Gestión de Reportes
+                        <i class="fas fa-home"></i> Gestión de Propiedades
                     </h1>
-                    <small>Control total de reportes del sistema</small>
+                    <small>Control total de propiedades del sistema</small>
                 </div>
                 <div class="col-md-6 text-end">
                     <div class="d-flex justify-content-end align-items-center">
@@ -271,10 +297,10 @@ if (!hasRole(ROLE_ADMIN)) {
                         <a class="nav-link" href="/admin/users?action=list">
                             <i class="fas fa-users"></i> Gestión de Usuarios
                         </a>
-                        <a class="nav-link" href="/admin/properties?action=list">
+                        <a class="nav-link active" href="/admin/properties?action=list">
                             <i class="fas fa-home"></i> Gestión de Propiedades
                         </a>
-                        <a class="nav-link active" href="/admin/reports?action=list">
+                        <a class="nav-link" href="/admin/reports?action=list">
                             <i class="fas fa-flag"></i> Gestión de Reportes
                         </a>
                         <a class="nav-link" href="/admin/logs">
@@ -300,20 +326,20 @@ if (!hasRole(ROLE_ADMIN)) {
                 <div class="stats-summary">
                     <div class="row text-center">
                         <div class="col-md-3">
-                            <h3><?= number_format(count($reports)) ?></h3>
-                            <p class="mb-0">Total Reportes</p>
+                            <h3><?= number_format(count($properties)) ?></h3>
+                            <p class="mb-0">Total Propiedades</p>
                         </div>
                         <div class="col-md-3">
-                            <h3><?= number_format(array_filter($reports, fn($r) => $r['estado'] === 'pendiente')->count()) ?></h3>
-                            <p class="mb-0">Pendientes</p>
+                            <h3><?= number_format(array_filter($properties, fn($p) => $p['estado'] === 'activa')->count()) ?></h3>
+                            <p class="mb-0">Activas</p>
                         </div>
                         <div class="col-md-3">
-                            <h3><?= number_format(array_filter($reports, fn($r) => $r['estado'] === 'atendido')->count()) ?></h3>
-                            <p class="mb-0">Atendidos</p>
+                            <h3><?= number_format(array_filter($properties, fn($p) => $p['estado'] === 'en_revision')->count()) ?></h3>
+                            <p class="mb-0">En Revisión</p>
                         </div>
                         <div class="col-md-3">
-                            <h3><?= number_format(array_filter($reports, fn($r) => $r['estado'] === 'descartado')->count()) ?></h3>
-                            <p class="mb-0">Descartados</p>
+                            <h3><?= number_format(array_filter($properties, fn($p) => $p['estado'] === 'vendida')->count()) ?></h3>
+                            <p class="mb-0">Vendidas</p>
                         </div>
                     </div>
                 </div>
@@ -325,128 +351,160 @@ if (!hasRole(ROLE_ADMIN)) {
                             <label for="statusFilter" class="form-label">Filtrar por Estado:</label>
                             <select class="form-select" id="statusFilter">
                                 <option value="">Todos los estados</option>
-                                <option value="pendiente">Pendientes</option>
-                                <option value="atendido">Atendidos</option>
-                                <option value="descartado">Descartados</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="priorityFilter" class="form-label">Filtrar por Prioridad:</label>
-                            <select class="form-select" id="priorityFilter">
-                                <option value="">Todas las prioridades</option>
-                                <option value="alta">Alta</option>
-                                <option value="media">Media</option>
-                                <option value="baja">Baja</option>
+                                <option value="activa">Activas</option>
+                                <option value="en_revision">En Revisión</option>
+                                <option value="rechazada">Rechazadas</option>
+                                <option value="vendida">Vendidas</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <label for="typeFilter" class="form-label">Filtrar por Tipo:</label>
                             <select class="form-select" id="typeFilter">
                                 <option value="">Todos los tipos</option>
-                                <option value="irregularidad">Irregularidad</option>
-                                <option value="spam">Spam</option>
-                                <option value="inapropiado">Inapropiado</option>
-                                <option value="fraude">Fraude</option>
+                                <option value="casa">Casa</option>
+                                <option value="apartamento">Apartamento</option>
+                                <option value="terreno">Terreno</option>
+                                <option value="oficina">Oficina</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label for="searchReport" class="form-label">Buscar Reporte:</label>
-                            <input type="text" class="form-control" id="searchReport" placeholder="Título, descripción...">
+                            <label for="cityFilter" class="form-label">Filtrar por Ciudad:</label>
+                            <select class="form-select" id="cityFilter">
+                                <option value="">Todas las ciudades</option>
+                                <?php
+                                $cities = array_unique(array_column($properties, 'ciudad'));
+                                foreach ($cities as $city):
+                                ?>
+                                    <option value="<?= htmlspecialchars($city) ?>"><?= htmlspecialchars($city) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="searchProperty" class="form-label">Buscar Propiedad:</label>
+                            <input type="text" class="form-control" id="searchProperty" placeholder="Título, descripción...">
                         </div>
                     </div>
                 </div>
 
-                <!-- Lista de Reportes -->
+                <!-- Lista de Propiedades -->
                 <div class="content-card">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4 class="mb-0">
-                            <i class="fas fa-list"></i> Lista de Reportes
+                            <i class="fas fa-list"></i> Lista de Propiedades
                         </h4>
                         <div>
-                            <button class="btn btn-success" onclick="exportReports()">
+                            <button class="btn btn-success" onclick="exportProperties()">
                                 <i class="fas fa-download"></i> Exportar
                             </button>
                         </div>
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover" id="reportsTable">
+                        <table class="table table-hover" id="propertiesTable">
                             <thead class="table-dark">
                                 <tr>
                                     <th>ID</th>
-                                    <th>Título</th>
-                                    <th>Descripción</th>
+                                    <th>Imagen</th>
+                                    <th>Propiedad</th>
+                                    <th>Precio</th>
                                     <th>Tipo</th>
-                                    <th>Prioridad</th>
                                     <th>Estado</th>
-                                    <th>Reportado por</th>
+                                    <th>Agente</th>
                                     <th>Fecha</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if (!empty($reports)): ?>
-                                    <?php foreach ($reports as $report): ?>
-                                        <tr class="report-row <?= $report['estado'] === 'pendiente' ? 'table-warning' : ($report['estado'] === 'descartado' ? 'table-danger' : 'table-success') ?>">
-                                            <td><?= $report['id'] ?></td>
+                                <?php if (!empty($properties)): ?>
+                                    <?php foreach ($properties as $property): ?>
+                                        <tr class="property-row <?= $property['estado'] === 'en_revision' ? 'table-warning' : ($property['estado'] === 'rechazada' ? 'table-danger' : '') ?>">
+                                            <td><?= $property['id'] ?></td>
                                             <td>
-                                                <strong><?= htmlspecialchars($report['titulo']) ?></strong>
-                                                <?php if ($report['estado'] === 'pendiente'): ?>
+                                                <?php if (!empty($property['imagen_principal'])): ?>
+                                                    <img src="/uploads/properties/<?= htmlspecialchars($property['imagen_principal']) ?>" 
+                                                         alt="Imagen" class="property-image">
+                                                <?php else: ?>
+                                                    <div class="property-image bg-light d-flex align-items-center justify-content-center">
+                                                        <i class="fas fa-home text-muted"></i>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <strong><?= htmlspecialchars($property['titulo']) ?></strong>
                                                     <br>
-                                                    <small class="text-warning">
-                                                        <i class="fas fa-clock"></i> Requiere atención
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-map-marker-alt"></i> 
+                                                        <?= htmlspecialchars($property['ciudad']) ?>, <?= htmlspecialchars($property['provincia']) ?>
+                                                    </small>
+                                                    <br>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-ruler-combined"></i> 
+                                                        <?= number_format($property['metros_cuadrados']) ?> m²
+                                                    </small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="price-highlight">
+                                                    $<?= number_format($property['precio']) ?>
+                                                </div>
+                                                <?php if ($property['estado'] === 'vendida'): ?>
+                                                    <small class="text-success">
+                                                        <i class="fas fa-check-circle"></i> Vendida
                                                     </small>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <div class="report-description" title="<?= htmlspecialchars($report['descripcion']) ?>">
-                                                    <?= htmlspecialchars(substr($report['descripcion'], 0, 100)) ?>
-                                                    <?= strlen($report['descripcion']) > 100 ? '...' : '' ?>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-secondary">
-                                                    <?= ucfirst($report['tipo']) ?>
+                                                <span class="type-badge type-<?= $property['tipo'] ?>">
+                                                    <?= ucfirst($property['tipo']) ?>
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="priority-badge priority-<?= $report['prioridad'] ?>">
-                                                    <?= ucfirst($report['prioridad']) ?>
+                                                <span class="status-badge status-<?= $property['estado'] ?>">
+                                                    <?= ucfirst(str_replace('_', ' ', $property['estado'])) ?>
                                                 </span>
-                                            </td>
-                                            <td>
-                                                <span class="status-badge status-<?= $report['estado'] ?>">
-                                                    <?= ucfirst($report['estado']) ?>
-                                                </span>
+                                                <?php if ($property['destacada']): ?>
+                                                    <br>
+                                                    <small class="text-info">
+                                                        <i class="fas fa-star"></i> Destacada
+                                                    </small>
+                                                <?php endif; ?>
                                             </td>
                                             <td>
                                                 <div>
-                                                    <strong><?= htmlspecialchars($report['usuario_nombre']) ?></strong>
+                                                    <strong><?= htmlspecialchars($property['agente_nombre']) ?></strong>
                                                     <br>
-                                                    <small class="text-muted"><?= htmlspecialchars($report['usuario_email']) ?></small>
+                                                    <small class="text-muted"><?= htmlspecialchars($property['agente_email']) ?></small>
                                                 </div>
                                             </td>
-                                            <td><?= date('d/m/Y H:i', strtotime($report['fecha_reporte'])) ?></td>
+                                            <td><?= date('d/m/Y H:i', strtotime($property['fecha_creacion'])) ?></td>
                                             <td>
                                                 <div class="btn-group" role="group">
                                                     <button type="button" class="btn btn-sm btn-outline-primary" 
-                                                            onclick="viewReport(<?= $report['id'] ?>)">
+                                                            onclick="viewProperty(<?= $property['id'] ?>)">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
                                                     
-                                                    <?php if ($report['estado'] === 'pendiente'): ?>
+                                                    <?php if ($property['estado'] === 'en_revision'): ?>
                                                         <button type="button" class="btn btn-sm btn-outline-success" 
-                                                                onclick="resolveReport(<?= $report['id'] ?>, '<?= htmlspecialchars($report['titulo']) ?>')">
+                                                                onclick="approveProperty(<?= $property['id'] ?>, '<?= htmlspecialchars($property['titulo']) ?>')">
                                                             <i class="fas fa-check"></i>
                                                         </button>
                                                         <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                                onclick="dismissReport(<?= $report['id'] ?>, '<?= htmlspecialchars($report['titulo']) ?>')">
+                                                                onclick="rejectProperty(<?= $property['id'] ?>, '<?= htmlspecialchars($property['titulo']) ?>')">
                                                             <i class="fas fa-times"></i>
                                                         </button>
                                                     <?php endif; ?>
                                                     
+                                                    <?php if ($property['estado'] === 'activa'): ?>
+                                                        <button type="button" class="btn btn-sm btn-outline-info" 
+                                                                onclick="featureProperty(<?= $property['id'] ?>, '<?= htmlspecialchars($property['titulo']) ?>')">
+                                                            <i class="fas fa-star"></i>
+                                                        </button>
+                                                    <?php endif; ?>
+                                                    
                                                     <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                            onclick="deleteReport(<?= $report['id'] ?>, '<?= htmlspecialchars($report['titulo']) ?>')">
+                                                            onclick="deleteProperty(<?= $property['id'] ?>, '<?= htmlspecialchars($property['titulo']) ?>')">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </div>
@@ -456,8 +514,8 @@ if (!hasRole(ROLE_ADMIN)) {
                                 <?php else: ?>
                                     <tr>
                                         <td colspan="9" class="text-center py-4">
-                                            <i class="fas fa-flag fa-3x text-muted mb-3"></i>
-                                            <p class="text-muted">No hay reportes registrados</p>
+                                            <i class="fas fa-home fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No hay propiedades registradas</p>
                                         </td>
                                     </tr>
                                 <?php endif; ?>
@@ -469,66 +527,33 @@ if (!hasRole(ROLE_ADMIN)) {
         </div>
     </div>
 
-    <!-- Modal para Resolver Reporte -->
-    <div class="modal fade" id="resolveReportModal" tabindex="-1">
+    <!-- Modal para Rechazar Propiedad -->
+    <div class="modal fade" id="rejectPropertyModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">
-                        <i class="fas fa-check-circle"></i> Resolver Reporte
+                        <i class="fas fa-times-circle"></i> Rechazar Propiedad
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="resolveReportForm" method="POST" action="/admin/reports?action=resolve">
+                <form id="rejectPropertyForm" method="POST" action="/admin/properties?action=reject">
                     <div class="modal-body">
-                        <input type="hidden" id="resolveReportId" name="report_id">
-                        <p>Resolver reporte: <strong id="resolveReportTitle"></strong></p>
+                        <input type="hidden" id="rejectPropertyId" name="property_id">
+                        <p>Rechazar propiedad: <strong id="rejectPropertyTitle"></strong></p>
                         <div class="mb-3">
-                            <label for="resolveResponse" class="form-label">Respuesta de Resolución:</label>
-                            <textarea class="form-control" id="resolveResponse" name="respuesta" rows="4" required 
-                                      placeholder="Describe las acciones tomadas para resolver el reporte..."></textarea>
-                        </div>
-                        <div class="alert alert-success">
-                            <i class="fas fa-info-circle"></i>
-                            <strong>Información:</strong> Esta respuesta será enviada al usuario que reportó el problema.
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success">Resolver Reporte</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para Descartar Reporte -->
-    <div class="modal fade" id="dismissReportModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fas fa-times-circle"></i> Descartar Reporte
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form id="dismissReportForm" method="POST" action="/admin/reports?action=dismiss">
-                    <div class="modal-body">
-                        <input type="hidden" id="dismissReportId" name="report_id">
-                        <p>Descartar reporte: <strong id="dismissReportTitle"></strong></p>
-                        <div class="mb-3">
-                            <label for="dismissReason" class="form-label">Motivo del Descarto:</label>
-                            <textarea class="form-control" id="dismissReason" name="motivo" rows="4" required 
-                                      placeholder="Especifica el motivo por el cual se descarta este reporte..."></textarea>
+                            <label for="rejectReason" class="form-label">Motivo del Rechazo:</label>
+                            <textarea class="form-control" id="rejectReason" name="motivo" rows="4" required 
+                                      placeholder="Especifica el motivo del rechazo..."></textarea>
                         </div>
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Advertencia:</strong> Esta acción marcará el reporte como descartado y no se tomarán acciones adicionales.
+                            <strong>Advertencia:</strong> Esta acción notificará al agente sobre el rechazo de su propiedad.
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-warning">Descartar Reporte</button>
+                        <button type="submit" class="btn btn-warning">Rechazar Propiedad</button>
                     </div>
                 </form>
             </div>
@@ -544,7 +569,7 @@ if (!hasRole(ROLE_ADMIN)) {
     <script>
         // Inicializar DataTable
         $(document).ready(function() {
-            $('#reportsTable').DataTable({
+            $('#propertiesTable').DataTable({
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
                 },
@@ -553,73 +578,75 @@ if (!hasRole(ROLE_ADMIN)) {
             });
         });
 
-        // Funciones de gestión de reportes
-        function viewReport(reportId) {
-            window.location.href = `/admin/reports?action=view&id=${reportId}`;
+        // Funciones de gestión de propiedades
+        function viewProperty(propertyId) {
+            window.open(`/properties/show/${propertyId}`, '_blank');
         }
 
-        function resolveReport(reportId, reportTitle) {
-            document.getElementById('resolveReportId').value = reportId;
-            document.getElementById('resolveReportTitle').textContent = reportTitle;
-            document.getElementById('resolveResponse').value = '';
+        function approveProperty(propertyId, propertyTitle) {
+            if (confirm(`¿Estás seguro de que quieres APROBAR la propiedad "${propertyTitle}"?\n\nEsta acción hará que la propiedad sea visible públicamente.`)) {
+                window.location.href = `/admin/properties?action=approve&id=${propertyId}`;
+            }
+        }
+
+        function rejectProperty(propertyId, propertyTitle) {
+            document.getElementById('rejectPropertyId').value = propertyId;
+            document.getElementById('rejectPropertyTitle').textContent = propertyTitle;
+            document.getElementById('rejectReason').value = '';
             
-            const modal = new bootstrap.Modal(document.getElementById('resolveReportModal'));
+            const modal = new bootstrap.Modal(document.getElementById('rejectPropertyModal'));
             modal.show();
         }
 
-        function dismissReport(reportId, reportTitle) {
-            document.getElementById('dismissReportId').value = reportId;
-            document.getElementById('dismissReportTitle').textContent = reportTitle;
-            document.getElementById('dismissReason').value = '';
-            
-            const modal = new bootstrap.Modal(document.getElementById('dismissReportModal'));
-            modal.show();
+        function featureProperty(propertyId, propertyTitle) {
+            if (confirm(`¿Estás seguro de que quieres DESTACAR la propiedad "${propertyTitle}"?\n\nEsta propiedad aparecerá en posiciones destacadas del sitio.`)) {
+                window.location.href = `/admin/properties?action=feature&id=${propertyId}`;
+            }
         }
 
-        function deleteReport(reportId, reportTitle) {
-            if (confirm(`¿Estás seguro de que quieres ELIMINAR PERMANENTEMENTE el reporte "${reportTitle}"?\n\n⚠️ ESTA ACCIÓN NO SE PUEDE DESHACER ⚠️`)) {
+        function deleteProperty(propertyId, propertyTitle) {
+            if (confirm(`¿Estás seguro de que quieres ELIMINAR PERMANENTEMENTE la propiedad "${propertyTitle}"?\n\n⚠️ ESTA ACCIÓN NO SE PUEDE DESHACER ⚠️\n\nSe eliminarán todas las imágenes y datos asociados.`)) {
                 if (confirm('¿CONFIRMAS la eliminación? Esta es tu última oportunidad para cancelar.')) {
-                    window.location.href = `/admin/reports?action=delete&id=${reportId}`;
+                    window.location.href = `/admin/properties?action=delete&id=${propertyId}`;
                 }
             }
         }
 
-        function exportReports() {
-            // Implementar exportación de reportes
+        function exportProperties() {
+            // Implementar exportación de propiedades
             alert('Función de exportación en desarrollo');
         }
 
         // Filtros
-        $('#statusFilter, #priorityFilter, #typeFilter').change(function() {
+        $('#statusFilter, #typeFilter, #cityFilter').change(function() {
             const status = $('#statusFilter').val();
-            const priority = $('#priorityFilter').val();
             const type = $('#typeFilter').val();
+            const city = $('#cityFilter').val();
             
-            $('#reportsTable tbody tr').each(function() {
+            $('#propertiesTable tbody tr').each(function() {
                 const row = $(this);
-                const reportStatus = row.find('td:nth-child(6)').text().toLowerCase().trim();
-                const reportPriority = row.find('td:nth-child(5)').text().toLowerCase().trim();
-                const reportType = row.find('td:nth-child(4)').text().toLowerCase().trim();
+                const propertyStatus = row.find('td:nth-child(6)').text().toLowerCase().trim();
+                const propertyType = row.find('td:nth-child(5)').text().toLowerCase().trim();
+                const propertyCity = row.find('td:nth-child(3)').text().toLowerCase();
                 
                 let show = true;
                 
-                if (status && reportStatus !== status) show = false;
-                if (priority && reportPriority !== priority) show = false;
-                if (type && reportType !== type) show = false;
+                if (status && propertyStatus !== status) show = false;
+                if (type && propertyType !== type) show = false;
+                if (city && !propertyCity.includes(city.toLowerCase())) show = false;
                 
                 row.toggle(show);
             });
         });
 
-        $('#searchReport').keyup(function() {
+        $('#searchProperty').keyup(function() {
             const searchTerm = $(this).val().toLowerCase();
             
-            $('#reportsTable tbody tr').each(function() {
+            $('#propertiesTable tbody tr').each(function() {
                 const row = $(this);
-                const reportTitle = row.find('td:nth-child(2)').text().toLowerCase();
-                const reportDescription = row.find('td:nth-child(3)').text().toLowerCase();
+                const propertyTitle = row.find('td:nth-child(3)').text().toLowerCase();
                 
-                if (reportTitle.includes(searchTerm) || reportDescription.includes(searchTerm)) {
+                if (propertyTitle.includes(searchTerm)) {
                     row.show();
                 } else {
                     row.hide();

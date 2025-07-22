@@ -82,6 +82,11 @@ class ReporteIrregularidad {
             $params[] = $filtros['tipo_reporte'];
         }
         
+        if (!empty($filtros['prioridad'])) {
+            $whereConditions[] = "r.prioridad = ?";
+            $params[] = $filtros['prioridad'];
+        }
+        
         if (!empty($filtros['usuario_id'])) {
             $whereConditions[] = "r.usuario_id = ?";
             $params[] = $filtros['usuario_id'];
@@ -95,6 +100,13 @@ class ReporteIrregularidad {
         if (!empty($filtros['fecha_hasta'])) {
             $whereConditions[] = "r.fecha_reporte <= ?";
             $params[] = $filtros['fecha_hasta'];
+        }
+        
+        // Filtro de búsqueda (busca en título, descripción y nombre del usuario)
+        if (!empty($filtros['search'])) {
+            $searchTerm = '%' . $filtros['search'] . '%';
+            $whereConditions[] = "(r.titulo LIKE ? OR r.descripcion LIKE ? OR u.nombre LIKE ? OR u.apellido LIKE ?)";
+            $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm, $searchTerm]);
         }
         
         if (!empty($whereConditions)) {
@@ -126,18 +138,56 @@ class ReporteIrregularidad {
      * Actualizar el estado de un reporte
      * 
      * @param int $id ID del reporte
-     * @param string $estado Nuevo estado
-     * @param string $respuesta Respuesta del administrador
-     * @param int $adminId ID del administrador responsable
-     * @return bool True si se actualizó correctamente
+     * @param string $estado Nuevo estado (pendiente, atendido, descartado)
+     * @param string|null $respuesta Respuesta del administrador
+     * @param int|null $adminId ID del administrador responsable
+     * @return bool True si se actualizó correctamente, false en caso contrario
      */
     public function actualizarEstado($id, $estado, $respuesta = null, $adminId = null) {
-        $sql = "UPDATE reportes_irregularidades 
-                SET estado = ?, respuesta_admin = ?, admin_responsable_id = ?, 
+        try {
+            // Validar parámetros
+            if (!$id || !$estado) {
+                error_log("actualizarEstado: Parámetros inválidos - ID: $id, Estado: $estado");
+                return false;
+            }
+            
+            // Validar estado
+            $estadosValidos = ['pendiente', 'atendido', 'descartado'];
+            if (!in_array($estado, $estadosValidos)) {
+                error_log("actualizarEstado: Estado inválido - $estado");
+                return false;
+            }
+            
+            // Construir la consulta SQL
+            $sql = "UPDATE reportes_irregularidades SET 
+                    estado = ?, 
+                    respuesta_admin = ?, 
+                    admin_responsable_id = ?,
                     fecha_respuesta = CURRENT_TIMESTAMP
-                WHERE id = ?";
-        
-        return $this->db->update($sql, [$estado, $respuesta, $adminId, $id]) !== false;
+                    WHERE id = ?";
+            
+            // Ejecutar la actualización
+            $result = $this->db->update($sql, [$estado, $respuesta, $adminId, $id]);
+            
+            // Verificar el resultado
+            if ($result === false) {
+                error_log("actualizarEstado: Error en la consulta SQL");
+                return false;
+            }
+            
+            // Verificar que se afectó al menos una fila
+            if ($result <= 0) {
+                error_log("actualizarEstado: No se encontró el reporte con ID $id");
+                return false;
+            }
+            
+            error_log("actualizarEstado: Reporte $id actualizado exitosamente a estado '$estado'");
+            return true;
+            
+        } catch (Exception $e) {
+            error_log("actualizarEstado: Excepción - " . $e->getMessage());
+            return false;
+        }
     }
     
     /**

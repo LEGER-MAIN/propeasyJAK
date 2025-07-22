@@ -85,6 +85,14 @@ class User {
         $userId = $this->db->insert($query, array_values($userData));
         
         if ($userId) {
+            // Registrar actividad
+            require_once APP_PATH . '/models/ActivityLog.php';
+            ActivityLog::log($userId, 'register', $this->table, $userId, [
+                'nombre' => $userData['nombre'],
+                'apellido' => $userData['apellido'],
+                'rol' => $userData['rol']
+            ]);
+            
             // Enviar email de verificación
             $this->sendVerificationEmail($userData['email'], $verificationToken, $userData['nombre']);
             
@@ -146,6 +154,13 @@ class User {
         
         // Actualizar último acceso
         $this->updateLastAccess($user['id']);
+        
+        // Registrar actividad de login
+        require_once APP_PATH . '/models/ActivityLog.php';
+        ActivityLog::log($user['id'], 'login', $this->table, $user['id'], [
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? ''
+        ]);
         
         // Crear sesión del usuario
         $this->createUserSession($user);
@@ -323,7 +338,7 @@ class User {
      */
     public function getById($id) {
         $query = "SELECT id, nombre, apellido, email, telefono, ciudad, sector, rol, estado, 
-                         email_verificado, fecha_registro, ultimo_acceso 
+                         email_verificado, token_verificacion, fecha_registro, ultimo_acceso 
                   FROM {$this->table} WHERE id = ?";
         return $this->db->selectOne($query, [$id]);
     }
@@ -494,6 +509,15 @@ class User {
      * Cerrar sesión del usuario
      */
     public function logout() {
+        // Registrar actividad de logout si hay usuario en sesión
+        if (isset($_SESSION['user_id'])) {
+            require_once APP_PATH . '/models/ActivityLog.php';
+            ActivityLog::log($_SESSION['user_id'], 'logout', $this->table, $_SESSION['user_id'], [
+                'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? ''
+            ]);
+        }
+        
         // Destruir sesión
         session_destroy();
         
@@ -1476,9 +1500,8 @@ class User {
      * @return int Total de usuarios con ese rol
      */
     public function getUsersByRole($role) {
-        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE rol = ?";
-        $resultado = $this->db->selectOne($query, [$role]);
-        return $resultado ? (int)$resultado['total'] : 0;
+        $query = "SELECT * FROM {$this->table} WHERE rol = ? ORDER BY fecha_registro DESC";
+        return $this->db->select($query, [$role]);
     }
     
     /**
@@ -1522,7 +1545,134 @@ class User {
      */
     public function changeUserStatus($userId, $newStatus) {
         $query = "UPDATE {$this->table} SET estado = ? WHERE id = ?";
-        return $this->db->update($query, [$newStatus, $userId]);
+        $result = $this->db->update($query, [$newStatus, $userId]);
+        
+        // Registrar actividad
+        if ($result) {
+            require_once APP_PATH . '/models/ActivityLog.php';
+            $user = $this->getById($userId);
+            if ($user) {
+                ActivityLog::log($_SESSION['user_id'] ?? 1, 'update', $this->table, $userId, [
+                    'campo' => 'estado',
+                    'valor_anterior' => $user['estado'],
+                    'valor_nuevo' => $newStatus,
+                    'usuario_afectado' => $user['nombre'] . ' ' . $user['apellido']
+                ]);
+            }
+        }
+        
+        return $result;
+    }
+    
+    /**
+     * Cambiar rol de usuario
+     * 
+     * @param int $userId ID del usuario
+     * @param string $newRole Nuevo rol
+     * @return bool True si se actualizó correctamente
+     */
+    public function changeUserRole($userId, $newRole) {
+        $query = "UPDATE {$this->table} SET rol = ? WHERE id = ?";
+        $result = $this->db->update($query, [$newRole, $userId]);
+        
+        // Registrar actividad
+        if ($result) {
+            require_once APP_PATH . '/models/ActivityLog.php';
+            $user = $this->getById($userId);
+            if ($user) {
+                ActivityLog::log($_SESSION['user_id'] ?? 1, 'update', $this->table, $userId, [
+                    'campo' => 'rol',
+                    'valor_anterior' => $user['rol'],
+                    'valor_nuevo' => $newRole,
+                    'usuario_afectado' => $user['nombre'] . ' ' . $user['apellido']
+                ]);
+            }
+        }
+        
+        return $result;
+    }
+    
+    /**
+     * Eliminar usuario
+     * 
+     * @param int $userId ID del usuario
+     * @return bool True si se eliminó correctamente
+     */
+    public function deleteUser($userId) {
+        // Verificar que no sea el usuario actual
+        if ($userId == ($_SESSION['user_id'] ?? 0)) {
+            return false;
+        }
+        
+        $query = "DELETE FROM {$this->table} WHERE id = ?";
+        $result = $this->db->delete($query, [$userId]);
+        
+        // Registrar actividad
+        if ($result) {
+            require_once APP_PATH . '/models/ActivityLog.php';
+            ActivityLog::log($_SESSION['user_id'] ?? 1, 'delete', $this->table, $userId, [
+                'accion' => 'usuario_eliminado',
+                'eliminado_por' => $_SESSION['user_nombre'] ?? 'Administrador'
+            ]);
+        }
+        
+        return $result;
+    }
+    
+    /**
+     * Actualizar usuario por administrador
+     * 
+     * @param int $userId ID del usuario
+     * @param array $data Datos a actualizar
+     * @return bool True si se actualizó correctamente
+     */
+    public function updateUserByAdmin($userId, $data) {
+        // Preparar campos a actualizar
+        $updateFields = [];
+        $params = [];
+        
+        $fields = ['nombre', 'apellido', 'email', 'telefono', 'rol', 'estado', 'ciudad', 'sector'];
+        
+        foreach ($fields as $field) {
+            if (isset($data[$field])) {
+                $updateFields[] = "{$field} = ?";
+                $params[] = $data[$field];
+            }
+        }
+        
+        // Agregar contraseña si se proporciona
+        if (isset($data['password'])) {
+            $updateFields[] = "password = ?";
+            $params[] = $data['password'];
+        }
+        
+        // Agregar fecha de actualización (solo si la columna existe)
+        // $updateFields[] = "fecha_actualizacion = NOW()";
+        
+        if (empty($updateFields)) {
+            return false;
+        }
+        
+        // Construir query
+        $query = "UPDATE {$this->table} SET " . implode(', ', $updateFields) . " WHERE id = ?";
+        $params[] = $userId;
+        
+        $result = $this->db->update($query, $params);
+        
+        // Registrar actividad
+        if ($result) {
+            require_once APP_PATH . '/models/ActivityLog.php';
+            $user = $this->getById($userId);
+            if ($user) {
+                ActivityLog::log($_SESSION['user_id'] ?? 1, 'update', $this->table, $userId, [
+                    'accion' => 'usuario_actualizado_por_admin',
+                    'usuario_afectado' => $user['nombre'] . ' ' . $user['apellido'],
+                    'campos_actualizados' => array_keys($data)
+                ]);
+            }
+        }
+        
+        return $result;
     }
     
     /**
@@ -1618,5 +1768,176 @@ class User {
                   LEFT JOIN calificaciones_agentes ca ON u.id = ca.agente_id
                   WHERE u.id = ? AND u.rol = 'agente'";
         return $this->db->selectOne($query, [$agentId]);
+    }
+    
+    /**
+     * Obtener el total de usuarios en el sistema
+     * 
+     * @return int Total de usuarios
+     */
+    public function getTotalCount() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table}";
+        $result = $this->db->selectOne($query);
+        return $result ? (int)$result['total'] : 0;
+    }
+    
+    /**
+     * Obtener el total de usuarios por rol
+     * 
+     * @param string $role Rol del usuario
+     * @return int Total de usuarios con ese rol
+     */
+    public function getCountByRole($role) {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE rol = ?";
+        $result = $this->db->selectOne($query, [$role]);
+        return $result ? (int)$result['total'] : 0;
+    }
+    
+    /**
+     * Obtener usuarios por estado específico
+     */
+    public function getUsersByStatusCount($status) {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE estado = ?";
+        $result = $this->db->selectOne($query, [$status]);
+        return $result ? (int)$result['total'] : 0;
+    }
+    
+    /**
+     * Obtener usuarios nuevos hoy
+     */
+    public function getNewUsersToday() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE DATE(fecha_registro) = CURDATE()";
+        $result = $this->db->selectOne($query);
+        return $result ? (int)$result['total'] : 0;
+    }
+    
+    /**
+     * Obtener usuarios nuevos esta semana
+     */
+    public function getNewUsersThisWeek() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE YEARWEEK(fecha_registro) = YEARWEEK(NOW())";
+        $result = $this->db->selectOne($query);
+        return $result ? (int)$result['total'] : 0;
+    }
+    
+    /**
+     * Obtener usuarios activos por rol
+     */
+    public function getActiveUsersByRole($role) {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE rol = ? AND estado = 'activo'";
+        $result = $this->db->selectOne($query, [$role]);
+        return $result ? (int)$result['total'] : 0;
+    }
+    
+    /**
+     * Obtener datos de usuarios por período (semana, trimestre, año)
+     * @param string $periodType 'week', 'quarter', 'year'
+     * @param int $limit Número de períodos a obtener
+     * @return array ['labels' => [], 'data' => []]
+     */
+    public function getUsersByPeriod($periodType, $limit) {
+        $query = "";
+        $labels = [];
+        $data = [];
+
+        switch ($periodType) {
+            case 'week':
+                // Get data for the last 'limit' weeks
+                $query = "SELECT
+                            YEARWEEK(fecha_registro, 1) as period_key,
+                            COUNT(*) as total
+                          FROM {$this->table}
+                          WHERE fecha_registro >= DATE_SUB(CURDATE(), INTERVAL ? WEEK)
+                          GROUP BY period_key
+                          ORDER BY period_key ASC";
+                $results = $this->db->select($query, [$limit]);
+
+                // Generate labels and map data
+                for ($i = $limit - 1; $i >= 0; $i--) {
+                    $labels[] = 'Sem ' . ($limit - $i);
+                    $data[] = 0; // Initialize with 0
+                }
+
+                // Map actual data to the correct positions
+                foreach ($results as $row) {
+                    $data[] = (int)$row['total'];
+                }
+                
+                // Ensure we have exactly 'limit' data points
+                while (count($data) < $limit) {
+                    $data[] = 0;
+                }
+                $data = array_slice($data, -$limit);
+                
+                return ['labels' => $labels, 'data' => $data];
+
+            case 'quarter':
+                $query = "SELECT
+                            CONCAT(YEAR(fecha_registro), '-Q', QUARTER(fecha_registro)) as period_key,
+                            COUNT(*) as total
+                          FROM {$this->table}
+                          WHERE fecha_registro >= DATE_SUB(CURDATE(), INTERVAL ? QUARTER)
+                          GROUP BY period_key
+                          ORDER BY period_key ASC";
+                $results = $this->db->select($query, [$limit]);
+
+                $currentQuarter = (int)ceil(date('n') / 3);
+                $currentYear = (int)date('Y');
+                for ($i = $limit - 1; $i >= 0; $i--) {
+                    $qOffset = $i;
+                    $targetQuarter = $currentQuarter - $qOffset;
+                    $targetYear = $currentYear;
+                    while ($targetQuarter <= 0) {
+                        $targetQuarter += 4;
+                        $targetYear--;
+                    }
+                    $labels[] = $targetYear . '-Q' . $targetQuarter;
+                    $data[] = 0;
+                }
+
+                // Map actual data
+                foreach ($results as $row) {
+                    $data[] = (int)$row['total'];
+                }
+                
+                while (count($data) < $limit) {
+                    $data[] = 0;
+                }
+                $data = array_slice($data, -$limit);
+                
+                return ['labels' => $labels, 'data' => $data];
+
+            case 'year':
+                $query = "SELECT
+                            YEAR(fecha_registro) as period_key,
+                            COUNT(*) as total
+                          FROM {$this->table}
+                          WHERE fecha_registro >= DATE_SUB(CURDATE(), INTERVAL ? YEAR)
+                          GROUP BY period_key
+                          ORDER BY period_key ASC";
+                $results = $this->db->select($query, [$limit]);
+
+                $currentYear = (int)date('Y');
+                for ($i = $limit - 1; $i >= 0; $i--) {
+                    $year = $currentYear - $i;
+                    $labels[] = (string)$year;
+                    $data[] = 0;
+                }
+
+                // Map actual data
+                foreach ($results as $row) {
+                    $data[] = (int)$row['total'];
+                }
+                
+                while (count($data) < $limit) {
+                    $data[] = 0;
+                }
+                $data = array_slice($data, -$limit);
+                
+                return ['labels' => $labels, 'data' => $data];
+
+            default:
+                return ['labels' => [], 'data' => []];
+        }
     }
 } 

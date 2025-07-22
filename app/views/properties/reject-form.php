@@ -1,4 +1,12 @@
-<?php require_once APP_PATH . '/views/layouts/main.php'; ?>
+<?php
+/**
+ * Vista de Formulario de Rechazo de Propiedad
+ * PropEasy - Sistema Web de Venta de Bienes Raíces
+ */
+
+require_once APP_PATH . '/helpers/PropertyHelper.php';
+require_once APP_PATH . '/views/layouts/main.php';
+?>
 
 <div class="container mt-4">
     <div class="row justify-content-center">
@@ -38,7 +46,7 @@
                             <div class="row mb-3">
                                 <div class="col-6">
                                     <small class="text-muted">Tipo</small>
-                                    <div class="fw-bold"><?= ucfirst($property['tipo']) ?></div>
+                                    <div class="fw-bold"><?= getPropertyTypeDisplayName($property['tipo']) ?></div>
                                 </div>
                                 <div class="col-6">
                                     <small class="text-muted">Precio</small>

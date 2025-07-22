@@ -12,7 +12,7 @@ require_once __DIR__ . '/database.php';
 
 // Configuración de errores
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 ini_set('error_log', __DIR__ . '/../logs/error.log');
 
@@ -71,13 +71,17 @@ if (!defined('SMTP_PASS')) define('SMTP_PASS', 'pytxdgkuxcatapyn');
 if (!defined('SMTP_FROM')) define('SMTP_FROM', 'propeasycorp@gmail.com');
 if (!defined('SMTP_FROM_NAME')) define('SMTP_FROM_NAME', 'PropEasy - Sistema de Bienes Raíces');
 
+// Configuración de Email de Soporte
+if (!defined('SUPPORT_EMAIL')) define('SUPPORT_EMAIL', 'propeasy.soporte@gmail.com');
+if (!defined('SUPPORT_PHONE')) define('SUPPORT_PHONE', '809 359 5322');
+
 // Configuración de la aplicación
 if (!defined('APP_NAME')) define('APP_NAME', 'PropEasy');
 if (!defined('APP_URL')) define('APP_URL', 'http://localhost');
 if (!defined('APP_VERSION')) define('APP_VERSION', '1.0.0');
 
 // Configuración de entorno
-if (!defined('APP_ENV')) define('APP_ENV', 'development');
+if (!defined('APP_ENV')) define('APP_ENV', 'production');
 
 // Función para mostrar errores detallados en modo desarrollo
 function showDetailedError($error, $file = '', $line = '') {

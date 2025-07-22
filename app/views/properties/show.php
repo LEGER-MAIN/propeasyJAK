@@ -6,6 +6,8 @@
  * Esta vista muestra los detalles completos de una propiedad
  */
 
+require_once APP_PATH . '/helpers/PropertyHelper.php';
+
 // Incluir el layout principal
 $content = ob_start();
 ?>
@@ -119,7 +121,7 @@ $content = ob_start();
                 <!-- Badges -->
                 <div class="flex flex-wrap gap-2 mb-6">
                     <span class="px-3 py-1 rounded-full text-sm font-medium" style="background-color: rgba(29, 53, 87, 0.1); color: var(--color-azul-marino);">
-                        <?= ucfirst(str_replace('_', ' ', $property['tipo'])) ?>
+                                                 <?= getPropertyTypeDisplayName($property['tipo']) ?>
                     </span>
                     <span class="px-3 py-1 rounded-full text-sm font-medium" style="background-color: rgba(233, 196, 106, 0.2); color: var(--color-dorado-suave);">
                         Estado: <?= ucfirst(str_replace('_', ' ', $property['estado_propiedad'])) ?>

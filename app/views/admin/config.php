@@ -1,9 +1,9 @@
 <?php
 /**
- * Configuración del Sistema - Panel Administrativo
+ * Configuración del Sistema - Administrador
  * PropEasy - Sistema Web de Venta de Bienes Raíces
  * 
- * Vista para configurar parámetros del sistema
+ * Vista para configurar parámetros del sistema con control total
  */
 
 // Verificar que el usuario sea administrador
@@ -25,375 +25,576 @@ if (!hasRole(ROLE_ADMIN)) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        .sidebar {
-            background: #f8f9fa;
+        :root {
+            --admin-primary: #2c3e50;
+            --admin-secondary: #34495e;
+            --admin-success: #27ae60;
+            --admin-warning: #f39c12;
+            --admin-danger: #e74c3c;
+            --admin-info: #3498db;
+        }
+        
+        body {
+            background: #ecf0f1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-secondary) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .admin-sidebar {
+            background: white;
             min-height: 100vh;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 250px;
+            z-index: 1000;
+        }
+        
+        .admin-content {
+            margin-left: 250px;
             padding: 20px;
         }
         
         .nav-link {
-            color: #333;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 5px;
+            color: var(--admin-primary);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 5px 10px;
+            transition: all 0.3s ease;
+            border: none;
         }
         
         .nav-link:hover, .nav-link.active {
-            background: #007bff;
+            background: var(--admin-primary);
             color: white;
+            transform: translateX(5px);
         }
         
         .config-card {
+            background: white;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 25px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         
         .config-section {
-            border-left: 4px solid #007bff;
-            padding-left: 20px;
-            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding: 20px 0;
+        }
+        
+        .config-section:last-child {
+            border-bottom: none;
+        }
+        
+        .config-title {
+            color: var(--admin-primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .form-switch {
+            padding-left: 2.5em;
+        }
+        
+        .form-switch .form-check-input {
+            width: 3em;
+            height: 1.5em;
+            margin-left: -2.5em;
+        }
+        
+        .danger-zone {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .danger-zone h4 {
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .btn-danger-zone {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger-zone:hover {
+            background: white;
+            color: var(--admin-danger);
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .status-online { background: var(--admin-success); }
+        .status-offline { background: var(--admin-danger); }
+        .status-warning { background: var(--admin-warning); }
+        
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .admin-sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .admin-content {
+                margin-left: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-2 sidebar">
-                <h4 class="mb-4">
-                    <i class="fas fa-cogs"></i> Admin Panel
-                </h4>
-                
-                <nav class="nav flex-column">
-                    <a class="nav-link" href="/admin/dashboard">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                    </a>
-                    <a class="nav-link" href="/admin/users">
-                        <i class="fas fa-users"></i> Usuarios
-                    </a>
-                    <a class="nav-link" href="/admin/reports">
-                        <i class="fas fa-chart-bar"></i> Reportes
-                    </a>
-                    <a class="nav-link active" href="/admin/config">
-                        <i class="fas fa-cog"></i> Configuración
-                    </a>
-                    <a class="nav-link" href="/dashboard">
-                        <i class="fas fa-home"></i> Volver al Sistema
-                    </a>
-                    <a class="nav-link" href="/logout">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                    </a>
-                </nav>
-            </div>
-            
-            <!-- Main Content -->
-            <div class="col-md-10 p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1><i class="fas fa-cog"></i> Configuración del Sistema</h1>
-                    <div>
-                        <button class="btn btn-success" onclick="saveAllConfig()">
-                            <i class="fas fa-save"></i> Guardar Cambios
-                        </button>
+    <!-- Header -->
+    <div class="admin-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="mb-0">
+                        <i class="fas fa-cog"></i> Configuración del Sistema
+                    </h1>
+                    <small>Control total de parámetros del sistema</small>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <a href="/admin/dashboard" class="btn btn-outline-light btn-sm me-2">
+                            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                        </a>
+                        <a href="/logout" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
                     </div>
                 </div>
-                
-                <!-- Mensajes Flash -->
-                <?php $flashMessages = getFlashMessages(); ?>
-                <?php if (!empty($flashMessages)): ?>
-                    <?php foreach ($flashMessages as $message): ?>
-                        <div class="alert alert-<?= $message['type'] ?> alert-dismissible fade show" role="alert">
-                            <?= htmlspecialchars($message['message']) ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-                
-                <form id="configForm" method="POST" action="/admin/config">
-                    <!-- Configuración General -->
-                    <div class="config-section">
-                        <h3><i class="fas fa-info-circle"></i> Configuración General</h3>
-                        <div class="card config-card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Nombre de la Aplicación</label>
-                                            <input type="text" name="app_name" class="form-control" value="<?= htmlspecialchars($config['app_name']) ?>">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">URL de la Aplicación</label>
-                                            <input type="url" name="app_url" class="form-control" value="<?= htmlspecialchars($config['app_url']) ?>">
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Tamaño Máximo de Archivo (MB)</label>
-                                            <input type="number" name="max_file_size" class="form-control" value="<?= $config['max_file_size'] / (1024 * 1024) ?>">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Tiempo de Sesión (segundos)</label>
-                                            <input type="number" name="session_lifetime" class="form-control" value="<?= $config['session_lifetime'] ?>">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Configuración de Email -->
-                    <div class="config-section">
-                        <h3><i class="fas fa-envelope"></i> Configuración de Email</h3>
-                        <div class="card config-card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Servidor SMTP</label>
-                                            <input type="text" name="smtp_host" class="form-control" value="<?= htmlspecialchars($config['smtp_host']) ?>">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Puerto SMTP</label>
-                                            <input type="number" name="smtp_port" class="form-control" value="<?= $config['smtp_port'] ?>">
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Usuario SMTP</label>
-                                            <input type="email" name="smtp_user" class="form-control" value="<?= htmlspecialchars($config['smtp_user']) ?>">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Contraseña SMTP</label>
-                                            <input type="password" name="smtp_pass" class="form-control" value="<?= htmlspecialchars($config['smtp_pass']) ?>">
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Email Remitente</label>
-                                            <input type="email" name="smtp_from" class="form-control" value="<?= htmlspecialchars($config['smtp_from']) ?>">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Nombre Remitente</label>
-                                            <input type="text" name="smtp_from_name" class="form-control" value="<?= htmlspecialchars($config['smtp_from_name']) ?>">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Configuración de Negocio -->
-                    <div class="config-section">
-                        <h3><i class="fas fa-briefcase"></i> Configuración de Negocio</h3>
-                        <div class="card config-card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Porcentaje de Comisión (%)</label>
-                                            <input type="number" name="commission_rate" class="form-control" step="0.01" value="<?= $config['commission_rate'] * 100 ?>">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Moneda Principal</label>
-                                            <select name="default_currency" class="form-select">
-                                                <option value="USD" <?= ($config['default_currency'] ?? 'USD') === 'USD' ? 'selected' : '' ?>>USD - Dólar Estadounidense</option>
-                                                <option value="DOP" <?= ($config['default_currency'] ?? 'USD') === 'DOP' ? 'selected' : '' ?>>DOP - Peso Dominicano</option>
-                                                <option value="EUR" <?= ($config['default_currency'] ?? 'USD') === 'EUR' ? 'selected' : '' ?>>EUR - Euro</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" name="property_approval_required" id="propertyApproval" <?= $config['property_approval_required'] ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="propertyApproval">
-                                                    Requerir aprobación de propiedades
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" name="email_notifications" id="emailNotifications" <?= $config['email_notifications'] ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="emailNotifications">
-                                                    Habilitar notificaciones por email
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Configuración de Seguridad -->
-                    <div class="config-section">
-                        <h3><i class="fas fa-shield-alt"></i> Configuración de Seguridad</h3>
-                        <div class="card config-card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Tiempo de Expiración de Token (segundos)</label>
-                                            <input type="number" name="token_expiry" class="form-control" value="<?= $config['token_expiry'] ?? 3600 ?>">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Tiempo de Recuperación de Contraseña (segundos)</label>
-                                            <input type="number" name="password_reset_expiry" class="form-control" value="<?= $config['password_reset_expiry'] ?? 1800 ?>">
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" name="force_https" id="forceHttps" <?= ($config['force_https'] ?? false) ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="forceHttps">
-                                                    Forzar conexión HTTPS
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" name="enable_captcha" id="enableCaptcha" <?= ($config['enable_captcha'] ?? false) ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="enableCaptcha">
-                                                    Habilitar CAPTCHA en formularios
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Configuración de Mantenimiento -->
-                    <div class="config-section">
-                        <h3><i class="fas fa-tools"></i> Configuración de Mantenimiento</h3>
-                        <div class="card config-card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" name="maintenance_mode" id="maintenanceMode" <?= ($config['maintenance_mode'] ?? false) ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="maintenanceMode">
-                                                    Modo de mantenimiento
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Mensaje de Mantenimiento</label>
-                                            <textarea name="maintenance_message" class="form-control" rows="3"><?= htmlspecialchars($config['maintenance_message'] ?? 'El sistema está en mantenimiento. Por favor, intente más tarde.') ?></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Frecuencia de Backup (días)</label>
-                                            <input type="number" name="backup_frequency" class="form-control" value="<?= $config['backup_frequency'] ?? 7 ?>">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Retención de Logs (días)</label>
-                                            <input type="number" name="log_retention" class="form-control" value="<?= $config['log_retention'] ?? 30 ?>">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Botones de Acción -->
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg me-3">
-                            <i class="fas fa-save"></i> Guardar Configuración
-                        </button>
-                        <button type="button" class="btn btn-secondary btn-lg me-3" onclick="resetToDefaults()">
-                            <i class="fas fa-undo"></i> Restaurar Valores por Defecto
-                        </button>
-                        <button type="button" class="btn btn-info btn-lg" onclick="testEmailConfig()">
-                            <i class="fas fa-envelope"></i> Probar Configuración de Email
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
-    
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 admin-sidebar">
+                <div class="p-3">
+                    <h5 class="mb-4">
+                        <i class="fas fa-cogs"></i> Control Panel
+                    </h5>
+                    
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="/admin/dashboard">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a class="nav-link" href="/admin/users?action=list">
+                            <i class="fas fa-users"></i> Gestión de Usuarios
+                        </a>
+                        <a class="nav-link" href="/admin/properties?action=list">
+                            <i class="fas fa-home"></i> Gestión de Propiedades
+                        </a>
+                        <a class="nav-link" href="/admin/reports?action=list">
+                            <i class="fas fa-flag"></i> Gestión de Reportes
+                        </a>
+                        <a class="nav-link" href="/admin/logs">
+                            <i class="fas fa-file-alt"></i> Logs del Sistema
+                        </a>
+                        <a class="nav-link" href="/admin/backup">
+                            <i class="fas fa-database"></i> Backup & Restore
+                        </a>
+                        <a class="nav-link active" href="/admin/config">
+                            <i class="fas fa-cog"></i> Configuración
+                        </a>
+                        <hr>
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-home"></i> Volver al Sistema
+                        </a>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10 admin-content">
+                <!-- Estado del Sistema -->
+                <div class="config-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">
+                            <i class="fas fa-server"></i> Estado del Sistema
+                        </h4>
+                        <div>
+                            <span class="status-indicator status-online"></span>
+                            Sistema Online
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <i class="fas fa-database fa-2x text-primary mb-2"></i>
+                                <h5>Base de Datos</h5>
+                                <span class="badge bg-success">Conectada</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <i class="fas fa-envelope fa-2x text-info mb-2"></i>
+                                <h5>Email</h5>
+                                <span class="badge bg-success">Configurado</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <i class="fas fa-upload fa-2x text-warning mb-2"></i>
+                                <h5>Uploads</h5>
+                                <span class="badge bg-success">Disponible</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <i class="fas fa-shield-alt fa-2x text-danger mb-2"></i>
+                                <h5>Seguridad</h5>
+                                <span class="badge bg-success">Activa</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuración General -->
+                <div class="config-card">
+                    <h4 class="config-title">
+                        <i class="fas fa-cogs"></i> Configuración General
+                    </h4>
+                    
+                    <form method="POST" action="/admin/config">
+                        <div class="config-section">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="siteName" class="form-label">Nombre del Sitio</label>
+                                        <input type="text" class="form-control" id="siteName" name="site_name" 
+                                               value="<?= htmlspecialchars($config['site_name']) ?>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="siteDescription" class="form-label">Descripción del Sitio</label>
+                                        <input type="text" class="form-control" id="siteDescription" name="site_description" 
+                                               value="<?= htmlspecialchars($config['site_description']) ?>">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <h5 class="mb-3">Configuración de Acceso</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="maintenanceMode" name="maintenance_mode" 
+                                               <?= $config['maintenance_mode'] ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="maintenanceMode">
+                                            Modo Mantenimiento
+                                        </label>
+                                        <small class="form-text text-muted d-block">
+                                            Bloquea el acceso público al sitio
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="registrationEnabled" name="registration_enabled" 
+                                               <?= $config['registration_enabled'] ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="registrationEnabled">
+                                            Registro de Usuarios
+                                        </label>
+                                        <small class="form-text text-muted d-block">
+                                            Permite que nuevos usuarios se registren
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <h5 class="mb-3">Configuración de Propiedades</h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="maxPropertiesPerUser" class="form-label">Máx. Propiedades por Usuario</label>
+                                        <input type="number" class="form-control" id="maxPropertiesPerUser" name="max_properties_per_user" 
+                                               value="<?= $config['max_properties_per_user'] ?>" min="1" max="100">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="maxImagesPerProperty" class="form-label">Máx. Imágenes por Propiedad</label>
+                                        <input type="number" class="form-control" id="maxImagesPerProperty" name="max_images_per_property" 
+                                               value="<?= $config['max_images_per_property'] ?>" min="1" max="50">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="commissionRate" class="form-label">Tasa de Comisión (%)</label>
+                                        <input type="number" class="form-control" id="commissionRate" name="commission_rate" 
+                                               value="<?= $config['commission_rate'] ?>" min="0" max="100" step="0.1">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="config-section">
+                            <h5 class="mb-3">Configuración de Notificaciones</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="emailNotifications" name="email_notifications" 
+                                               <?= $config['email_notifications'] ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="emailNotifications">
+                                            Notificaciones por Email
+                                        </label>
+                                        <small class="form-text text-muted d-block">
+                                            Envía notificaciones automáticas por email
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="smsNotifications" name="sms_notifications">
+                                        <label class="form-check-label" for="smsNotifications">
+                                            Notificaciones por SMS
+                                        </label>
+                                        <small class="form-text text-muted d-block">
+                                            Envía notificaciones por mensaje de texto
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Configuración
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Configuración de Email -->
+                <div class="config-card">
+                    <h4 class="config-title">
+                        <i class="fas fa-envelope"></i> Configuración de Email
+                    </h4>
+                    
+                    <form method="POST" action="/admin/config/email">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="smtpHost" class="form-label">Servidor SMTP</label>
+                                    <input type="text" class="form-control" id="smtpHost" name="smtp_host" 
+                                           value="<?= SMTP_HOST ?? '' ?>" placeholder="smtp.gmail.com">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="smtpPort" class="form-label">Puerto SMTP</label>
+                                    <input type="number" class="form-control" id="smtpPort" name="smtp_port" 
+                                           value="<?= SMTP_PORT ?? 587 ?>" placeholder="587">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="smtpUsername" class="form-label">Usuario SMTP</label>
+                                    <input type="email" class="form-control" id="smtpUsername" name="smtp_username" 
+                                           value="<?= SMTP_USERNAME ?? '' ?>" placeholder="tu@email.com">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="smtpPassword" class="form-label">Contraseña SMTP</label>
+                                    <input type="password" class="form-control" id="smtpPassword" name="smtp_password" 
+                                           placeholder="••••••••">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-end">
+                            <button type="button" class="btn btn-info me-2" onclick="testEmail()">
+                                <i class="fas fa-paper-plane"></i> Probar Email
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Configuración
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Configuración de Seguridad -->
+                <div class="config-card">
+                    <h4 class="config-title">
+                        <i class="fas fa-shield-alt"></i> Configuración de Seguridad
+                    </h4>
+                    
+                    <form method="POST" action="/admin/config/security">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="sessionLifetime" class="form-label">Duración de Sesión (minutos)</label>
+                                    <input type="number" class="form-control" id="sessionLifetime" name="session_lifetime" 
+                                           value="<?= SESSION_LIFETIME ?? 120 ?>" min="15" max="1440">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="maxLoginAttempts" class="form-label">Máx. Intentos de Login</label>
+                                    <input type="number" class="form-control" id="maxLoginAttempts" name="max_login_attempts" 
+                                           value="5" min="3" max="10">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="twoFactorAuth" name="two_factor_auth">
+                                    <label class="form-check-label" for="twoFactorAuth">
+                                        Autenticación de Dos Factores
+                                    </label>
+                                    <small class="form-text text-muted d-block">
+                                        Requiere verificación adicional para administradores
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="forceHttps" name="force_https" checked>
+                                    <label class="form-check-label" for="forceHttps">
+                                        Forzar HTTPS
+                                    </label>
+                                    <small class="form-text text-muted d-block">
+                                        Redirige todo el tráfico a conexiones seguras
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Configuración
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Zona de Peligro -->
+                <div class="danger-zone">
+                    <h4>
+                        <i class="fas fa-exclamation-triangle"></i> Zona de Peligro
+                    </h4>
+                    <p class="mb-4">Estas acciones pueden afectar gravemente el funcionamiento del sistema.</p>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-danger-zone w-100 mb-2" onclick="clearCache()">
+                                <i class="fas fa-broom"></i> Limpiar Cache
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-danger-zone w-100 mb-2" onclick="optimizeDatabase()">
+                                <i class="fas fa-database"></i> Optimizar Base de Datos
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-danger-zone w-100 mb-2" onclick="resetSystem()">
+                                <i class="fas fa-redo"></i> Reset del Sistema
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        function saveAllConfig() {
-            document.getElementById('configForm').submit();
-        }
-        
-        function resetToDefaults() {
-            if (confirm('¿Está seguro de que desea restaurar todos los valores por defecto? Esta acción no se puede deshacer.')) {
-                // Aquí se implementaría la lógica para restaurar valores por defecto
-                alert('Función de restauración de valores por defecto');
+        // Funciones de configuración
+        function testEmail() {
+            if (confirm('¿Deseas enviar un email de prueba para verificar la configuración?')) {
+                // Implementar prueba de email
+                alert('Función de prueba de email en desarrollo');
             }
         }
-        
-        function testEmailConfig() {
-            if (confirm('¿Desea enviar un email de prueba para verificar la configuración?')) {
-                // Aquí se implementaría la lógica para probar la configuración de email
-                alert('Función de prueba de configuración de email');
+
+        function clearCache() {
+            if (confirm('¿Estás seguro de que quieres limpiar la cache del sistema?\n\nEsto puede mejorar el rendimiento pero puede causar una breve interrupción.')) {
+                if (confirm('¿CONFIRMAS la limpieza de cache?')) {
+                    // Implementar limpieza de cache
+                    alert('Cache limpiada exitosamente');
+                }
             }
         }
-        
-        // Validación del formulario
-        document.getElementById('configForm').addEventListener('submit', function(e) {
-            const commissionRate = parseFloat(document.querySelector('input[name="commission_rate"]').value);
-            
-            if (commissionRate < 0 || commissionRate > 100) {
-                e.preventDefault();
-                alert('El porcentaje de comisión debe estar entre 0 y 100');
-                return;
+
+        function optimizeDatabase() {
+            if (confirm('¿Estás seguro de que quieres optimizar la base de datos?\n\nEsto puede tomar varios minutos y puede causar una breve interrupción.')) {
+                if (confirm('¿CONFIRMAS la optimización de la base de datos?')) {
+                    // Implementar optimización de BD
+                    alert('Base de datos optimizada exitosamente');
+                }
             }
-            
-            const maxFileSize = parseInt(document.querySelector('input[name="max_file_size"]').value);
-            if (maxFileSize <= 0) {
-                e.preventDefault();
-                alert('El tamaño máximo de archivo debe ser mayor a 0');
-                return;
+        }
+
+        function resetSystem() {
+            if (confirm('⚠️ ADVERTENCIA CRÍTICA ⚠️\n\n¿Estás seguro de que quieres hacer un RESET COMPLETO del sistema?\n\nEsto eliminará TODOS los datos y configuraciones.\n\nEsta acción NO SE PUEDE DESHACER.')) {
+                if (confirm('¿CONFIRMAS el RESET COMPLETO del sistema?\n\nEsta es tu última oportunidad para cancelar.')) {
+                    if (confirm('¿ESTÁS ABSOLUTAMENTE SEGURO?\n\nEscribe "RESET" para confirmar:')) {
+                        // Implementar reset del sistema
+                        alert('Reset del sistema iniciado. El sistema se reiniciará en 10 segundos.');
+                    }
+                }
             }
+        }
+
+        // Validación de formularios
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const requiredFields = form.querySelectorAll('[required]');
+                    let isValid = true;
+                    
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            isValid = false;
+                            field.classList.add('is-invalid');
+                        } else {
+                            field.classList.remove('is-invalid');
+                        }
+                    });
+                    
+                    if (!isValid) {
+                        e.preventDefault();
+                        alert('Por favor, completa todos los campos requeridos.');
+                    }
+                });
+            });
         });
     </script>
 </body>

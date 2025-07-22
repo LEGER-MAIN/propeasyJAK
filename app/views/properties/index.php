@@ -6,6 +6,8 @@
  * Esta vista muestra el listado público de propiedades con filtros de búsqueda
  */
 
+require_once APP_PATH . '/helpers/PropertyHelper.php';
+
 // Incluir el layout principal
 $content = ob_start();
 ?>
@@ -233,7 +235,7 @@ $content = ob_start();
                         <!-- Badge de tipo -->
                         <div class="absolute top-2 left-2">
                             <span class="bg-primary-600 text-white px-2 py-1 rounded text-xs font-medium">
-                                <?= ucfirst(str_replace('_', ' ', $property['tipo'])) ?>
+                                <?= getPropertyTypeDisplayName($property['tipo']) ?>
                             </span>
                         </div>
                         

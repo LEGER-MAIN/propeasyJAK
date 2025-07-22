@@ -4,6 +4,8 @@
  * PropEasy - Sistema Web de Venta de Bienes Raíces
  */
 
+require_once APP_PATH . '/helpers/PropertyHelper.php';
+
 // Verificar que las variables necesarias estén definidas
 if (!isset($properties)) $properties = [];
 if (!isset($stats)) $stats = ['total' => 0, 'en_revision' => 0, 'activas' => 0, 'rechazadas' => 0];
@@ -213,7 +215,7 @@ $content = ob_start();
                                                     <?= htmlspecialchars($property['ciudad']) ?>, <?= htmlspecialchars($property['sector']) ?>
                                                 </p>
                                                 <p class="text-sm font-medium text-primary-600">
-                                                    $<?= number_format($property['precio'], 2) ?> - <?= ucfirst(str_replace('_', ' ', $property['tipo'])) ?>
+                                                    $<?= number_format($property['precio'], 2) ?> - <?= getPropertyTypeDisplayName($property['tipo']) ?>
                                                 </p>
                                             </div>
                                         </div>

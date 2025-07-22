@@ -235,13 +235,56 @@ class Router {
         $this->get('/profile', 'AuthController@showProfile');
         $this->post('/profile', 'AuthController@updateProfile');
         
-        // Rutas de administrador
+        // Rutas de administrador - Panel de Control Total
         $this->get('/admin/dashboard', 'AdminController@dashboard');
         $this->get('/admin/users', 'AdminController@manageUsers');
+        $this->post('/admin/users', 'AdminController@manageUsers');
+        $this->get('/admin/users/change-role/{id}', 'AdminController@showChangeRoleForm');
+        $this->post('/admin/users/change-role/{id}', 'AdminController@changeUserRole');
         $this->post('/admin/users/change-status', 'AdminController@changeUserStatus');
-        $this->get('/admin/reports', 'AdminController@reports');
+        $this->post('/admin/users/block', 'AdminController@blockUser');
+        $this->post('/admin/users/unblock', 'AdminController@unblockUser');
+        $this->post('/admin/users/delete', 'AdminController@deleteUser');
+        
+        // Gestión de propiedades
+        $this->get('/admin/properties', 'AdminController@manageProperties');
+        $this->post('/admin/properties/approve', 'AdminController@approveProperty');
+        $this->post('/admin/properties/reject', 'AdminController@rejectProperty');
+
+        $this->post('/admin/properties/delete', 'AdminController@deleteProperty');
+        
+        // Gestión de favoritos del admin
+        $this->post('/admin/favorites/toggle', 'AdminController@toggleFavorite');
+        $this->get('/admin/favorites', 'AdminController@getFavorites');
+        $this->post('/admin/favorites/remove', 'AdminController@removeFavorite');
+        
+        // Gestión de Reportes
+        $this->get('/admin/reports', 'AdminController@manageReports');
+        $this->get('/admin/reports/view/{id}', 'AdminController@viewReport');
+        $this->get('/admin/reports/{action}/{id}', 'AdminController@manageReports');
+        $this->post('/admin/reports', 'AdminController@manageReports');
+        
+        // Configuración del sistema
         $this->get('/admin/config', 'AdminController@systemConfig');
-        $this->post('/admin/config', 'AdminController@systemConfig');
+        $this->post('/admin/config', 'AdminController@updateSystemConfig');
+        $this->post('/admin/config/email', 'AdminController@updateEmailConfig');
+        $this->post('/admin/config/security', 'AdminController@updateSecurityConfig');
+        
+        // Logs del sistema
+        $this->get('/admin/logs', 'AdminController@systemLogs');
+        $this->post('/admin/logs/clear', 'AdminController@clearLogs');
+        $this->post('/admin/logs/delete', 'AdminController@deleteLog');
+        
+        // Backup y Restore
+        $this->get('/admin/backup', 'AdminController@systemBackup');
+        $this->post('/admin/backup/create', 'AdminController@createBackup');
+        $this->post('/admin/backup/restore', 'AdminController@restoreBackup');
+        $this->post('/admin/backup/delete', 'AdminController@deleteBackup');
+        $this->post('/admin/backup/config', 'AdminController@updateBackupConfig');
+        $this->get('/admin/backup/download/{id}', 'AdminController@downloadBackup');
+        
+        // Endpoint AJAX para datos de gráficos
+        $this->get('/admin/chart-data', 'AdminController@getChartData');
         
         // Rutas de agente
         $this->get('/agente/dashboard', 'AgenteController@showDashboard');
@@ -369,9 +412,6 @@ class Router {
         $this->post('/reportes/guardar', 'ReporteController@guardar');
         $this->get('/reportes/mis-reportes', 'ReporteController@misReportes');
         $this->get('/reportes/mostrar/{id}', 'ReporteController@mostrar');
-        $this->get('/reportes/admin', 'ReporteController@admin');
-        $this->post('/reportes/actualizar-estado', 'ReporteController@actualizarEstado');
-        $this->post('/reportes/eliminar', 'ReporteController@eliminar');
         
         // Rutas de reportes de citas (solo administradores)
         $this->get('/reportes/citas', 'ReporteController@citas');

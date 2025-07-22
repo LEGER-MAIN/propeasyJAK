@@ -1,9 +1,9 @@
 <?php
 /**
- * Gestión de Usuarios - Panel Administrativo
+ * Gestión Completa de Usuarios - Administrador
  * PropEasy - Sistema Web de Venta de Bienes Raíces
  * 
- * Vista para gestionar usuarios del sistema (agentes, clientes, administradores)
+ * Vista para gestionar usuarios con control total (bloquear, eliminar, cambiar roles)
  */
 
 // Verificar que el usuario sea administrador
@@ -23,333 +23,515 @@ if (!hasRole(ROLE_ADMIN)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- DataTables -->
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     
     <style>
-        .sidebar {
-            background: #f8f9fa;
+        :root {
+            --admin-primary: #2c3e50;
+            --admin-secondary: #34495e;
+            --admin-success: #27ae60;
+            --admin-warning: #f39c12;
+            --admin-danger: #e74c3c;
+            --admin-info: #3498db;
+        }
+        
+        body {
+            background: #ecf0f1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-secondary) 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .admin-sidebar {
+            background: white;
             min-height: 100vh;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 250px;
+            z-index: 1000;
+        }
+        
+        .admin-content {
+            margin-left: 250px;
             padding: 20px;
         }
         
         .nav-link {
-            color: #333;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 5px;
+            color: var(--admin-primary);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 5px 10px;
+            transition: all 0.3s ease;
+            border: none;
         }
         
         .nav-link:hover, .nav-link.active {
-            background: #007bff;
+            background: var(--admin-primary);
             color: white;
+            transform: translateX(5px);
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         
         .user-card {
+            background: white;
             border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            border-left: 4px solid var(--admin-primary);
+            transition: transform 0.3s ease;
+        }
+        
+        .user-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .user-card.suspended {
+            border-left-color: var(--admin-danger);
+            opacity: 0.7;
+        }
+        
+        .user-card.admin {
+            border-left-color: var(--admin-danger);
+        }
+        
+        .user-card.agent {
+            border-left-color: var(--admin-warning);
+        }
+        
+        .user-card.client {
+            border-left-color: var(--admin-success);
         }
         
         .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
             font-size: 0.8rem;
-            padding: 5px 10px;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: var(--admin-success);
+            color: white;
+        }
+        
+        .status-suspended {
+            background: var(--admin-danger);
+            color: white;
         }
         
         .role-badge {
-            font-size: 0.7rem;
-            padding: 3px 8px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .role-admin {
+            background: var(--admin-danger);
+            color: white;
+        }
+        
+        .role-agent {
+            background: var(--admin-warning);
+            color: white;
+        }
+        
+        .role-client {
+            background: var(--admin-success);
+            color: white;
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            margin: 2px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            color: white;
+        }
+        
+        .btn-edit {
+            background: var(--admin-info);
+            color: white;
+        }
+        
+        .btn-block {
+            background: var(--admin-warning);
+            color: white;
+        }
+        
+        .btn-unblock {
+            background: var(--admin-success);
+            color: white;
+        }
+        
+        .btn-delete {
+            background: var(--admin-danger);
+            color: white;
+        }
+        
+        .btn-change-role {
+            background: var(--admin-primary);
+            color: white;
+        }
+        
+        .stats-summary {
+            background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-secondary) 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .admin-sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .admin-content {
+                margin-left: 0;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <div class="admin-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="mb-0">
+                        <i class="fas fa-users"></i> Gestión de Usuarios
+                    </h1>
+                    <small>Control total de usuarios del sistema</small>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <a href="/admin/dashboard" class="btn btn-outline-light btn-sm me-2">
+                            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                        </a>
+                        <a href="/logout" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-2 sidebar">
-                <h4 class="mb-4">
-                    <i class="fas fa-cogs"></i> Admin Panel
-                </h4>
-                
-                <nav class="nav flex-column">
-                    <a class="nav-link" href="/admin/dashboard">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                    </a>
-                    <a class="nav-link active" href="/admin/users">
-                        <i class="fas fa-users"></i> Usuarios
-                    </a>
-                    <a class="nav-link" href="/admin/reports">
-                        <i class="fas fa-chart-bar"></i> Reportes
-                    </a>
-                    <a class="nav-link" href="/admin/config">
-                        <i class="fas fa-cog"></i> Configuración
-                    </a>
-                    <a class="nav-link" href="/dashboard">
-                        <i class="fas fa-home"></i> Volver al Sistema
-                    </a>
-                    <a class="nav-link" href="/logout">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                    </a>
-                </nav>
+            <div class="col-md-2 admin-sidebar">
+                <div class="p-3">
+                    <h5 class="mb-4">
+                        <i class="fas fa-cogs"></i> Control Panel
+                    </h5>
+                    
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="/admin/dashboard">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a class="nav-link active" href="/admin/users?action=list">
+                            <i class="fas fa-users"></i> Gestión de Usuarios
+                        </a>
+                        <a class="nav-link" href="/admin/properties?action=list">
+                            <i class="fas fa-home"></i> Gestión de Propiedades
+                        </a>
+                        <a class="nav-link" href="/admin/reports?action=list">
+                            <i class="fas fa-flag"></i> Gestión de Reportes
+                        </a>
+                        <a class="nav-link" href="/admin/logs">
+                            <i class="fas fa-file-alt"></i> Logs del Sistema
+                        </a>
+                        <a class="nav-link" href="/admin/backup">
+                            <i class="fas fa-database"></i> Backup & Restore
+                        </a>
+                        <a class="nav-link" href="/admin/config">
+                            <i class="fas fa-cog"></i> Configuración
+                        </a>
+                        <hr>
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-home"></i> Volver al Sistema
+                        </a>
+                    </nav>
+                </div>
             </div>
             
             <!-- Main Content -->
-            <div class="col-md-10 p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1><i class="fas fa-users"></i> Gestión de Usuarios</h1>
-                    <div>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                            <i class="fas fa-plus"></i> Agregar Usuario
-                        </button>
+            <div class="col-md-10 admin-content">
+                <!-- Resumen de Estadísticas -->
+                <div class="stats-summary">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h3><?= number_format(count($users)) ?></h3>
+                            <p class="mb-0">Total Usuarios</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h3><?= number_format(array_filter($users, fn($u) => $u['rol'] === 'admin')->count()) ?></h3>
+                            <p class="mb-0">Administradores</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h3><?= number_format(array_filter($users, fn($u) => $u['rol'] === 'agente')->count()) ?></h3>
+                            <p class="mb-0">Agentes</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h3><?= number_format(array_filter($users, fn($u) => $u['rol'] === 'cliente')->count()) ?></h3>
+                            <p class="mb-0">Clientes</p>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Filtros -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <form method="GET" class="row g-3">
-                            <div class="col-md-3">
-                                <label class="form-label">Rol</label>
-                                <select name="role" class="form-select">
-                                    <option value="">Todos los roles</option>
-                                    <option value="admin" <?= ($_GET['role'] ?? '') === 'admin' ? 'selected' : '' ?>>Administrador</option>
-                                    <option value="agente" <?= ($_GET['role'] ?? '') === 'agente' ? 'selected' : '' ?>>Agente</option>
-                                    <option value="cliente" <?= ($_GET['role'] ?? '') === 'cliente' ? 'selected' : '' ?>>Cliente</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Estado</label>
-                                <select name="status" class="form-select">
-                                    <option value="">Todos los estados</option>
-                                    <option value="activo" <?= ($_GET['status'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
-                                    <option value="inactivo" <?= ($_GET['status'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
-                                    <option value="pendiente" <?= ($_GET['status'] ?? '') === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Buscar</label>
-                                <input type="text" name="search" class="form-control" placeholder="Nombre, email..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">&nbsp;</label>
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fas fa-search"></i> Buscar
-                                </button>
-                            </div>
-                        </form>
+
+                <!-- Filtros y Búsqueda -->
+                <div class="filter-section">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <label for="roleFilter" class="form-label">Filtrar por Rol:</label>
+                            <select class="form-select" id="roleFilter">
+                                <option value="">Todos los roles</option>
+                                <option value="admin">Administradores</option>
+                                <option value="agente">Agentes</option>
+                                <option value="cliente">Clientes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="statusFilter" class="form-label">Filtrar por Estado:</label>
+                            <select class="form-select" id="statusFilter">
+                                <option value="">Todos los estados</option>
+                                <option value="activo">Activos</option>
+                                <option value="suspendido">Suspendidos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="searchUser" class="form-label">Buscar Usuario:</label>
+                            <input type="text" class="form-control" id="searchUser" placeholder="Nombre, email...">
+                        </div>
                     </div>
                 </div>
-                
+
                 <!-- Lista de Usuarios -->
-                <div class="row">
-                    <?php if (!empty($users)): ?>
-                        <?php foreach ($users as $user): ?>
-                            <div class="col-md-6 col-lg-4">
-                                <div class="card user-card">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <div>
-                                                <h5 class="card-title mb-1">
-                                                    <?= htmlspecialchars($user['nombre'] . ' ' . $user['apellido']) ?>
-                                                </h5>
-                                                <p class="text-muted mb-0">
-                                                    <i class="fas fa-envelope"></i> <?= htmlspecialchars($user['email']) ?>
-                                                </p>
-                                            </div>
-                                            <div class="text-end">
-                                                <?php
-                                                $roleClass = '';
-                                                switch ($user['rol']) {
-                                                    case 'admin':
-                                                        $roleClass = 'bg-danger';
-                                                        break;
-                                                    case 'agente':
-                                                        $roleClass = 'bg-primary';
-                                                        break;
-                                                    case 'cliente':
-                                                        $roleClass = 'bg-success';
-                                                        break;
-                                                }
-                                                ?>
-                                                <span class="badge <?= $roleClass ?> role-badge">
+                <div class="content-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">
+                            <i class="fas fa-list"></i> Lista de Usuarios
+                        </h4>
+                        <div>
+                            <button class="btn btn-success" onclick="exportUsers()">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="usersTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Usuario</th>
+                                    <th>Email</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Registro</th>
+                                    <th>Último Acceso</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($users)): ?>
+                                    <?php foreach ($users as $user): ?>
+                                        <tr class="user-row <?= $user['estado'] === 'suspendido' ? 'table-danger' : '' ?>">
+                                            <td><?= $user['id'] ?></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="me-3">
+                                                        <i class="fas fa-user-circle fa-2x text-muted"></i>
+                                                    </div>
+                                                    <div>
+                                                        <strong><?= htmlspecialchars($user['nombre'] . ' ' . $user['apellido']) ?></strong>
+                                                        <br>
+                                                        <small class="text-muted">@<?= htmlspecialchars($user['username']) ?></small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><?= htmlspecialchars($user['email']) ?></td>
+                                            <td>
+                                                <span class="role-badge role-<?= $user['rol'] ?>">
                                                     <?= ucfirst($user['rol']) ?>
                                                 </span>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <p class="mb-1">
-                                                <i class="fas fa-phone"></i> <?= htmlspecialchars($user['telefono']) ?>
-                                            </p>
-                                            <p class="mb-1">
-                                                <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($user['ciudad']) ?>
-                                            </p>
-                                            <p class="mb-0">
-                                                <i class="fas fa-calendar"></i> Registrado: <?= date('d/m/Y', strtotime($user['fecha_registro'])) ?>
-                                            </p>
-                                        </div>
-                                        
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <?php
-                                                $statusClass = $user['estado'] === 'activo' ? 'bg-success' : 
-                                                             ($user['estado'] === 'inactivo' ? 'bg-danger' : 'bg-warning');
-                                                ?>
-                                                <span class="badge <?= $statusClass ?> status-badge">
+                                            </td>
+                                            <td>
+                                                <span class="status-badge status-<?= $user['estado'] ?>">
                                                     <?= ucfirst($user['estado']) ?>
                                                 </span>
-                                            </div>
-                                            <div class="btn-group">
-                                                <button class="btn btn-sm btn-outline-primary" onclick="editUser(<?= $user['id'] ?>)">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger" onclick="deleteUser(<?= $user['id'] ?>)">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="col-12">
-                            <div class="alert alert-info text-center">
-                                <i class="fas fa-info-circle"></i> No se encontraron usuarios con los filtros aplicados.
-                            </div>
-                        </div>
-                    <?php endif; ?>
+                                            </td>
+                                            <td><?= date('d/m/Y H:i', strtotime($user['fecha_registro'])) ?></td>
+                                            <td><?= $user['ultimo_acceso'] ? date('d/m/Y H:i', strtotime($user['ultimo_acceso'])) : 'Nunca' ?></td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                            onclick="editUser(<?= $user['id'] ?>)">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    
+                                                    <?php if ($user['estado'] === 'activo'): ?>
+                                                        <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                                onclick="blockUser(<?= $user['id'] ?>, '<?= htmlspecialchars($user['nombre'] . ' ' . $user['apellido']) ?>')">
+                                                            <i class="fas fa-ban"></i>
+                                                        </button>
+                                                    <?php else: ?>
+                                                        <button type="button" class="btn btn-sm btn-outline-success" 
+                                                                onclick="unblockUser(<?= $user['id'] ?>, '<?= htmlspecialchars($user['nombre'] . ' ' . $user['apellido']) ?>')">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    <?php endif; ?>
+                                                    
+
+                                                    
+                                                    <?php if ($user['id'] != $_SESSION['user_id']): ?>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                                onclick="deleteUser(<?= $user['id'] ?>, '<?= htmlspecialchars($user['nombre'] . ' ' . $user['apellido']) ?>')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4">
+                                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No hay usuarios registrados</p>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                
-                <!-- Paginación -->
-                <?php if (isset($pagination) && $pagination['pages'] > 1): ?>
-                    <nav aria-label="Paginación de usuarios">
-                        <ul class="pagination justify-content-center">
-                            <?php for ($i = 1; $i <= $pagination['pages']; $i++): ?>
-                                <li class="page-item <?= $i == $pagination['page'] ? 'active' : '' ?>">
-                                    <a class="page-link" href="?page=<?= $i ?>&role=<?= $_GET['role'] ?? '' ?>&status=<?= $_GET['status'] ?? '' ?>&search=<?= $_GET['search'] ?? '' ?>">
-                                        <?= $i ?>
-                                    </a>
-                                </li>
-                            <?php endfor; ?>
-                        </ul>
-                    </nav>
-                <?php endif; ?>
             </div>
         </div>
     </div>
-    
-    <!-- Modal para agregar/editar usuario -->
-    <div class="modal fade" id="addUserModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Agregar Usuario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form id="userForm" method="POST" action="/admin/users/add">
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Nombre *</label>
-                                    <input type="text" name="nombre" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Apellido *</label>
-                                    <input type="text" name="apellido" class="form-control" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Email *</label>
-                                    <input type="email" name="email" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Teléfono *</label>
-                                    <input type="tel" name="telefono" class="form-control" required>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Rol *</label>
-                                    <select name="rol" class="form-select" required>
-                                        <option value="">Seleccionar rol</option>
-                                        <option value="admin">Administrador</option>
-                                        <option value="agente">Agente</option>
-                                        <option value="cliente">Cliente</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Estado *</label>
-                                    <select name="estado" class="form-select" required>
-                                        <option value="activo">Activo</option>
-                                        <option value="inactivo">Inactivo</option>
-                                        <option value="pendiente">Pendiente</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Ciudad</label>
-                            <input type="text" name="ciudad" class="form-control">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Contraseña *</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Confirmar Contraseña *</label>
-                            <input type="password" name="password_confirm" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Usuario</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
+
+
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
     
     <script>
+        // Inicializar DataTable
+        $(document).ready(function() {
+            $('#usersTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                },
+                pageLength: 25,
+                order: [[0, 'desc']]
+            });
+        });
+
+        // Funciones de gestión de usuarios
         function editUser(userId) {
-            // Implementar edición de usuario
-            alert('Función de edición para usuario ID: ' + userId);
+            window.location.href = `/admin/users?action=edit&id=${userId}`;
         }
-        
-        function deleteUser(userId) {
-            if (confirm('¿Está seguro de que desea eliminar este usuario?')) {
-                // Implementar eliminación de usuario
-                alert('Función de eliminación para usuario ID: ' + userId);
+
+        function blockUser(userId, userName) {
+            if (confirm(`¿Estás seguro de que quieres BLOQUEAR al usuario "${userName}"?\n\nEsta acción impedirá que el usuario acceda al sistema.`)) {
+                window.location.href = `/admin/users?action=block&id=${userId}`;
             }
         }
-        
-        // Validación del formulario
-        document.getElementById('userForm').addEventListener('submit', function(e) {
-            const password = document.querySelector('input[name="password"]').value;
-            const passwordConfirm = document.querySelector('input[name="password_confirm"]').value;
+
+        function unblockUser(userId, userName) {
+            if (confirm(`¿Estás seguro de que quieres DESBLOQUEAR al usuario "${userName}"?\n\nEsta acción permitirá que el usuario acceda nuevamente al sistema.`)) {
+                window.location.href = `/admin/users?action=unblock&id=${userId}`;
+            }
+        }
+
+
+
+        function deleteUser(userId, userName) {
+            if (confirm(`¿Estás seguro de que quieres ELIMINAR PERMANENTEMENTE al usuario "${userName}"?\n\n⚠️ ESTA ACCIÓN NO SE PUEDE DESHACER ⚠️\n\nSe eliminarán todos los datos asociados al usuario.`)) {
+                if (confirm('¿CONFIRMAS la eliminación? Esta es tu última oportunidad para cancelar.')) {
+                    window.location.href = `/admin/users?action=delete&id=${userId}`;
+                }
+            }
+        }
+
+        function exportUsers() {
+            // Implementar exportación de usuarios
+            alert('Función de exportación en desarrollo');
+        }
+
+        // Filtros
+        $('#roleFilter, #statusFilter').change(function() {
+            const role = $('#roleFilter').val();
+            const status = $('#statusFilter').val();
             
-            if (password !== passwordConfirm) {
-                e.preventDefault();
-                alert('Las contraseñas no coinciden');
-            }
+            $('#usersTable tbody tr').each(function() {
+                const row = $(this);
+                const userRole = row.find('td:nth-child(4)').text().toLowerCase().trim();
+                const userStatus = row.find('td:nth-child(5)').text().toLowerCase().trim();
+                
+                let show = true;
+                
+                if (role && userRole !== role) show = false;
+                if (status && userStatus !== status) show = false;
+                
+                row.toggle(show);
+            });
+        });
+
+        $('#searchUser').keyup(function() {
+            const searchTerm = $(this).val().toLowerCase();
+            
+            $('#usersTable tbody tr').each(function() {
+                const row = $(this);
+                const userName = row.find('td:nth-child(2)').text().toLowerCase();
+                const userEmail = row.find('td:nth-child(3)').text().toLowerCase();
+                
+                if (userName.includes(searchTerm) || userEmail.includes(searchTerm)) {
+                    row.show();
+                } else {
+                    row.hide();
+                }
+            });
         });
     </script>
 </body>
