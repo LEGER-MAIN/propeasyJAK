@@ -17,7 +17,7 @@ ob_start();
             
             <!-- Búsqueda rápida -->
             <div class="max-w-5xl mx-auto">
-                <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 p-8">
+                <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 p-8 hero-section">
                     <form action="/properties" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div class="space-y-2">
                             <label for="tipo" class="block text-sm font-semibold mb-2" style="color: var(--color-azul-marino) !important; font-weight: 700; font-size: 14px;">
@@ -47,10 +47,15 @@ ob_start();
                                    class="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-gray-800 font-medium shadow-sm hover:border-gray-400 placeholder-gray-500">
                         </div>
                         <div class="flex items-end space-x-3">
-                            <button type="submit" class="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white px-6 py-3 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold text-lg" style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); border: none;">
-                                <i class="fas fa-search mr-2"></i> Buscar Propiedades
+                            <button type="submit" 
+                                    class="flex-1 px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                                    style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); color: white; border: none; min-height: 56px;">
+                                <i class="fas fa-search"></i>
                             </button>
-                            <button type="button" id="limpiarFiltros" class="btn btn-outline-secondary px-6 py-3 rounded-xl font-semibold text-lg">
+                            <button type="button" 
+                                    id="limpiarFiltros" 
+                                    class="px-6 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+                                    style="background-color: white; color: var(--text-primary); border: 2px solid var(--color-gris-claro); min-height: 56px;">
                                 <i class="fas fa-times mr-2"></i> Limpiar
                             </button>
                         </div>
@@ -334,11 +339,58 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('ciudad').value = '';
             document.getElementById('precio_max').value = '';
             
-            // Efecto visual de confirmación
+            // Efecto visual de confirmación mejorado
+            const originalText = this.innerHTML;
+            const originalBg = this.style.background;
+            const originalColor = this.style.color;
+            const originalBorder = this.style.border;
+            
+            this.innerHTML = '<i class="fas fa-check mr-2"></i>¡Limpiado!';
+            this.style.background = 'var(--color-verde-esmeralda)';
+            this.style.color = 'white';
+            this.style.border = '2px solid var(--color-verde-esmeralda)';
             this.style.transform = 'scale(0.95)';
+            
             setTimeout(() => {
+                this.innerHTML = originalText;
+                this.style.background = originalBg;
+                this.style.color = originalColor;
+                this.style.border = originalBorder;
                 this.style.transform = 'scale(1)';
-            }, 150);
+            }, 1500);
+            
+            // Enfocar el primer campo después de limpiar
+            setTimeout(() => {
+                document.getElementById('tipo').focus();
+            }, 1600);
+        });
+    }
+    
+    // Mejorar la experiencia del formulario de búsqueda
+    const searchForm = document.querySelector('form[action="/properties"]');
+    if (searchForm) {
+        const submitBtn = searchForm.querySelector('button[type="submit"]');
+        
+        // Efecto de carga al enviar el formulario
+        searchForm.addEventListener('submit', function() {
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Buscando...';
+            submitBtn.disabled = true;
+            
+            // Restaurar después de un tiempo (en caso de que no se envíe)
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 3000);
+        });
+        
+        // Validación en tiempo real
+        const inputs = searchForm.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                const hasValues = Array.from(inputs).some(input => input.value.trim() !== '');
+                submitBtn.style.opacity = hasValues ? '1' : '0.8';
+            });
         });
     }
 });

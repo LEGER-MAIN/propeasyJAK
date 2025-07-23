@@ -223,33 +223,19 @@ $content = ob_start();
                     </div>
                     
                     <div class="mt-6">
-                        <div class="flex space-x-2">
-                            <?php if (!empty($property['agente_email'])): ?>
-                                <a href="mailto:<?= htmlspecialchars($property['agente_email']) ?>?subject=Consulta sobre <?= urlencode($property['titulo']) ?>&body=Hola <?= htmlspecialchars($property['agente_nombre']) ?>,%0D%0A%0D%0AMe interesa la propiedad: <?= urlencode($property['titulo']) ?>%0D%0APrecio: $<?= number_format($property['precio']) ?> <?= $property['moneda'] ?>%0D%0A%0D%0APor favor, contáctame para más información.%0D%0A%0D%0ASaludos," 
-                                   class="btn btn-primary flex-1 text-center py-2 px-4 rounded-md"
-                                   title="Enviar email a <?= htmlspecialchars($property['agente_nombre']) ?>"
-                                   onclick="trackContact('email', '<?= htmlspecialchars($property['agente_email']) ?>')">
-                                    <i class="fas fa-envelope mr-2"></i>Email
-                                </a>
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($property['agente_telefono'])): ?>
-                                <a href="tel:<?= htmlspecialchars($property['agente_telefono']) ?>" 
-                                   class="btn btn-success flex-1 text-center py-2 px-4 rounded-md"
-                                   title="Llamar a <?= htmlspecialchars($property['agente_nombre']) ?>"
-                                   onclick="trackContact('phone', '<?= htmlspecialchars($property['agente_telefono']) ?>')">
-                                    <i class="fas fa-phone mr-2"></i>Llamar
-                                </a>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <?php if (empty($property['agente_email']) && empty($property['agente_telefono'])): ?>
-                            <div class="text-center py-3 px-4 rounded-md" style="background-color: var(--bg-secondary); border: 1px solid var(--color-gris-claro);">
-                                <p class="text-sm" style="color: var(--text-secondary);">
-                                    <i class="fas fa-info-circle mr-2"></i>
-                                    Información de contacto no disponible
-                                </p>
-                            </div>
+                        <?php if (isAuthenticated()): ?>
+                            <a href="/chat/simple?agent=<?= $property['agente_id'] ?>&property=<?= $property['id'] ?>" 
+                               class="btn btn-primary w-full text-center py-3 px-4 rounded-md flex items-center justify-center"
+                               title="Contactar a <?= htmlspecialchars($property['agente_nombre']) ?> por chat"
+                               onclick="trackContact('chat', '<?= htmlspecialchars($property['agente_nombre']) ?>')">
+                                <i class="fas fa-comments mr-2"></i>Contactar
+                            </a>
+                        <?php else: ?>
+                            <a href="/login?redirect=/properties/show/<?= $property['id'] ?>" 
+                               class="btn btn-primary w-full text-center py-3 px-4 rounded-md flex items-center justify-center"
+                               title="Inicia sesión para contactar al agente">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión para Contactar
+                            </a>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -321,32 +307,19 @@ function trackContact(type, contact) {
     const button = event.target.closest('a');
     const originalText = button.innerHTML;
     
-    if (type === 'email') {
-        button.innerHTML = '<i class="fas fa-check mr-2"></i>Email Enviado';
+    if (type === 'chat') {
+        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Abriendo Chat...';
         button.style.backgroundColor = 'var(--color-verde-esmeralda)';
         button.style.color = 'white';
         
-        // Restaurar después de 2 segundos
+        // Restaurar después de 1 segundo
         setTimeout(() => {
             button.innerHTML = originalText;
             button.style.backgroundColor = '';
             button.style.color = '';
-        }, 2000);
+        }, 1000);
         
-        console.log('Email contact tracked:', contact);
-    } else if (type === 'phone') {
-        button.innerHTML = '<i class="fas fa-check mr-2"></i>Llamando...';
-        button.style.backgroundColor = 'var(--color-verde-esmeralda)';
-        button.style.color = 'white';
-        
-        // Restaurar después de 3 segundos
-        setTimeout(() => {
-            button.innerHTML = originalText;
-            button.style.backgroundColor = '';
-            button.style.color = '';
-        }, 3000);
-        
-        console.log('Phone contact tracked:', contact);
+        console.log('Chat contact tracked:', contact);
     }
     
     // Aquí podrías enviar datos a Google Analytics o tu sistema de tracking
@@ -359,98 +332,22 @@ function trackContact(type, contact) {
     }
 }
 
-// Mejorar la experiencia de usuario para dispositivos móviles
+// Mejorar la experiencia de usuario para el botón de chat
 document.addEventListener('DOMContentLoaded', function() {
-    const phoneButtons = document.querySelectorAll('a[href^="tel:"]');
-    const emailButtons = document.querySelectorAll('a[href^="mailto:"]');
+    const chatButtons = document.querySelectorAll('a[href*="/chat/"]');
     
     // Agregar indicadores visuales para dispositivos móviles
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        phoneButtons.forEach(button => {
-            button.style.fontSize = '1.1rem';
-            button.style.padding = '0.75rem 1rem';
-        });
-        
-        emailButtons.forEach(button => {
+        chatButtons.forEach(button => {
             button.style.fontSize = '1.1rem';
             button.style.padding = '0.75rem 1rem';
         });
     }
     
     // Agregar tooltips informativos
-    phoneButtons.forEach(button => {
+    chatButtons.forEach(button => {
         button.addEventListener('mouseenter', function() {
-            this.title = 'Toca para llamar directamente';
-        });
-        
-        // Manejar casos donde el dispositivo no soporte llamadas
-        button.addEventListener('click', function(e) {
-            const phoneNumber = this.href.replace('tel:', '');
-            
-            // Verificar si el dispositivo soporta llamadas
-            if (!navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i)) {
-                e.preventDefault();
-                
-                // Mostrar el número para copiar
-                if (confirm('Tu dispositivo no soporta llamadas directas. ¿Quieres copiar el número al portapapeles?')) {
-                    navigator.clipboard.writeText(phoneNumber).then(() => {
-                        alert('Número copiado al portapapeles: ' + phoneNumber);
-                    }).catch(() => {
-                        alert('Número del agente: ' + phoneNumber);
-                    });
-                }
-            }
-        });
-    });
-    
-    emailButtons.forEach(button => {
-        button.addEventListener('mouseenter', function() {
-            this.title = 'Toca para abrir tu aplicación de email';
-        });
-        
-        // Manejar casos donde no haya aplicación de email
-        button.addEventListener('click', function(e) {
-            const email = this.href.replace('mailto:', '').split('?')[0];
-            
-            // Verificar si hay aplicación de email
-            if (!navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i)) {
-                e.preventDefault();
-                
-                if (confirm('¿Quieres copiar el email al portapapeles?')) {
-                    navigator.clipboard.writeText(email).then(() => {
-                        alert('Email copiado al portapapeles: ' + email);
-                    }).catch(() => {
-                        alert('Email del agente: ' + email);
-                    });
-                }
-            }
-        });
-    });
-    
-    // Agregar indicadores de estado de carga
-    phoneButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const originalText = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Conectando...';
-            this.disabled = true;
-            
-            setTimeout(() => {
-                this.innerHTML = originalText;
-                this.disabled = false;
-            }, 2000);
-        });
-    });
-    
-    emailButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const originalText = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Abriendo...';
-            this.disabled = true;
-            
-            setTimeout(() => {
-                this.innerHTML = originalText;
-                this.disabled = false;
-            }, 1500);
+            this.title = 'Abrir chat con el agente';
         });
     });
 });

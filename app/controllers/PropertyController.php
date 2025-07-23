@@ -549,29 +549,24 @@ class PropertyController {
         
         // Procesar cada archivo
         for ($i = 0; $i < count($files['name']); $i++) {
-            echo "\n--- Procesando imagen $i ---\n";
             $fileName = $files['name'][$i];
             $fileTmpName = $files['tmp_name'][$i];
             $fileSize = $files['size'][$i];
             $fileType = $files['type'][$i];
             $fileError = $files['error'][$i];
-            echo "Nombre: $fileName\nTmp: $fileTmpName\nTamaño: $fileSize\nTipo: $fileType\nError: $fileError\n";
             
             if ($fileError !== UPLOAD_ERR_OK) {
-                echo "Descartada: error en upload ($fileError)\n";
                 continue;
             }
             
             // Validar tipo de archivo
             $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
             if (!in_array($fileType, $allowedTypes)) {
-                echo "Descartada: tipo no permitido ($fileType)\n";
                 continue;
             }
             
             // Validar tamaño (máximo 5MB)
             if ($fileSize > 5 * 1024 * 1024) {
-                echo "Descartada: tamaño excedido ($fileSize bytes)\n";
                 continue;
             }
             
@@ -581,18 +576,23 @@ class PropertyController {
             $uniqueName = uniqid() . '_' . str_replace('.', '', $microtime) . '.' . $extension;
             $filePath = $uploadDir . $uniqueName;
             
-            // Mover archivo
-            if (move_uploaded_file($fileTmpName, $filePath)) {
-                echo "Imagen movida correctamente: $filePath\n";
-                $processedImages[] = [
-                    'name' => $uniqueName,
-                    'original_name' => $fileName,
-                    'path' => '/uploads/properties/' . $uniqueName,
-                    'size' => $fileSize,
-                    'type' => $fileType
-                ];
-            } else {
-                echo "Error al mover archivo: $fileTmpName -> $filePath\n";
+            // Verificar que el archivo temporal existe
+            if (!file_exists($fileTmpName)) {
+                continue;
+            }
+            
+            // Mover archivo usando copy en lugar de move_uploaded_file para mayor compatibilidad
+            if (copy($fileTmpName, $filePath)) {
+                // Verificar que el archivo se copió correctamente
+                if (file_exists($filePath)) {
+                    $processedImages[] = [
+                        'name' => $uniqueName,
+                        'original_name' => $fileName,
+                        'path' => '/uploads/properties/' . $uniqueName,
+                        'size' => $fileSize,
+                        'type' => $fileType
+                    ];
+                }
             }
         }
         

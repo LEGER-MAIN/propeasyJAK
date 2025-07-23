@@ -623,6 +623,53 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             }
         }
 
+        // SELECCIONAR AGENTE POR ID
+        async function selectAgentById(agentId) {
+            try {
+                console.log('🎯 Seleccionando agente por ID:', agentId);
+                
+                // Primero verificar si ya existe una conversación con este agente
+                const existingConversation = conversations.find(conv => 
+                    conv.agente_id == agentId || conv.cliente_id == agentId
+                );
+                
+                if (existingConversation) {
+                    console.log('✅ Conversación existente encontrada, seleccionando...');
+                    selectConversation(existingConversation);
+                    return;
+                }
+                
+                // Si no existe, buscar el agente y crear conversación
+                console.log('🔍 Buscando información del agente...');
+                // Usar una búsqueda más específica para encontrar el agente por ID
+                const response = await fetch(`/chat/search-users?q=id:${agentId}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.users && data.users.length > 0) {
+                    const agent = data.users.find(user => user.id == agentId);
+                    if (agent) {
+                        console.log('✅ Agente encontrado:', agent);
+                        await createConversation(agent.id, `${agent.nombre} ${agent.apellido}`);
+                    } else {
+                        console.error('❌ Agente no encontrado en los resultados');
+                    }
+                } else {
+                    console.error('❌ No se encontró información del agente');
+                }
+            } catch (error) {
+                console.error('❌ Error seleccionando agente:', error);
+            }
+        }
+
         // ACTUALIZAR ÚLTIMO MENSAJE
         function updateLastMessage(conversationId, message) {
             const conversationItem = document.querySelector(`[data-conversation-id="${conversationId}"]`);
@@ -782,6 +829,19 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             Object.keys(elements).forEach(key => {
                 console.log(`${key}:`, elements[key]);
             });
+            
+            // Preseleccionar agente si se pasa como parámetro
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedAgentId = urlParams.get('agent');
+            const propertyId = urlParams.get('property');
+            
+            if (selectedAgentId) {
+                console.log('🎯 Agente preseleccionado:', selectedAgentId);
+                // Buscar el agente y crear conversación automáticamente
+                setTimeout(() => {
+                    selectAgentById(selectedAgentId);
+                }, 1000); // Esperar a que se carguen las conversaciones
+            }
             
             // BOTÓN ENVIAR
             elements.sendMessage.addEventListener('click', function(e) {

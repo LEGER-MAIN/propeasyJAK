@@ -72,6 +72,10 @@ class ChatController {
             }
         }
 
+        // Obtener el agente preseleccionado si existe
+        $selectedAgentId = $_GET['agent'] ?? null;
+        $propertyId = $_GET['property'] ?? null;
+        
         // Cargar vista del chat simple
         include APP_PATH . '/views/chat/simple.php';
     }
@@ -211,6 +215,62 @@ class ChatController {
             'success' => true,
             'messages' => $mensajes
         ]);
+    }
+
+    /**
+     * Mostrar chat directo con agente
+     */
+    public function showDirectChat($agente_id) {
+        // Verificar sesión de forma segura
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        $user_id = $_SESSION['user_id'];
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        $user_name = $_SESSION['user_nombre'] ?? $_SESSION['nombre'] ?? 'Usuario';
+
+        // Verificar que el agente existe
+        $agente = $this->userModel->getById($agente_id);
+        if (!$agente || $agente['rol'] !== 'agente') {
+            http_response_code(404);
+            include APP_PATH . '/views/errors/404.php';
+            return;
+        }
+
+        // Crear o obtener conversación directa
+        $conversacion_id = $this->chatModel->crearObtenerConversacionDirecta($user_id, $agente_id);
+        
+        if (!$conversacion_id) {
+            http_response_code(500);
+            include APP_PATH . '/views/errors/500.php';
+            return;
+        }
+
+        // Obtener información de la conversación
+        $conversacion = $this->chatModel->getConversacionDirecta($conversacion_id, $user_id);
+        
+        // Obtener mensajes
+        $mensajes = $this->chatModel->getMensajesDirectos($conversacion_id);
+
+        // Preparar datos para la vista
+        $data = [
+            'conversacion' => $conversacion,
+            'mensajes' => $mensajes,
+            'agente' => $agente,
+            'user_id' => $user_id,
+            'user_name' => $user_name,
+            'user_role' => $user_role,
+            'conversacion_id' => $conversacion_id
+        ];
+
+        // Cargar vista del chat directo
+        include APP_PATH . '/views/chat/direct.php';
     }
 
     /**
@@ -582,7 +642,17 @@ class ChatController {
         $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
         $query = $_GET['q'] ?? '';
 
-        if (empty($query) || strlen($query) < 2) {
+        // Verificar si es una búsqueda por ID
+        $isIdSearch = false;
+        if (strpos($query, 'id:') === 0) {
+            $agentId = substr($query, 3);
+            if (is_numeric($agentId)) {
+                $isIdSearch = true;
+                $query = $agentId;
+            }
+        }
+
+        if (!$isIdSearch && (empty($query) || strlen($query) < 2)) {
             http_response_code(400);
             echo json_encode(['error' => 'Término de búsqueda debe tener al menos 2 caracteres']);
             return;
@@ -590,19 +660,34 @@ class ChatController {
 
         // Buscar usuarios según el rol del usuario actual
         $usuarios = [];
-        if ($user_role === 'agente') {
-            // Los agentes pueden buscar clientes Y otros agentes
-            $usuarios = $this->userModel->searchUsers($query, null, $user_id);
-            // Filtrar para excluir al usuario actual y solo mostrar clientes y otros agentes
-            $usuarios = array_filter($usuarios, function($user) use ($user_id) {
-                return $user['id'] != $user_id && ($user['rol'] === 'cliente' || $user['rol'] === 'agente');
-            });
-        } elseif ($user_role === 'cliente') {
-            // Los clientes pueden buscar agentes
-            $usuarios = $this->userModel->searchUsers($query, 'agente', $user_id);
-        } elseif ($user_role === 'admin') {
-            // Los admins pueden buscar cualquier usuario
-            $usuarios = $this->userModel->searchUsers($query, null, $user_id);
+        if ($isIdSearch) {
+            // Búsqueda por ID específico
+            if ($user_role === 'cliente') {
+                // Los clientes solo pueden buscar agentes por ID
+                $usuarios = $this->userModel->searchUsersById($query, 'agente', $user_id);
+            } elseif ($user_role === 'agente') {
+                // Los agentes pueden buscar clientes y otros agentes por ID
+                $usuarios = $this->userModel->searchUsersById($query, null, $user_id);
+            } elseif ($user_role === 'admin') {
+                // Los admins pueden buscar cualquier usuario por ID
+                $usuarios = $this->userModel->searchUsersById($query, null, $user_id);
+            }
+        } else {
+            // Búsqueda normal por texto
+            if ($user_role === 'agente') {
+                // Los agentes pueden buscar clientes Y otros agentes
+                $usuarios = $this->userModel->searchUsers($query, null, $user_id);
+                // Filtrar para excluir al usuario actual y solo mostrar clientes y otros agentes
+                $usuarios = array_filter($usuarios, function($user) use ($user_id) {
+                    return $user['id'] != $user_id && ($user['rol'] === 'cliente' || $user['rol'] === 'agente');
+                });
+            } elseif ($user_role === 'cliente') {
+                // Los clientes pueden buscar agentes
+                $usuarios = $this->userModel->searchUsers($query, 'agente', $user_id);
+            } elseif ($user_role === 'admin') {
+                // Los admins pueden buscar cualquier usuario
+                $usuarios = $this->userModel->searchUsers($query, null, $user_id);
+            }
         }
 
         // Formatear resultados

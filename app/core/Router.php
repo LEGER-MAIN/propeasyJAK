@@ -345,7 +345,7 @@ class Router {
         
         // Rutas de chat
         $this->get('/chat', 'ChatController@index');
-        $this->get('/chat/{id}', 'ChatController@show');
+        $this->get('/chat/{id}', 'ChatController@showDirectChat');
         $this->post('/chat/{id}/messages', 'ChatController@sendMessage');
         $this->get('/chat/{id}/messages', 'ChatController@getMessages');
         $this->get('/chat/unread-messages', 'ChatController@getUnreadMessages');

@@ -38,6 +38,9 @@ Thumbs.db
 vendor/
 composer.lock
 
+# Archivos de configuración sensibles
+config/database.php
+
 # Archivos de Node.js (si se usan en el futuro)
 node_modules/
 npm-debug.log

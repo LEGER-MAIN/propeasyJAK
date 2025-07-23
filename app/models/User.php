@@ -951,6 +951,41 @@ class User {
     }
 
     /**
+     * Buscar usuario por ID específico
+     * 
+     * @param int $userId ID del usuario a buscar
+     * @param string $role Rol específico a filtrar (opcional)
+     * @param int $excludeUserId ID del usuario a excluir (opcional)
+     * @return array Usuario encontrado o array vacío
+     */
+    public function searchUsersById($userId, $role = null, $excludeUserId = null) {
+        $params = [$userId];
+        $conditions = ["estado = 'activo'", "id = ?"];
+        
+        // Excluir usuario actual
+        if ($excludeUserId) {
+            $conditions[] = "id != ?";
+            $params[] = $excludeUserId;
+        }
+        
+        // Filtrar por rol si se especifica
+        if ($role) {
+            $conditions[] = "rol = ?";
+            $params[] = $role;
+        }
+        
+        $whereClause = implode(' AND ', $conditions);
+        
+        $query = "SELECT id, nombre, apellido, email, rol, ultimo_acceso 
+                  FROM {$this->table} 
+                  WHERE {$whereClause} 
+                  LIMIT 1";
+        
+        $result = $this->db->select($query, $params);
+        return $result ?: [];
+    }
+
+    /**
      * Obtener usuarios disponibles para chat directo
      * 
      * @param int $currentUserId ID del usuario actual
@@ -1544,7 +1579,7 @@ class User {
                         $agente['especialidades'] = array_filter(array_map('trim', explode(',', $agente['especialidades'])));
                     }
                 } else {
-                    $agente['especialidades'] = [];
+                $agente['especialidades'] = [];
                 }
                 
                 // Procesar idiomas
@@ -1553,7 +1588,7 @@ class User {
                         $agente['idiomas'] = array_filter(array_map('trim', explode(',', $agente['idiomas'])));
                     }
                 } else {
-                    $agente['idiomas'] = [];
+                $agente['idiomas'] = [];
                 }
                 
                 // Calcular tiempo de registro
