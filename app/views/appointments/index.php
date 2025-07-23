@@ -16,6 +16,7 @@ $csrfToken = generateCSRFToken();
                 <h1 class="text-3xl font-bold" style="color: var(--text-primary);">Mis Citas</h1>
                 <p class="mt-2" style="color: var(--text-secondary);">Gestiona todas tus citas programadas</p>
             </div>
+            <?php if (hasRole(ROLE_AGENTE)): ?>
             <a href="/appointments/create" 
                class="px-6 py-2 rounded-md transition-all duration-200"
                style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); color: white;"
@@ -23,6 +24,7 @@ $csrfToken = generateCSRFToken();
                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
                 Nueva Cita
             </a>
+            <?php endif; ?>
         </div>
 
         <!-- Filtros -->
@@ -208,6 +210,7 @@ $csrfToken = generateCSRFToken();
                         </svg>
                     </div>
                     <h3 class="mt-2 text-sm font-medium" style="color: var(--text-primary);">No hay citas</h3>
+                    <?php if (hasRole(ROLE_AGENTE)): ?>
                     <p class="mt-1 text-sm" style="color: var(--text-secondary);">Comienza creando tu primera cita.</p>
                     <div class="mt-6">
                         <a href="/appointments/create" 
@@ -218,6 +221,9 @@ $csrfToken = generateCSRFToken();
                             Crear Cita
                         </a>
                     </div>
+                    <?php else: ?>
+                    <p class="mt-1 text-sm" style="color: var(--text-secondary);">No tienes citas programadas en este momento.</p>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>

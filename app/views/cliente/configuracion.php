@@ -239,7 +239,7 @@
                         <h3 class="text-lg font-semibold text-gray-900">Acciones Rápidas</h3>
                     </div>
                     <div class="p-6 space-y-3">
-                        <a href="/cliente/perfil" class="block w-full text-left px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md transition-colors">
+                        <a href="/profile" class="block w-full text-left px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md transition-colors">
                             <i class="fas fa-user mr-3 text-primary-600"></i>
                             Mi Perfil
                         </a>

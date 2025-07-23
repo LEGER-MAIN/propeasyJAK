@@ -593,13 +593,13 @@ class PropertyController {
             if (copy($fileTmpName, $filePath)) {
                 // Verificar que el archivo se copió correctamente
                 if (file_exists($filePath)) {
-                    $processedImages[] = [
-                        'name' => $uniqueName,
-                        'original_name' => $fileName,
-                        'path' => '/uploads/properties/' . $uniqueName,
-                        'size' => $fileSize,
-                        'type' => $fileType
-                    ];
+                $processedImages[] = [
+                    'name' => $uniqueName,
+                    'original_name' => $fileName,
+                    'path' => '/uploads/properties/' . $uniqueName,
+                    'size' => $fileSize,
+                    'type' => $fileType
+                ];
                 }
             }
         }

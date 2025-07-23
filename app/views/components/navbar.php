@@ -105,10 +105,7 @@
                                     <i class="fas fa-user"></i>
                                     <span>Mi Perfil</span>
                                 </a>
-                                <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                    <i class="fas fa-cog"></i>
-                                    <span>Configuración</span>
-                                </a>
+
                                 <a href="/reportes/mis-reportes" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                     <i class="fas fa-clipboard-list"></i>
                                     <span>Mis Reportes</span>
@@ -280,9 +277,7 @@
                     <a href="/profile" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-user mr-3"></i>Mi Perfil
                     </a>
-                    <a href="/settings" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
-                        <i class="fas fa-cog mr-3"></i>Configuración
-                    </a>
+
                     <a href="/reportes/mis-reportes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-clipboard-list mr-3"></i>Mis Reportes
                     </a>

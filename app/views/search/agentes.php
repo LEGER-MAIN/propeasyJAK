@@ -215,7 +215,7 @@ $content = ob_start();
                         </a>
                         <a href="/chat/simple?agent=<?= $agente['id'] ?>&v=<?= time() ?>" 
                            class="w-full px-4 py-2 rounded-md font-medium transition-all duration-200 hover:transform hover:scale-105 text-center block"
-                           style="background: linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%); color: var(--text-light);"
+                                style="background: linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%); color: var(--text-light);"
                            onmouseover="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda-hover) 0%, var(--color-verde-esmeralda) 100%)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(42, 157, 143, 0.3)'"
                            onmouseout="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'"
                            title="Contactar a <?= htmlspecialchars($agente['nombre'] . ' ' . $agente['apellido']) ?> por chat">

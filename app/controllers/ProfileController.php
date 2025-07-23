@@ -17,6 +17,7 @@ class ProfileController {
     private $favoriteModel;
     private $solicitudModel;
     private $propertyModel;
+    private $db;
     
     /**
      * Constructor del controlador
@@ -26,6 +27,7 @@ class ProfileController {
         $this->favoriteModel = new Favorite();
         $this->solicitudModel = new SolicitudCompra();
         $this->propertyModel = new Property();
+        $this->db = new Database();
     }
     
     /**
@@ -53,6 +55,12 @@ class ProfileController {
         
         // Obtener actividad reciente
         $actividadReciente = $this->getActividadReciente($userId, $userRole, 5);
+        
+        // Obtener propiedades enviadas como solicitudes (solo para clientes)
+        $propiedadesEnviadas = [];
+        if ($userRole === 'cliente') {
+            $propiedadesEnviadas = $this->getPropiedadesEnviadas($userId);
+        }
         
         $pageTitle = 'Mi Perfil - ' . APP_NAME;
         $csrfToken = generateCSRFToken();
@@ -254,6 +262,41 @@ class ProfileController {
     private function getActividadReciente($userId, $userRole, $limit = 5) {
         // Por ahora retornamos un array vacío, se puede implementar después
         return [];
+    }
+    
+    /**
+     * Obtener propiedades que el cliente ha enviado como solicitudes
+     * 
+     * @param int $userId ID del cliente
+     * @return array Lista de propiedades enviadas
+     */
+    private function getPropiedadesEnviadas($userId) {
+        $sql = "SELECT sc.*, 
+                       p.id as propiedad_id,
+                       p.titulo as titulo_propiedad,
+                       p.precio as precio_propiedad,
+                       p.moneda as moneda_propiedad,
+                       p.ciudad as ciudad_propiedad,
+                       p.sector as sector_propiedad,
+                       p.direccion as direccion_propiedad,
+                       p.tipo as tipo_propiedad,
+                       p.habitaciones as habitaciones_propiedad,
+                       p.banos as banos_propiedad,
+                       p.area as area_propiedad,
+                       p.foto_principal as foto_propiedad,
+                       p.estado as estado_propiedad,
+                       ua.nombre as nombre_agente,
+                       ua.apellido as apellido_agente,
+                       ua.email as email_agente,
+                       ua.telefono as telefono_agente,
+                       ua.foto_perfil as foto_agente
+                FROM solicitudes_compra sc
+                INNER JOIN propiedades p ON sc.propiedad_id = p.id
+                INNER JOIN usuarios ua ON sc.agente_id = ua.id
+                WHERE sc.cliente_id = ?
+                ORDER BY sc.fecha_solicitud DESC";
+        
+        return $this->db->select($sql, [$userId]);
     }
 }
 ?> 

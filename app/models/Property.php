@@ -75,9 +75,9 @@ class Property {
                     ];
                 }
             } else {
-                // Asignar automáticamente el agente con menos propiedades
-                $agenteAsignado = $this->getAgenteConMenosPropiedades();
-                $data['agente_id'] = $agenteAsignado ? $agenteAsignado['id'] : null;
+            // Asignar automáticamente el agente con menos propiedades
+            $agenteAsignado = $this->getAgenteConMenosPropiedades();
+            $data['agente_id'] = $agenteAsignado ? $agenteAsignado['id'] : null;
             }
         }
         

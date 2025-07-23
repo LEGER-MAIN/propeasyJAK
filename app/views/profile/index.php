@@ -391,12 +391,150 @@ $roleNames = [
                                 Mis Citas
                             </a>
                         <?php endif; ?>
-                        <a href="/settings" class="flex items-center text-sm text-gray-700 hover:text-primary-600 transition-colors">
-                            <i class="fas fa-cog mr-3 text-gray-400"></i>
-                            Configuración
-                        </a>
+
                     </div>
                 </div>
+            </div>
+        </div>
+        
+        <?php if ($userRole === 'cliente' && !empty($propiedadesEnviadas)): ?>
+        <!-- Propiedades Enviadas como Solicitudes -->
+        <div class="mt-8">
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">Propiedades Enviadas como Solicitudes</h2>
+                    <p class="mt-1 text-sm text-gray-600">Propiedades que has solicitado información o compra</p>
+                </div>
+                
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <?php foreach ($propiedadesEnviadas as $solicitud): ?>
+                        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 hover:transform hover:scale-105">
+                            <!-- Imagen de la propiedad -->
+                            <div class="relative h-48 bg-gray-200">
+                                <?php if (!empty($solicitud['foto_propiedad'])): ?>
+                                    <img src="<?= htmlspecialchars($solicitud['foto_propiedad']) ?>" 
+                                         alt="<?= htmlspecialchars($solicitud['titulo_propiedad']) ?>" 
+                                         class="w-full h-full object-cover">
+                                <?php else: ?>
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <i class="fas fa-home text-4xl text-gray-400"></i>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <!-- Estado de la solicitud -->
+                                <div class="absolute top-2 right-2">
+                                    <?php
+                                    $estadoClass = '';
+                                    $estadoText = '';
+                                    switch ($solicitud['estado']) {
+                                        case 'nueva':
+                                            $estadoClass = 'bg-blue-100 text-blue-800';
+                                            $estadoText = 'Nueva';
+                                            break;
+                                        case 'en_revision':
+                                            $estadoClass = 'bg-yellow-100 text-yellow-800';
+                                            $estadoText = 'En Revisión';
+                                            break;
+                                        case 'reunion_agendada':
+                                            $estadoClass = 'bg-green-100 text-green-800';
+                                            $estadoText = 'Reunión Agendada';
+                                            break;
+                                        case 'cerrado':
+                                            $estadoClass = 'bg-gray-100 text-gray-800';
+                                            $estadoText = 'Cerrado';
+                                            break;
+                                        default:
+                                            $estadoClass = 'bg-gray-100 text-gray-800';
+                                            $estadoText = ucfirst($solicitud['estado']);
+                                    }
+                                    ?>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $estadoClass ?>">
+                                        <?= $estadoText ?>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Información de la propiedad -->
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                                    <?= htmlspecialchars($solicitud['titulo_propiedad']) ?>
+                                </h3>
+                                
+                                <div class="flex items-center text-sm text-gray-600 mb-2">
+                                    <i class="fas fa-map-marker-alt mr-1"></i>
+                                    <?= htmlspecialchars($solicitud['ciudad_propiedad']) ?>
+                                    <?= !empty($solicitud['sector_propiedad']) ? ', ' . htmlspecialchars($solicitud['sector_propiedad']) : '' ?>
+                                </div>
+                                
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-lg font-bold text-primary-600">
+                                        $<?= number_format($solicitud['precio_propiedad'], 0) ?>
+                                    </span>
+                                    <span class="text-sm text-gray-500">
+                                        <?= ucfirst($solicitud['tipo_propiedad']) ?>
+                                    </span>
+                                </div>
+                                
+                                <!-- Características -->
+                                <div class="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                                    <?php if (!empty($solicitud['habitaciones_propiedad'])): ?>
+                                        <span><i class="fas fa-bed mr-1"></i><?= $solicitud['habitaciones_propiedad'] ?> hab</span>
+                                    <?php endif; ?>
+                                    <?php if (!empty($solicitud['banos_propiedad'])): ?>
+                                        <span><i class="fas fa-bath mr-1"></i><?= $solicitud['banos_propiedad'] ?> baños</span>
+                                    <?php endif; ?>
+                                    <?php if (!empty($solicitud['area_propiedad'])): ?>
+                                        <span><i class="fas fa-ruler-combined mr-1"></i><?= $solicitud['area_propiedad'] ?> m²</span>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <!-- Información del agente -->
+                                <div class="border-t border-gray-200 pt-3">
+                                    <div class="flex items-center">
+                                        <?php if (!empty($solicitud['foto_agente'])): ?>
+                                            <img src="<?= htmlspecialchars($solicitud['foto_agente']) ?>" 
+                                                 alt="Agente" 
+                                                 class="w-8 h-8 rounded-full object-cover mr-2">
+                                        <?php else: ?>
+                                            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center mr-2">
+                                                <i class="fas fa-user text-xs text-gray-600"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-gray-900">
+                                                <?= htmlspecialchars($solicitud['nombre_agente'] . ' ' . $solicitud['apellido_agente']) ?>
+                                            </p>
+                                            <p class="text-xs text-gray-500">Agente</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Fecha de solicitud -->
+                                <div class="mt-3 text-xs text-gray-500">
+                                    <i class="fas fa-calendar-alt mr-1"></i>
+                                    Solicitado: <?= date('d/m/Y', strtotime($solicitud['fecha_solicitud'])) ?>
+                                </div>
+                                
+                                <!-- Acciones -->
+                                <div class="mt-4 flex space-x-2">
+                                    <a href="/properties/<?= $solicitud['propiedad_id'] ?>" 
+                                       class="flex-1 text-center px-3 py-2 text-sm font-medium text-primary-600 border border-primary-600 rounded-md hover:bg-primary-50 transition-colors">
+                                        <i class="fas fa-eye mr-1"></i>Ver Propiedad
+                                    </a>
+                                    <a href="/chat/simple?agent=<?= $solicitud['agente_id'] ?>&v=<?= time() ?>" 
+                                       class="flex-1 text-center px-3 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 transition-colors">
+                                        <i class="fas fa-comments mr-1"></i>Contactar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
             </div>
         </div>
     </div>
