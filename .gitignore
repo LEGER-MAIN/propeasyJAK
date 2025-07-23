@@ -21,6 +21,8 @@ public/uploads/properties/*
 !public/uploads/properties/.gitkeep
 public/uploads/reportes/*
 !public/uploads/reportes/.gitkeep
+public/uploads/profiles/*
+!public/uploads/profiles/.gitkeep
 
 # Archivos del sistema
 .DS_Store
@@ -44,4 +46,4 @@ yarn-error.log
 # Archivos de backup
 *.bak
 *.backup
-*~ 
+*~

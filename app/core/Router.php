@@ -232,8 +232,8 @@ class Router {
         
         // Rutas protegidas (requieren autenticación)
         $this->get('/dashboard', 'DashboardController@index');
-        $this->get('/profile', 'AuthController@showProfile');
-        $this->post('/profile', 'AuthController@updateProfile');
+        $this->get('/profile', 'ProfileController@showProfile');
+        $this->post('/profile', 'ProfileController@updateProfile');
         
         // Rutas de administrador - Panel de Control Total
         $this->get('/admin/dashboard', 'AdminController@dashboard');

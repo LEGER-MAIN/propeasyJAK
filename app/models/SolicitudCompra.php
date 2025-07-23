@@ -473,4 +473,28 @@ class SolicitudCompra {
         $result = $this->db->selectOne($query);
         return $result ? (int)$result['total'] : 0;
     }
+    
+    /**
+     * Obtener conteo de solicitudes de un usuario (cliente)
+     * 
+     * @param int $usuarioId ID del usuario (cliente)
+     * @return int Total de solicitudes
+     */
+    public function getCountByUser($usuarioId) {
+        $query = "SELECT COUNT(*) as total FROM solicitudes_compra WHERE cliente_id = ?";
+        $result = $this->db->selectOne($query, [$usuarioId]);
+        return $result ? (int)$result['total'] : 0;
+    }
+    
+    /**
+     * Obtener conteo de solicitudes pendientes de un agente
+     * 
+     * @param int $agenteId ID del agente
+     * @return int Total de solicitudes pendientes
+     */
+    public function getCountPendingByAgent($agenteId) {
+        $query = "SELECT COUNT(*) as total FROM solicitudes_compra WHERE agente_id = ? AND estado = 'nueva'";
+        $result = $this->db->selectOne($query, [$agenteId]);
+        return $result ? (int)$result['total'] : 0;
+    }
 } 

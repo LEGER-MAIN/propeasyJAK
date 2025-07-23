@@ -23,6 +23,9 @@ PropEasy es una plataforma web integral diseñada para optimizar la gestión inm
 - **Autenticación segura** con confirmación por email
 - **Recuperación de contraseñas** mediante email
 - **Control de acceso** basado en roles (RBAC)
+- **Perfil unificado** con edición completa de información
+- **Fotos de perfil** con subida y gestión de archivos
+- **Campos específicos por rol** (experiencia, especialidades para agentes)
 
 ### 💬 Chat en Tiempo Real
 - **Chat interno** entre cliente y agente por propiedad
@@ -106,16 +109,18 @@ propeasy/
 │   │   ├── FavoriteController.php
 │   │   ├── HomeController.php
 │   │   ├── PropertyController.php
+│   │   ├── ProfileController.php      # ✨ Perfil unificado
 │   │   ├── RealtimeChatController.php
 │   │   ├── ReporteController.php
 │   │   ├── SearchController.php
 │   │   ├── SimpleController.php
 │   │   └── SolicitudController.php
 │   ├── core/                 # Núcleo del sistema
-│   │   ├── Database.php
-│   │   └── Router.php
+│   │   ├── Database.php      # Clase de conexión a BD
+│   │   └── Router.php        # Sistema de rutas
 │   ├── helpers/              # Funciones auxiliares
-│   │   └── EmailHelper.php
+│   │   ├── EmailHelper.php
+│   │   └── PropertyHelper.php
 │   ├── models/               # Modelos de datos
 │   │   ├── ActivityLog.php
 │   │   ├── Appointment.php
@@ -125,48 +130,51 @@ propeasy/
 │   │   ├── ReporteIrregularidad.php
 │   │   ├── SolicitudCompra.php
 │   │   └── User.php
-│   ├── views/                # Vistas y templates
-│   │   ├── admin/            # Vistas administrativas
-│   │   ├── agente/           # Vistas de agentes
-│   │   ├── auth/             # Vistas de autenticación
-│   │   ├── chat/             # Vistas de chat
-│   │   ├── cliente/          # Vistas de clientes
+│   ├── views/                # Vistas del sistema
+│   │   ├── admin/            # Panel administrativo
+│   │   ├── agente/           # Panel de agentes
+│   │   ├── auth/             # Autenticación
+│   │   ├── chat/             # Chat en tiempo real
+│   │   ├── cliente/          # Panel de clientes
 │   │   ├── components/       # Componentes reutilizables
 │   │   ├── errors/           # Páginas de error
-│   │   ├── home/             # Vistas principales
+│   │   ├── home/             # Página principal
 │   │   ├── layouts/          # Layouts principales
-│   │   ├── properties/       # Vistas de propiedades
-│   │   └── search/           # Vistas de búsqueda
+│   │   ├── profile/          # ✨ Perfil unificado
+│   │   ├── properties/       # Gestión de propiedades
+│   │   ├── reportes/         # Sistema de reportes
+│   │   └── search/           # Búsquedas
 │   └── websocket_server.php  # Servidor WebSocket
 ├── config/                   # Configuración
-│   ├── config.php
-│   └── database.php
+│   ├── config.php            # Configuración general
+│   └── database.php          # Configuración de BD
 ├── database/                 # Base de datos
-│   └── scheme.sql
-├── logs/                     # Logs del sistema
-├── public/                   # Archivos públicos
+│   └── scheme.sql            # Esquema de BD
+├── logs/                     # Archivos de log
+├── public/                   # Directorio público
 │   ├── css/                  # Estilos CSS
 │   ├── js/                   # JavaScript
 │   ├── uploads/              # Archivos subidos
+│   │   ├── profiles/         # ✨ Fotos de perfil
+│   │   ├── properties/       # Imágenes de propiedades
+│   │   └── reportes/         # Archivos de reportes
 │   └── index.php             # Punto de entrada
-├── scripts/                  # Scripts de utilidad
-│   ├── seed_activity_logs.php
-│   └── send_appointment_reminders.php
-├── vendor/                   # Dependencias Composer
-├── .gitignore
-├── .htaccess
-├── composer.json
-├── composer.lock
-└── README.md
+├── scripts/                  # Scripts de mantenimiento
+├── vendor/                   # Dependencias de Composer
+├── .gitignore               # Archivos ignorados por Git
+├── .htaccess                # Configuración de Apache
+├── composer.json            # Dependencias de PHP
+└── README.md                # Este archivo
 ```
 
 ## 🚀 Instalación
 
 ### Requisitos Previos
-- PHP 8.2 o superior
-- MySQL 8.0 o superior
-- Apache con mod_rewrite habilitado
-- Composer (para dependencias)
+- **PHP 8.2 o superior**
+- **MySQL 8.0 o superior**
+- **Apache/Nginx** con mod_rewrite habilitado
+- **Composer** para gestión de dependencias
+- **Extensiones PHP**: PDO, PDO_MySQL, OpenSSL, mbstring, fileinfo
 
 ### Pasos de Instalación
 
@@ -183,139 +191,218 @@ propeasy/
 
 3. **Configurar la base de datos**
    - Crear una base de datos MySQL
-   - Importar el archivo `database/scheme.sql`
+   - Importar el esquema: `database/scheme.sql`
+   - Copiar `config/database.example.php` a `config/database.php`
    - Configurar las credenciales en `config/database.php`
 
 4. **Configurar el servidor web**
-   - Configurar el DocumentRoot en la carpeta `public/`
-   - Asegurar que mod_rewrite esté habilitado
+   - Apuntar el document root a la carpeta `public/`
+   - Habilitar mod_rewrite para Apache
+   - Configurar permisos de escritura en `public/uploads/`
 
-5. **Configurar permisos**
-   ```bash
-   chmod 755 public/uploads/
-   chmod 755 logs/
-   ```
+5. **Configurar email**
+   - Actualizar configuración SMTP en `config/config.php`
+   - Configurar credenciales de Gmail o servidor SMTP
 
-6. **Configurar variables de entorno**
-   - Editar `config/config.php` con las configuraciones del servidor
-   - Configurar el envío de emails en `config/config.php`
-
-### Configuración del WebSocket (Opcional)
-
-Para el chat en tiempo real:
-
-1. **Instalar Ratchet**
-   ```bash
-   composer require cboden/ratchet
-   ```
-
-2. **Ejecutar el servidor WebSocket**
+6. **Iniciar el servidor WebSocket** (opcional, para chat en tiempo real)
    ```bash
    php app/websocket_server.php
    ```
 
-## 🔧 Configuración
+## ⚙️ Configuración
 
-### Archivos de Configuración
-
-- **`config/config.php`** - Configuración general del sistema
-- **`config/database.php`** - Configuración de la base de datos
-- **`public/.htaccess`** - Configuración de Apache
-
-### Variables Importantes
+### Variables de Entorno
+Las principales configuraciones se encuentran en `config/config.php`:
 
 ```php
-// config/config.php
+// Configuración de la aplicación
 define('APP_NAME', 'PropEasy');
 define('APP_URL', 'http://localhost');
-define('EMAIL_HOST', 'smtp.gmail.com');
-define('EMAIL_USERNAME', 'tu-email@gmail.com');
-define('EMAIL_PASSWORD', 'tu-password');
+define('APP_ENV', 'production');
+
+// Configuración de email
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_USER', 'tu-email@gmail.com');
+define('SMTP_PASS', 'tu-contraseña-de-aplicación');
 ```
 
-## 📱 Características Responsive
+### Configuración de Base de Datos
+En `config/database.php`:
 
-- **Diseño móvil optimizado** con sidebar colapsable
-- **Interfaz adaptativa** para tablets y smartphones
-- **Navegación táctil** optimizada
-- **Modales responsivas** para acciones importantes
-- **Tablas adaptativas** con scroll horizontal
+```php
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'propeasy');
+define('DB_USER', 'tu-usuario');
+define('DB_PASS', 'tu-contraseña');
+```
+
+## 🔧 Uso del Sistema
+
+### Roles de Usuario
+
+#### 👤 Cliente
+- **Registro y autenticación**
+- **Búsqueda de propiedades** con filtros avanzados
+- **Sistema de favoritos**
+- **Solicitudes de compra**
+- **Chat con agentes**
+- **Gestión de citas**
+- **Perfil personal** con foto
+
+#### 🏢 Agente Inmobiliario
+- **Dashboard personal** con estadísticas
+- **Gestión de propiedades** (crear, editar, validar)
+- **Perfil público** con información profesional
+- **Chat con clientes**
+- **Gestión de citas**
+- **Seguimiento de solicitudes**
+- **Perfil profesional** con experiencia y especialidades
+
+#### 👨‍💼 Administrador
+- **Panel de control completo**
+- **Gestión de usuarios** y roles
+- **Estadísticas globales**
+- **Validación de propiedades**
+- **Gestión de reportes**
+- **Configuración del sistema**
+- **Backups y mantenimiento**
+
+### Funcionalidades Principales
+
+#### 🏠 Gestión de Propiedades
+1. **Crear propiedad**: Formulario completo con validación
+2. **Editar propiedad**: Modificar información existente
+3. **Validar propiedad**: Sistema de tokens para verificación
+4. **Buscar propiedades**: Filtros por tipo, precio, ubicación
+5. **Gestionar imágenes**: Subida múltiple con vista previa
+
+#### 💬 Chat en Tiempo Real
+1. **Chat por propiedad**: Conversación específica sobre una propiedad
+2. **Chat directo**: Comunicación general entre cliente y agente
+3. **Notificaciones**: Alertas de nuevos mensajes
+4. **Historial**: Persistencia de todas las conversaciones
+
+#### 📅 Sistema de Citas
+1. **Proponer cita**: Desde chat o panel del agente
+2. **Aceptar/Rechazar**: Gestión de respuestas
+3. **Calendario**: Vista organizada de citas
+4. **Recordatorios**: Notificaciones automáticas
+
+#### 👤 Perfil Unificado
+1. **Información personal**: Nombre, teléfono, ubicación
+2. **Foto de perfil**: Subida con validación
+3. **Campos específicos**: Experiencia, especialidades (agentes)
+4. **Cambio de contraseña**: Seguro con validación
 
 ## 🔒 Seguridad
 
+### Medidas Implementadas
 - **Hashing de contraseñas** con bcrypt
-- **Tokens CSRF** para formularios
-- **Validación de sesiones** robusta
+- **Tokens CSRF** en formularios
+- **Validación de sesiones** en cada página
 - **Sanitización de datos** de entrada
 - **Control de acceso** basado en roles
-- **Logging de actividades** para auditoría
+- **Protección contra SQL Injection**
+- **Validación de archivos** subidos
 
-## 📊 Funcionalidades Administrativas
-
-### Panel de Control Total
-- **Dashboard con estadísticas** en tiempo real
-- **Gestión de usuarios** completa
-- **Gestión de propiedades** con validación
-- **Sistema de reportes** de irregularidades
-- **Logs del sistema** para monitoreo
-- **Backup y restore** de base de datos
-- **Configuración del sistema** centralizada
-
-### Gestión de Reportes
-- **Modales elegantes** para acciones
-- **Filtros avanzados** por estado, prioridad, tipo
-- **Búsqueda de texto** en títulos y descripciones
-- **Exportación a CSV** de reportes
-- **Vista detallada** de cada reporte
-
-## 🧪 Testing
-
-El proyecto incluye scripts de prueba para verificar funcionalidades:
-
-```bash
-# Verificar estructura de base de datos
-php scripts/check_table_structure.php
-
-# Generar logs de actividad de prueba
-php scripts/seed_activity_logs.php
-
-# Enviar recordatorios de citas
-php scripts/send_appointment_reminders.php
+### Configuración de Seguridad
+```php
+// Configuración de seguridad en config/config.php
+define('PASSWORD_COST', 12);           // Costo de hashing
+define('SESSION_TIMEOUT', 3600);       // Timeout de sesión
+define('MAX_LOGIN_ATTEMPTS', 5);       // Intentos de login
 ```
+
+## 📊 Mantenimiento
+
+### Scripts de Mantenimiento
+- `scripts/send_appointment_reminders.php` - Recordatorios automáticos
+- `scripts/seed_activity_logs.php` - Generación de logs de actividad
+
+### Logs del Sistema
+- **Error logs**: `logs/error.log`
+- **Activity logs**: Base de datos
+- **Access logs**: Servidor web
+
+### Backups
+- **Base de datos**: Exportación automática
+- **Archivos**: Copia de seguridad de uploads
+- **Configuración**: Backup de archivos de configuración
+
+## 🐛 Solución de Problemas
+
+### Problemas Comunes
+
+#### Error de Conexión a Base de Datos
+```bash
+# Verificar configuración en config/database.php
+# Comprobar que MySQL esté ejecutándose
+# Verificar credenciales de acceso
+```
+
+#### Error de Permisos en Uploads
+```bash
+# Asignar permisos de escritura
+chmod -R 755 public/uploads/
+chown -R www-data:www-data public/uploads/
+```
+
+#### Chat No Funciona
+```bash
+# Verificar que el servidor WebSocket esté ejecutándose
+php app/websocket_server.php
+# Comprobar configuración de puertos
+```
+
+#### Emails No Se Envían
+```bash
+# Verificar configuración SMTP en config/config.php
+# Comprobar credenciales de Gmail
+# Verificar que la extensión OpenSSL esté habilitada
+```
+
+## 📈 Versiones
+
+### v1.1.0 (2025-01-23) - Perfil Unificado
+- ✨ **Perfil unificado** para todos los usuarios
+- 📸 **Sistema de fotos de perfil** con validación
+- 🔧 **Mejoras técnicas** en rutas y configuración
+- 🐛 **Correcciones** de bugs y limpieza de código
+
+### v1.0.0 (2025-01-20) - Lanzamiento Inicial
+- 🎉 Sistema completo de gestión inmobiliaria
+- 💬 Chat en tiempo real
+- 📅 Sistema de citas
+- 📊 Dashboard administrativo
+- 🏠 Gestión de propiedades y usuarios
 
 ## 🤝 Contribución
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+1. **Fork** el proyecto
+2. **Crear** una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. **Commit** tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** a la rama (`git push origin feature/AmazingFeature`)
+5. **Abrir** un Pull Request
 
-## 📝 Licencia
+## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
 ## 📞 Soporte
 
-Para soporte técnico o preguntas:
-- 📧 Email: soporte@propeasy.com
-- 📱 WhatsApp: +1 234 567 8900
-- 🌐 Website: https://propeasy.com
+- **Email**: propeasy.soporte@gmail.com
+- **Teléfono**: 809 359 5322
+- **Documentación**: Este README
+- **Issues**: GitHub Issues
 
-## 🗺️ Roadmap
+## 🙏 Agradecimientos
 
-### Próximas Características
-- [ ] **API REST** para integración con apps móviles
-- [ ] **Sistema de notificaciones push**
-- [ ] **Integración con Google Maps**
-- [ ] **Sistema de pagos online**
-- [ ] **App móvil nativa**
-- [ ] **Analytics avanzados**
-- [ ] **Sistema de reseñas**
-- [ ] **Integración con redes sociales**
+- **Bootstrap** por el framework CSS
+- **Font Awesome** por los iconos
+- **Chart.js** por las visualizaciones
+- **Ratchet PHP** por el WebSocket
+- **PHPMailer** por el envío de emails
 
 ---
 
-**Desarrollado con ❤️ por el equipo de PropEasy**
-
-*Sistema Web de Venta de Bienes Raíces - Versión 2.0* 
+**PropEasy** - Simplificando la gestión inmobiliaria 🏠✨ 

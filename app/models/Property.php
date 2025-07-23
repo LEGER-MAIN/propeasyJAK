@@ -1603,4 +1603,37 @@ class Property {
                 return ['labels' => [], 'data' => []];
         }
     }
+    
+    /**
+     * Obtener conteo de propiedades de un agente
+     * 
+     * @param int $agenteId ID del agente
+     * @param string|null $estado Estado de la propiedad (opcional)
+     * @return int Total de propiedades
+     */
+    public function getCountByAgent($agenteId, $estado = null) {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE agente_id = ?";
+        $params = [$agenteId];
+        
+        if ($estado !== null) {
+            $query .= " AND estado_publicacion = ?";
+            $params[] = $estado;
+        }
+        
+        $result = $this->db->selectOne($query, $params);
+        return $result ? (int)$result['total'] : 0;
+    }
+    
+    /**
+     * Obtener total de ventas de un agente
+     * 
+     * @param int $agenteId ID del agente
+     * @return float Total de ventas
+     */
+    public function getTotalSalesByAgent($agenteId) {
+        $query = "SELECT COALESCE(SUM(precio_venta), 0) as total FROM {$this->table} 
+                  WHERE agente_id = ? AND estado_publicacion = 'vendida' AND precio_venta IS NOT NULL";
+        $result = $this->db->selectOne($query, [$agenteId]);
+        return $result ? (float)$result['total'] : 0.0;
+    }
 } 

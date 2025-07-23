@@ -199,7 +199,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
         // ===== CHAT SIMPLE DESDE CERO =====
         console.log('🚀 INICIANDO CHAT SIMPLE DESDE CERO');
         
-        // Debug de variables de sesión
+
         console.log('🔍 Variables de sesión disponibles:');
         console.log('user_id:', <?= $user_id ?? 'null' ?>);
         console.log('user_nombre:', '<?= $user_nombre ?? 'null' ?>');

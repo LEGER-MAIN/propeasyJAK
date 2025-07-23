@@ -138,7 +138,7 @@ require_once APP_PATH . '/helpers/PropertyHelper.php';
                                     $imagenPath = '/uploads/properties/' . $property['foto'];
                                 }
                                 
-                                // Debug temporal - remover después
+                        
                                 if (empty($imagenPath) && !empty($property['id'])) {
                                     // Intentar obtener la primera imagen disponible
                                     $imagenPath = '/uploads/properties/687fb18eecc97_17531989909699.webp';

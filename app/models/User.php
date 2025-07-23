@@ -362,14 +362,16 @@ class User {
      * @return array Resultado de la actualización
      */
     public function updateProfile($id, $data) {
-        // Validar datos
-        if (empty($data['nombre']) || empty($data['apellido']) || empty($data['telefono'])) {
+        // Validar datos requeridos
+        if (empty($data['nombre']) || empty($data['apellido'])) {
             return [
                 'success' => false,
-                'message' => 'Todos los campos son requeridos.'
+                'message' => 'El nombre y apellido son obligatorios.'
             ];
         }
-        if (strlen($data['telefono']) > 20) {
+        
+        // Validar teléfono si se proporciona
+        if (isset($data['telefono']) && strlen($data['telefono']) > 20) {
             return [
                 'success' => false,
                 'message' => 'El teléfono no puede tener más de 20 caracteres.'
@@ -379,16 +381,41 @@ class User {
         // Preparar datos para actualización
         $updateData = [
             'nombre' => sanitizeInput($data['nombre']),
-            'apellido' => sanitizeInput($data['apellido']),
-            'telefono' => sanitizeInput($data['telefono'])
+            'apellido' => sanitizeInput($data['apellido'])
         ];
         
         // Agregar campos opcionales si están presentes
+        if (isset($data['telefono'])) {
+            $updateData['telefono'] = sanitizeInput($data['telefono']);
+        }
         if (isset($data['ciudad'])) {
             $updateData['ciudad'] = sanitizeInput($data['ciudad']);
         }
         if (isset($data['sector'])) {
             $updateData['sector'] = sanitizeInput($data['sector']);
+        }
+        if (isset($data['foto_perfil'])) {
+            $updateData['foto_perfil'] = $data['foto_perfil'];
+        }
+        
+        // Campos específicos para agentes
+        if (isset($data['experiencia_anos'])) {
+            $updateData['experiencia_anos'] = (int)$data['experiencia_anos'];
+        }
+        if (isset($data['especialidades'])) {
+            $updateData['especialidades'] = sanitizeInput($data['especialidades']);
+        }
+        if (isset($data['idiomas'])) {
+            $updateData['idiomas'] = sanitizeInput($data['idiomas']);
+        }
+        if (isset($data['biografia'])) {
+            $updateData['biografia'] = sanitizeInput($data['biografia']);
+        }
+        if (isset($data['licencia_inmobiliaria'])) {
+            $updateData['licencia_inmobiliaria'] = sanitizeInput($data['licencia_inmobiliaria']);
+        }
+        if (isset($data['horario_disponibilidad'])) {
+            $updateData['horario_disponibilidad'] = sanitizeInput($data['horario_disponibilidad']);
         }
         
         // Si se proporciona nueva contraseña, validarla y hashearla
@@ -1414,76 +1441,170 @@ class User {
         try {
             // Construir condiciones WHERE
             $conditions = [
-                "rol = 'agente'",
-                "estado = 'activo'",
-                "perfil_publico_activo = 1"
+                "u.rol = 'agente'",
+                "u.estado = 'activo'",
+                "u.perfil_publico_activo = 1"
             ];
             $params = [];
             
             // Filtro por ciudad
             if (!empty($ciudad)) {
-                $conditions[] = "ciudad LIKE ?";
+                $conditions[] = "u.ciudad LIKE ?";
                 $params[] = "%{$ciudad}%";
             }
             
             // Filtro por experiencia mínima
             if (!empty($experiencia)) {
-                $conditions[] = "experiencia_anos >= ?";
+                $conditions[] = "u.experiencia_anos >= ?";
                 $params[] = intval($experiencia);
             }
             
             // Filtro por idioma
             if (!empty($idioma)) {
-                $conditions[] = "idiomas LIKE ?";
+                $conditions[] = "u.idiomas LIKE ?";
                 $params[] = "%{$idioma}%";
             }
             
             $whereClause = implode(' AND ', $conditions);
             
             // Ordenamiento
-            $orderBy = 'nombre, apellido';
+            $orderBy = 'u.nombre, u.apellido';
             switch($ordenar) {
                 case 'experiencia':
-                    $orderBy = 'experiencia_anos DESC, nombre, apellido';
+                    $orderBy = 'u.experiencia_anos DESC, u.nombre, u.apellido';
                     break;
                 case 'reciente':
-                    $orderBy = 'fecha_registro DESC, nombre, apellido';
+                    $orderBy = 'u.fecha_registro DESC, u.nombre, u.apellido';
                     break;
                 case 'propiedades':
                     // Por ahora ordenar por experiencia, después se puede mejorar
-                    $orderBy = 'experiencia_anos DESC, nombre, apellido';
+                    $orderBy = 'u.experiencia_anos DESC, u.nombre, u.apellido';
                     break;
                 case 'calificacion':
                     // Por ahora ordenar por nombre, después se puede mejorar
-                    $orderBy = 'nombre, apellido';
+                    $orderBy = 'u.nombre, u.apellido';
                     break;
             }
             
-            // Consulta con filtros
-            $query = "SELECT id, nombre, apellido, email FROM usuarios WHERE $whereClause ORDER BY $orderBy LIMIT $limit OFFSET $offset";
+            // Consulta completa con todos los campos necesarios
+            $query = "SELECT 
+                        u.id,
+                        u.nombre,
+                        u.apellido,
+                        u.email,
+                        u.telefono,
+                        u.ciudad,
+                        u.sector,
+                        u.experiencia_anos,
+                        u.especialidades,
+                        u.idiomas,
+                        u.biografia,
+                        u.licencia_inmobiliaria,
+                        u.horario_disponibilidad,
+                        u.foto_perfil,
+                        u.fecha_registro,
+                        u.ultimo_acceso,
+                        COALESCE(p_stats.total_propiedades, 0) as total_propiedades,
+                        COALESCE(p_stats.propiedades_activas, 0) as propiedades_activas,
+                        COALESCE(p_stats.propiedades_vendidas, 0) as propiedades_vendidas,
+                        COALESCE(ca_stats.calificacion_promedio, 0) as calificacion_promedio,
+                        COALESCE(ca_stats.total_calificaciones, 0) as total_calificaciones
+                      FROM {$this->table} u
+                      LEFT JOIN (
+                          SELECT 
+                              agente_id,
+                              COUNT(*) as total_propiedades,
+                              COUNT(CASE WHEN estado_publicacion = 'activa' THEN 1 END) as propiedades_activas,
+                              COUNT(CASE WHEN estado_publicacion = 'vendida' THEN 1 END) as propiedades_vendidas
+                          FROM propiedades 
+                          GROUP BY agente_id
+                      ) p_stats ON u.id = p_stats.agente_id
+                      LEFT JOIN (
+                          SELECT 
+                              agente_id,
+                              AVG(calificacion) as calificacion_promedio,
+                              COUNT(*) as total_calificaciones
+                          FROM calificaciones_agentes 
+                          GROUP BY agente_id
+                      ) ca_stats ON u.id = ca_stats.agente_id
+                      WHERE {$whereClause}
+                      ORDER BY {$orderBy}
+                      LIMIT ? OFFSET ?";
+            
+            $params[] = $limit;
+            $params[] = $offset;
             
             $agentes = $this->db->select($query, $params);
             
+            // Procesar datos para cada agente
             foreach ($agentes as &$agente) {
-                // Agregar campos por defecto si no existen
-                $agente['propiedades_activas'] = 0;
-                $agente['propiedades_vendidas'] = 0;
-                $agente['total_propiedades'] = 0;
-                $agente['calificacion_promedio'] = 0;
-                $agente['total_calificaciones'] = 0;
-                $agente['telefono'] = '';
-                $agente['ciudad'] = '';
-                $agente['sector'] = '';
-                $agente['experiencia_anos'] = 0;
-                $agente['especialidades'] = [];
-                $agente['idiomas'] = [];
-                $agente['biografia'] = '';
-                $agente['descripcion_corta'] = '';
-                $agente['licencia_inmobiliaria'] = '';
-                $agente['horario_atencion'] = '';
-                $agente['foto_perfil'] = '';
-                $agente['fecha_registro'] = '';
-                $agente['ultimo_acceso'] = '';
+                // Procesar especialidades
+                if (!empty($agente['especialidades'])) {
+                    if (is_string($agente['especialidades'])) {
+                        $agente['especialidades'] = array_filter(array_map('trim', explode(',', $agente['especialidades'])));
+                    }
+                } else {
+                    $agente['especialidades'] = [];
+                }
+                
+                // Procesar idiomas
+                if (!empty($agente['idiomas'])) {
+                    if (is_string($agente['idiomas'])) {
+                        $agente['idiomas'] = array_filter(array_map('trim', explode(',', $agente['idiomas'])));
+                    }
+                } else {
+                    $agente['idiomas'] = [];
+                }
+                
+                // Calcular tiempo de registro
+                if (!empty($agente['fecha_registro'])) {
+                    $fechaRegistro = new DateTime($agente['fecha_registro']);
+                    $ahora = new DateTime();
+                    $diferencia = $fechaRegistro->diff($ahora);
+                    
+                    if ($diferencia->y > 0) {
+                        $agente['tiempo_registro'] = $diferencia->y . ' año' . ($diferencia->y > 1 ? 's' : '');
+                    } elseif ($diferencia->m > 0) {
+                        $agente['tiempo_registro'] = $diferencia->m . ' mes' . ($diferencia->m > 1 ? 'es' : '');
+                    } else {
+                        $agente['tiempo_registro'] = $diferencia->d . ' día' . ($diferencia->d > 1 ? 's' : '');
+                    }
+                } else {
+                    $agente['tiempo_registro'] = '';
+                }
+                
+                // Calcular último acceso
+                if (!empty($agente['ultimo_acceso'])) {
+                    $ultimoAcceso = new DateTime($agente['ultimo_acceso']);
+                    $ahora = new DateTime();
+                    $diferencia = $ultimoAcceso->diff($ahora);
+                    
+                    if ($diferencia->y > 0) {
+                        $agente['ultimo_acceso_hace'] = $diferencia->y . ' año' . ($diferencia->y > 1 ? 's' : '');
+                    } elseif ($diferencia->m > 0) {
+                        $agente['ultimo_acceso_hace'] = $diferencia->m . ' mes' . ($diferencia->m > 1 ? 'es' : '');
+                    } elseif ($diferencia->d > 0) {
+                        $agente['ultimo_acceso_hace'] = $diferencia->d . ' día' . ($diferencia->d > 1 ? 's' : '');
+                    } elseif ($diferencia->h > 0) {
+                        $agente['ultimo_acceso_hace'] = $diferencia->h . ' hora' . ($diferencia->h > 1 ? 's' : '');
+                    } else {
+                        $agente['ultimo_acceso_hace'] = 'Hace unos minutos';
+                    }
+                } else {
+                    $agente['ultimo_acceso_hace'] = '';
+                }
+                
+                // Asegurar que los campos numéricos sean números
+                $agente['propiedades_activas'] = (int)($agente['propiedades_activas'] ?? 0);
+                $agente['propiedades_vendidas'] = (int)($agente['propiedades_vendidas'] ?? 0);
+                $agente['total_propiedades'] = (int)($agente['total_propiedades'] ?? 0);
+                $agente['calificacion_promedio'] = (float)($agente['calificacion_promedio'] ?? 0);
+                $agente['total_calificaciones'] = (int)($agente['total_calificaciones'] ?? 0);
+                $agente['experiencia_anos'] = (int)($agente['experiencia_anos'] ?? 0);
+                
+                // Mapear campos para compatibilidad con la vista
+                $agente['descripcion_corta'] = $agente['biografia'] ?? '';
+                $agente['horario_atencion'] = $agente['horario_disponibilidad'] ?? '';
             }
             
             return $agentes;

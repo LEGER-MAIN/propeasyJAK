@@ -402,4 +402,14 @@ class Favorite {
         
         return $propiedadesConFavoritos;
     }
+    
+    /**
+     * Obtener conteo de favoritos de un usuario (alias para compatibilidad)
+     * 
+     * @param int $usuarioId ID del usuario
+     * @return int Total de favoritos
+     */
+    public function getCountByUser($usuarioId) {
+        return $this->getTotalFavoritosUsuario($usuarioId);
+    }
 } 

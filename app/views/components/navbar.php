@@ -83,11 +83,17 @@
                     <!-- Perfil de Usuario Desktop -->
                     <div class="hidden lg:block relative group">
                         <button class="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition-colors" style="color: var(--text-primary);">
-                            <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center" style="background-color: var(--color-azul-marino);">
-                                <span class="text-white text-sm font-medium">
-                                    <?= strtoupper(substr($_SESSION['user_nombre'] ?? 'U', 0, 1)) ?>
-                                </span>
-                            </div>
+                            <?php if (!empty($_SESSION['user_foto_perfil'])): ?>
+                                <img class="w-8 h-8 rounded-full object-cover border-2 border-gray-200" 
+                                     src="<?= htmlspecialchars($_SESSION['user_foto_perfil']) ?>" 
+                                     alt="Foto de perfil">
+                            <?php else: ?>
+                                <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center" style="background-color: var(--color-azul-marino);">
+                                    <span class="text-white text-sm font-medium">
+                                        <?= strtoupper(substr($_SESSION['user_nombre'] ?? 'U', 0, 1)) ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
                             <span class="text-sm font-medium"><?= ($_SESSION['user_nombre'] ?? '') . ' ' . ($_SESSION['user_apellido'] ?? '') ?: 'Usuario' ?></span>
                             <i class="fas fa-chevron-down text-xs"></i>
                         </button>
@@ -95,10 +101,10 @@
                         <!-- Dropdown de Usuario -->
                         <div class="absolute top-full right-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                             <div class="py-2">
-                                <a href="<?= hasRole(ROLE_CLIENTE) ? '/cliente/perfil' : '/profile' ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                    <i class="fas fa-user"></i>
-                                    <span>Mi Perfil</span>
-                                </a>
+                                                                    <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                        <i class="fas fa-user"></i>
+                                        <span>Mi Perfil</span>
+                                    </a>
                                 <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                     <i class="fas fa-cog"></i>
                                     <span>Configuración</span>
@@ -161,11 +167,17 @@
                     
                     <!-- Perfil de Usuario Mobile/Tablet -->
                     <div class="lg:hidden flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
-                            <span class="text-white text-sm font-medium">
-                                <?= strtoupper(substr($_SESSION['user_nombre'] ?? 'U', 0, 1)) ?>
-                            </span>
-                        </div>
+                        <?php if (!empty($_SESSION['user_foto_perfil'])): ?>
+                            <img class="w-8 h-8 rounded-full object-cover border-2 border-gray-200" 
+                                 src="<?= htmlspecialchars($_SESSION['user_foto_perfil']) ?>" 
+                                 alt="Foto de perfil">
+                        <?php else: ?>
+                            <div class="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
+                                <span class="text-white text-sm font-medium">
+                                    <?= strtoupper(substr($_SESSION['user_nombre'] ?? 'U', 0, 1)) ?>
+                                </span>
+                            </div>
+                        <?php endif; ?>
                         <span class="hidden sm:block text-sm font-medium text-gray-700"><?= ($_SESSION['user_nombre'] ?? '') . ' ' . ($_SESSION['user_apellido'] ?? '') ?: 'Usuario' ?></span>
                     </div>
                 <?php else: ?>
@@ -265,7 +277,7 @@
                     
                     <hr class="my-2 border-gray-200">
                     <div class="px-3 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Cuenta</div>
-                    <a href="<?= hasRole(ROLE_CLIENTE) ? '/cliente/perfil' : '/profile' ?>" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                    <a href="/profile" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-user mr-3"></i>Mi Perfil
                     </a>
                     <a href="/settings" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
