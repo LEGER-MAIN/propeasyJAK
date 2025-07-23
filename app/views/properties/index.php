@@ -331,14 +331,25 @@ $content = ob_start();
             <?php endforeach; ?>
         </div>
 
+        <!-- Información de paginación -->
+        <div class="mt-6 text-center text-gray-600">
+            <p class="text-sm">
+                Mostrando <?= count($properties) ?> de <?= $totalProperties ?> propiedades
+                <?php if ($totalPages > 1): ?>
+                    (Página <?= $page ?> de <?= $totalPages ?>)
+                <?php endif; ?>
+            </p>
+        </div>
+
         <!-- Paginación -->
         <?php if ($totalPages > 1): ?>
-            <div class="mt-8 flex justify-center">
-                <nav class="flex items-center space-x-2">
+            <div class="mt-6 flex justify-center">
+                <nav class="flex items-center space-x-1">
                     <!-- Primera página -->
                     <?php if ($page > 1): ?>
                         <a href="?<?= http_build_query(array_merge($_GET, ['page' => 1])) ?>" 
-                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                           title="Primera página">
                             <i class="fas fa-angle-double-left"></i>
                         </a>
                     <?php endif; ?>
@@ -346,7 +357,8 @@ $content = ob_start();
                     <!-- Página anterior -->
                     <?php if ($page > 1): ?>
                         <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page - 1])) ?>" 
-                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                           title="Página anterior">
                             <i class="fas fa-angle-left"></i>
                         </a>
                     <?php endif; ?>
@@ -356,18 +368,28 @@ $content = ob_start();
                     $start = max(1, $page - 2);
                     $end = min($totalPages, $page + 2);
                     
-                    for ($i = $start; $i <= $end; $i++):
-                    ?>
+                    // Mostrar "..." al inicio si hay páginas antes
+                    if ($start > 1): ?>
+                        <span class="px-3 py-2 text-sm text-gray-400">...</span>
+                    <?php endif;
+                    
+                    for ($i = $start; $i <= $end; $i++): ?>
                         <a href="?<?= http_build_query(array_merge($_GET, ['page' => $i])) ?>" 
-                           class="px-3 py-2 text-sm font-medium <?= $i === $page ? 'text-white bg-primary-600 border-primary-600' : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-50' ?> border rounded-md">
+                           class="px-3 py-2 text-sm font-medium <?= $i === $page ? 'text-white bg-primary-600 border-primary-600' : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-50' ?> border rounded-md transition-colors">
                             <?= $i ?>
                         </a>
-                    <?php endfor; ?>
+                    <?php endfor; 
+                    
+                    // Mostrar "..." al final si hay páginas después
+                    if ($end < $totalPages): ?>
+                        <span class="px-3 py-2 text-sm text-gray-400">...</span>
+                    <?php endif; ?>
                     
                     <!-- Página siguiente -->
                     <?php if ($page < $totalPages): ?>
                         <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page + 1])) ?>" 
-                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                           title="Página siguiente">
                             <i class="fas fa-angle-right"></i>
                         </a>
                     <?php endif; ?>
@@ -375,7 +397,8 @@ $content = ob_start();
                     <!-- Última página -->
                     <?php if ($page < $totalPages): ?>
                         <a href="?<?= http_build_query(array_merge($_GET, ['page' => $totalPages])) ?>" 
-                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                           title="Última página">
                             <i class="fas fa-angle-double-right"></i>
                         </a>
                     <?php endif; ?>

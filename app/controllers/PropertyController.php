@@ -38,7 +38,7 @@ class PropertyController {
         
         // Obtener página actual
         $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-        $limit = 12; // 12 propiedades por página
+        $limit = 9; // 9 propiedades por página
         $offset = ($page - 1) * $limit;
         
         // Obtener total de propiedades para paginación (más eficiente)
