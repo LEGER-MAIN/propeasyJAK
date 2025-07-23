@@ -107,6 +107,9 @@ class PropertyController {
             redirect('/login');
         }
         
+        // Obtener agentes disponibles
+        $agentes = $this->propertyModel->getAgentesDisponibles();
+        
         $pageTitle = 'Publicar Propiedad - ' . APP_NAME;
         include APP_PATH . '/views/properties/create.php';
     }
@@ -143,6 +146,11 @@ class PropertyController {
             'estado_propiedad' => $_POST['estado_propiedad'] ?? 'bueno',
             'cliente_vendedor_id' => $_SESSION['user_id']
         ];
+        
+        // Procesar selección de agente
+        if (!empty($_POST['agente_id'])) {
+            $data['agente_id'] = intval($_POST['agente_id']);
+        }
         
         // Procesar imágenes si se subieron
         if (isset($_FILES['imagenes']) && !empty($_FILES['imagenes']['name'][0])) {

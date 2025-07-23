@@ -671,6 +671,7 @@ class User {
         $_SESSION['user_email_verificado'] = $user['email_verificado'] ?? 0;
         $_SESSION['user_fecha_registro'] = $user['fecha_registro'] ?? '';
         $_SESSION['user_ultimo_acceso'] = $user['ultimo_acceso'] ?? '';
+        $_SESSION['user_foto_perfil'] = $user['foto_perfil'] ?? '';
         $_SESSION['user_logged_in'] = true;
         $_SESSION['login_time'] = time();
         
@@ -687,7 +688,8 @@ class User {
             'estado' => $user['estado'] ?? 'activo',
             'email_verificado' => $user['email_verificado'] ?? 0,
             'fecha_registro' => $user['fecha_registro'] ?? '',
-            'ultimo_acceso' => $user['ultimo_acceso'] ?? ''
+            'ultimo_acceso' => $user['ultimo_acceso'] ?? '',
+            'foto_perfil' => $user['foto_perfil'] ?? ''
         ];
     }
     

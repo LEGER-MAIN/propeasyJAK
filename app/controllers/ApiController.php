@@ -302,15 +302,24 @@ class ApiController {
     }
     
     /**
-     * Obtener agentes disponibles
+     * Obtener agentes disponibles con paginación y búsqueda
      */
     public function agents() {
         try {
-            $agents = $this->userModel->getAgentsForAPI();
+            $page = intval($_GET['page'] ?? 0);
+            $search = $_GET['search'] ?? '';
+            $limit = 20; // 20 agentes por página
+            $offset = $page * $limit;
+            
+            // Obtener agentes con filtros
+            $agents = $this->propertyModel->getAgentesDisponiblesPaginated($search, $limit, $offset);
             
             $response = [
                 'success' => true,
-                'data' => $agents
+                'agentes' => $agents,
+                'page' => $page,
+                'limit' => $limit,
+                'hasMore' => count($agents) === $limit
             ];
             
             echo json_encode($response);

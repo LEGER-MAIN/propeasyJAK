@@ -501,21 +501,21 @@ class AgenteController {
             }
             
             // Crear directorio si no existe
-            $uploadDir = UPLOAD_PATH . '/agentes/';
+            $uploadDir = UPLOAD_PATH . '/profiles/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
             
             // Generar nombre único
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-            $filename = 'perfil_' . time() . '_' . uniqid() . '.' . $extension;
+            $filename = 'profile_' . time() . '_' . uniqid() . '.' . $extension;
             $filepath = $uploadDir . $filename;
             
             // Mover archivo
             if (move_uploaded_file($file['tmp_name'], $filepath)) {
                 return [
                     'success' => true,
-                    'ruta' => '/uploads/agentes/' . $filename,
+                    'ruta' => '/uploads/profiles/' . $filename,
                     'message' => 'Foto de perfil subida exitosamente.'
                 ];
             } else {

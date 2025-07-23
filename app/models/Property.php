@@ -63,9 +63,22 @@ class Property {
         $agenteAsignado = null;
         if (isset($data['cliente_vendedor_id']) && !empty($data['cliente_vendedor_id'])) {
             $tokenValidacion = $this->generateValidationToken();
-            // Asignar automáticamente el agente con menos propiedades
-            $agenteAsignado = $this->getAgenteConMenosPropiedades();
-            $data['agente_id'] = $agenteAsignado ? $agenteAsignado['id'] : null;
+            
+            // Si se proporcionó un agente específico, usarlo; si no, asignar automáticamente
+            if (isset($data['agente_id']) && !empty($data['agente_id'])) {
+                // Verificar que el agente existe y está activo
+                $agenteAsignado = $this->getAgenteById($data['agente_id']);
+                if (!$agenteAsignado || $agenteAsignado['rol'] !== 'agente' || $agenteAsignado['estado'] !== 'activo') {
+                    return [
+                        'success' => false,
+                        'message' => 'El agente seleccionado no está disponible.'
+                    ];
+                }
+            } else {
+                // Asignar automáticamente el agente con menos propiedades
+                $agenteAsignado = $this->getAgenteConMenosPropiedades();
+                $data['agente_id'] = $agenteAsignado ? $agenteAsignado['id'] : null;
+            }
         }
         
         // Preparar datos para inserción
@@ -1635,5 +1648,108 @@ class Property {
                   WHERE agente_id = ? AND estado_publicacion = 'vendida' AND precio_venta IS NOT NULL";
         $result = $this->db->selectOne($query, [$agenteId]);
         return $result ? (float)$result['total'] : 0.0;
+    }
+    
+    /**
+     * Obtener agentes disponibles para asignación
+     * 
+     * @return array Lista de agentes con información básica
+     */
+    public function getAgentesDisponibles() {
+        $query = "SELECT 
+                    u.id,
+                    u.nombre,
+                    u.apellido,
+                    u.email,
+                    u.telefono,
+                    u.ciudad,
+                    u.sector,
+                    u.foto_perfil,
+                    (SELECT COUNT(*) FROM {$this->table} WHERE agente_id = u.id AND estado_publicacion = 'activa') as propiedades_activas,
+                    (SELECT COUNT(*) FROM {$this->table} WHERE agente_id = u.id AND estado_publicacion = 'vendida') as propiedades_vendidas
+                  FROM usuarios u
+                  WHERE u.rol = 'agente' 
+                  AND u.estado = 'activo'
+                  ORDER BY u.nombre ASC, u.apellido ASC";
+        
+        return $this->db->select($query);
+    }
+    
+    /**
+     * Obtener agentes disponibles con paginación y búsqueda
+     * 
+     * @param string $search Término de búsqueda
+     * @param int $limit Límite de resultados
+     * @param int $offset Offset para paginación
+     * @return array Lista de agentes con información básica
+     */
+    public function getAgentesDisponiblesPaginated($search = '', $limit = 20, $offset = 0) {
+        $whereConditions = ["u.rol = 'agente'", "u.estado = 'activo'"];
+        $params = [];
+        
+        // Agregar búsqueda por nombre o ciudad
+        if (!empty($search)) {
+            // Dividir el término de búsqueda en palabras
+            $searchWords = array_filter(explode(' ', trim($search)));
+            
+            if (!empty($searchWords)) {
+                $searchConditions = [];
+                
+                // Para cada palabra, buscar en nombre, apellido, ciudad y sector
+                foreach ($searchWords as $word) {
+                    $wordTerm = '%' . $word . '%';
+                    $searchConditions[] = "(u.nombre LIKE ? OR u.apellido LIKE ? OR u.ciudad LIKE ? OR u.sector LIKE ?)";
+                    $params[] = $wordTerm;
+                    $params[] = $wordTerm;
+                    $params[] = $wordTerm;
+                    $params[] = $wordTerm;
+                }
+                
+                // También buscar el término completo para nombres completos
+                $fullSearchTerm = '%' . $search . '%';
+                $searchConditions[] = "(CONCAT(u.nombre, ' ', u.apellido) LIKE ? OR CONCAT(u.apellido, ' ', u.nombre) LIKE ?)";
+                $params[] = $fullSearchTerm;
+                $params[] = $fullSearchTerm;
+                
+                $whereConditions[] = '(' . implode(' OR ', $searchConditions) . ')';
+            }
+        }
+        
+        $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+        
+        $query = "SELECT 
+                    u.id,
+                    u.nombre,
+                    u.apellido,
+                    u.email,
+                    u.telefono,
+                    u.ciudad,
+                    u.sector,
+                    u.foto_perfil,
+                    (SELECT COUNT(*) FROM {$this->table} WHERE agente_id = u.id AND estado_publicacion = 'activa') as propiedades_activas,
+                    (SELECT COUNT(*) FROM {$this->table} WHERE agente_id = u.id AND estado_publicacion = 'vendida') as propiedades_vendidas
+                  FROM usuarios u
+                  {$whereClause}
+                  ORDER BY u.nombre ASC, u.apellido ASC
+                  LIMIT ? OFFSET ?";
+        
+        $params[] = $limit;
+        $params[] = $offset;
+        
+        return $this->db->select($query, $params);
+    }
+    
+    /**
+     * Obtener un agente por ID
+     * 
+     * @param int $agenteId ID del agente
+     * @return array|null Datos del agente
+     */
+    public function getAgenteById($agenteId) {
+        $query = "SELECT id, nombre, apellido, email, telefono, ciudad, sector, rol, estado, foto_perfil
+                  FROM usuarios 
+                  WHERE id = ? AND rol = 'agente'";
+        
+        return $this->db->selectOne($query, [$agenteId]);
     }
 } 
