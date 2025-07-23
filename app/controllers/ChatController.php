@@ -810,22 +810,23 @@ class ChatController {
     /**
      * Iniciar conversación con nuevo cliente
      */
-    public function iniciarConNuevoCliente($cliente_id) {
+    public function iniciarConNuevoCliente($agente_id) {
         // Verificar sesión de forma segura
         if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
             session_start();
         }
 
-        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'agente') {
+        if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
             exit;
         }
 
-        $agente_id = $_SESSION['user_id'];
+        $cliente_id = $_SESSION['user_id'];
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
 
-        // Verificar que el cliente existe
-        $cliente = $this->userModel->getById($cliente_id);
-        if (!$cliente || $cliente['rol'] !== 'cliente') {
+        // Verificar que el agente existe
+        $agente = $this->userModel->getById($agente_id);
+        if (!$agente || $agente['rol'] !== 'agente') {
             http_response_code(404);
             include APP_PATH . '/views/errors/404.php';
             return;

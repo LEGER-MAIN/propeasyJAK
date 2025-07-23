@@ -530,7 +530,7 @@ $calificaciones = $calificaciones ?? [];
         <?php endif; ?>
         
         <!-- Botón de contacto -->
-        <a href="/chat/iniciar/<?= $perfilPublico['id'] ?>" class="btn-contactar">
+        <a href="/chat/simple?agent=<?= $perfilPublico['id'] ?>&v=<?= time() ?>" class="btn-contactar">
             <i class="fas fa-comments"></i>
             Contactar Agente
         </a>

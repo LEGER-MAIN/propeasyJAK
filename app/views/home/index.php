@@ -155,7 +155,11 @@ ob_start();
                             </div>
                             <div class="mt-4">
                                 <a href="/properties/show/<?= $propiedad['id'] ?>" 
-                                   class="w-full bg-primary-600 hover:bg-primary-700 text-white text-center py-2 px-4 rounded-md transition-colors duration-200 block" style="background-color: var(--color-azul-marino);">
+                                   class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:transform hover:scale-105 text-center"
+                                   style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); color: var(--text-light);"
+                                   onmouseover="this.style.background='linear-gradient(135deg, var(--color-azul-marino-hover) 0%, var(--color-azul-marino) 100%)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(29, 53, 87, 0.3)'"
+                                   onmouseout="this.style.background='linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                    <i class="fas fa-eye"></i>
                                     Ver Detalles
                                 </a>
                             </div>

@@ -213,14 +213,14 @@ $content = ob_start();
                            onmouseout="this.style.background='linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%)';">
                             <i class="fas fa-home mr-2"></i>Ver Propiedades
                         </a>
-                        <button type="button" 
-                                onclick="iniciarChat(<?= $agente['id'] ?>, '<?= htmlspecialchars($agente['nombre'] . ' ' . $agente['apellido']) ?>')"
-                                class="w-full px-4 py-2 rounded-md font-medium transition-all duration-200 hover:transform hover:scale-105"
-                                style="background: linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%); color: var(--text-light);"
-                                onmouseover="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda-hover) 0%, var(--color-verde-esmeralda) 100%)';"
-                                onmouseout="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%)';">
+                        <a href="/chat/simple?agent=<?= $agente['id'] ?>&v=<?= time() ?>" 
+                           class="w-full px-4 py-2 rounded-md font-medium transition-all duration-200 hover:transform hover:scale-105 text-center block"
+                           style="background: linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%); color: var(--text-light);"
+                           onmouseover="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda-hover) 0%, var(--color-verde-esmeralda) 100%)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(42, 157, 143, 0.3)'"
+                           onmouseout="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                           title="Contactar a <?= htmlspecialchars($agente['nombre'] . ' ' . $agente['apellido']) ?> por chat">
                             <i class="fas fa-comments mr-2"></i>Contactar
-                        </button>
+                        </a>
                     </div>
                     
                     <!-- Footer -->
@@ -275,37 +275,7 @@ $content = ob_start();
     <?php endif; ?>
 </div>
 
-<!-- Modal para iniciar chat -->
-<div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" id="chatModal">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-medium text-gray-900">Iniciar Conversación</h3>
-                <button type="button" onclick="cerrarModal('chatModal')" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="mb-4">
-                <p>¿Deseas iniciar una conversación con <strong id="agenteNombre"></strong>?</p>
-                <p class="text-sm text-gray-600 mt-2">Se creará una nueva solicitud de compra y podrás chatear directamente con el agente.</p>
-            </div>
-            <div class="flex justify-end space-x-3">
-                <button type="button" onclick="cerrarModal('chatModal')" class="px-4 py-2 rounded-md transition-all duration-200 hover:transform hover:scale-105"
-                        style="background-color: var(--color-gris-claro); color: var(--text-primary);"
-                        onmouseover="this.style.backgroundColor='var(--color-azul-marino-light)';"
-                        onmouseout="this.style.backgroundColor='var(--color-gris-claro)';">
-                    Cancelar
-                </button>
-                <button type="button" id="confirmarChat" class="px-4 py-2 rounded-md transition-all duration-200 hover:transform hover:scale-105"
-                        style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); color: var(--text-light);"
-                        onmouseover="this.style.background='linear-gradient(135deg, var(--color-azul-marino-hover) 0%, var(--color-azul-marino) 100%)';"
-                        onmouseout="this.style.background='linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%)';">
-                    <i class="fas fa-comments mr-2"></i>Iniciar Chat
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -339,35 +309,7 @@ function cargarCiudades() {
         .catch(error => console.error('Error al cargar ciudades:', error));
 }
 
-let agenteSeleccionado = null;
 
-function iniciarChat(agenteId, agenteNombre) {
-    agenteSeleccionado = agenteId;
-    document.getElementById('agenteNombre').textContent = agenteNombre;
-    
-    document.getElementById('chatModal').classList.remove('hidden');
-}
-
-function cerrarModal(modalId) {
-    document.getElementById(modalId).classList.add('hidden');
-}
-
-// Cerrar modal al hacer clic fuera de él
-document.addEventListener('click', function(event) {
-    const modal = document.getElementById('chatModal');
-    if (modal && !modal.classList.contains('hidden')) {
-        if (event.target === modal) {
-            cerrarModal('chatModal');
-        }
-    }
-});
-
-document.getElementById('confirmarChat').addEventListener('click', function() {
-    if (agenteSeleccionado) {
-        // Redirigir al chat o crear nueva solicitud
-        window.location.href = `/chat?nuevo_agente=${agenteSeleccionado}`;
-    }
-});
 
 // Búsqueda en tiempo real (opcional)
 let searchTimeout;

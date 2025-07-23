@@ -19,6 +19,8 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Estados de publicación** (activa, en revisión, vendida, rechazada)
 - **Paginación inteligente** con 9 propiedades por página
 - **Selección manual de agentes** con búsqueda y carga infinita
+- **Botones "Ver Detalles"** con efectos hover mejorados
+- **Carga de imágenes** optimizada con validación mejorada
 
 ### 👥 Gestión de Usuarios
 - **Múltiples roles**: Clientes, Agentes, Administradores
@@ -27,6 +29,8 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Recuperación de contraseñas** por email
 - **Fotos de perfil** con gestión unificada
 - **Gestión de sesiones** mejorada
+- **Corrección de rutas** de fotos de perfil
+- **Variables de sesión** optimizadas
 
 ### 💬 Sistema de Chat Integrado
 - **Chat en tiempo real** entre clientes y agentes
@@ -35,6 +39,9 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Historial de conversaciones** persistente
 - **Búsqueda de usuarios** para iniciar chats
 - **WebSockets** para comunicación en tiempo real
+- **Chat simple** con agente preseleccionado
+- **Botones de contacto** unificados en todas las páginas
+- **Redirección automática** al chat con agente seleccionado
 
 ### 📅 Sistema de Citas
 - **Agendamiento de visitas** a propiedades
@@ -56,11 +63,13 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Historial de solicitudes** por cliente
 
 ### 🔍 Búsqueda y Filtros Avanzados
-- **Búsqueda por nombre completo** de agentes
-- **Filtros por ciudad y sector**
+- **Búsqueda por nombre completo** de agentes con espacios
+- **Filtros por ciudad, sector y experiencia**
 - **Carga infinita** en listados de agentes
-- **Búsqueda en tiempo real** con debounce
+- **Búsqueda en tiempo real** con debounce optimizado
 - **Selección visual** de agentes con tarjetas informativas
+- **Búsqueda combinada** en nombre, apellido, ciudad y sector
+- **Resultados paginados** con navegación numerada
 
 ### 📊 Panel de Administración
 - **Dashboard completo** con estadísticas en tiempo real
@@ -78,6 +87,9 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Iconografía** con Font Awesome
 - **Animaciones suaves** y transiciones
 - **Mensajes flash** informativos
+- **Efectos hover** mejorados en botones
+- **Gradientes dinámicos** con efectos visuales
+- **Botones unificados** con estilos consistentes
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -325,6 +337,8 @@ define('PASSWORD_RESET_EXPIRY', 1800);
 - **Validación de archivos** subidos
 - **Headers de seguridad** en respuestas HTTP
 - **Sesiones seguras** con configuración optimizada
+- **Corrección de errores 500** en rutas de chat
+- **Validación de parámetros** en URLs
 
 ## 🧪 Testing
 
@@ -366,11 +380,13 @@ php scripts/check_structure.php
 ## 🚀 Características Avanzadas
 
 ### Sistema de Búsqueda
-- **Búsqueda por nombre completo** de agentes
+- **Búsqueda por nombre completo** de agentes con espacios
 - **Filtros combinados** por múltiples criterios
 - **Carga infinita** para mejor rendimiento
-- **Búsqueda en tiempo real** con debounce
+- **Búsqueda en tiempo real** con debounce optimizado
 - **Resultados paginados** optimizados
+- **Búsqueda SQL mejorada** con concatenaciones
+- **Soporte para nombres** con espacios y caracteres especiales
 
 ### Gestión de Imágenes
 - **Carga múltiple** de imágenes
@@ -384,6 +400,8 @@ php scripts/check_structure.php
 - **Emails automáticos** para eventos importantes
 - **Recordatorios de citas** programados
 - **Alertas de sistema** para administradores
+- **Notificaciones de chat** mejoradas
+- **Sistema de tracking** de contactos
 
 ## 🤝 Contribución
 
@@ -420,6 +438,24 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 - **Ratchet** por el servidor WebSocket
 - **PHPMailer** por el envío de emails
 
+## 🐛 Problemas Conocidos y Soluciones
+
+### Error 500 en Chat
+**Problema**: Error interno del servidor al acceder a `/chat/iniciar/{id}`
+**Solución**: Los botones "Contactar" ahora redirigen a `/chat/simple?agent={id}`
+
+### Caché del Navegador
+**Problema**: Cambios no se reflejan inmediatamente
+**Solución**: Usar Ctrl+F5 para limpiar caché o agregar parámetro `&v={timestamp}`
+
+### Fotos de Perfil No Se Muestran
+**Problema**: Rutas inconsistentes en diferentes controladores
+**Solución**: Todas las fotos ahora usan `/uploads/profiles/` unificadamente
+
+### Búsqueda de Agentes con Espacios
+**Problema**: Búsqueda no funciona con nombres como "Angel Leger"
+**Solución**: Búsqueda SQL mejorada con concatenaciones y división de palabras
+
 ## 📞 Soporte
 
 Para soporte técnico o consultas:
@@ -431,6 +467,14 @@ Para soporte técnico o consultas:
 - 🐛 Issues: https://github.com/propeasy/propeasy/issues
 
 ## 🔄 Changelog
+
+### v2.1.0 (2024-12-23)
+- 🔧 Corrección de errores 500 en rutas de chat
+- 🎨 Efectos hover mejorados en botones
+- 🔗 Unificación de botones "Contactar" en todas las páginas
+- 🖼️ Corrección de rutas de fotos de perfil
+- 🔍 Búsqueda SQL mejorada para nombres con espacios
+- ⚡ Optimizaciones de rendimiento y caché
 
 ### v2.0.0 (2024-12-23)
 - ✨ Sistema de búsqueda mejorado para agentes

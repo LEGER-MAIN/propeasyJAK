@@ -85,9 +85,13 @@ $content = ob_start();
         <div class="mt-4">
             <a 
                 href="/properties/show/<?= $solicitud['propiedad_id'] ?>" 
-                class="text-primary-600 hover:text-primary-900 text-sm font-medium"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:transform hover:scale-105 text-center"
+                style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); color: var(--text-light);"
+                onmouseover="this.style.background='linear-gradient(135deg, var(--color-azul-marino-hover) 0%, var(--color-azul-marino) 100%)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(29, 53, 87, 0.3)'"
+                onmouseout="this.style.background='linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'"
             >
-                Ver detalles de la propiedad →
+                <i class="fas fa-eye"></i>
+                Ver detalles de la propiedad
             </a>
         </div>
     </div>
