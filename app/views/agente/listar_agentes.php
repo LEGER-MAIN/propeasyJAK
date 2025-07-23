@@ -40,16 +40,24 @@ $ciudad = $ciudad ?? '';
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     margin-bottom: 2rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .filtros-form {
     display: flex;
     gap: 1rem;
     align-items: end;
+    justify-content: center;
+    max-width: 800px;
+    margin: 0 auto;
+    flex-wrap: wrap;
 }
 
 .filtros-form .form-group {
     flex: 1;
+    min-width: 200px;
 }
 
 .form-control {
@@ -477,8 +485,21 @@ $ciudad = $ciudad ?? '';
         padding: 2rem 0;
     }
     
+    .filtros {
+        max-width: 95%;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 1rem;
+    }
+    
     .filtros-form {
         flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .filtros-form .form-group {
+        min-width: auto;
+        width: 100%;
     }
     
     .agentes-grid {
@@ -492,6 +513,28 @@ $ciudad = $ciudad ?? '';
     
     .paginacion {
         flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .filtros {
+        max-width: 100%;
+        margin: 0 0.5rem 2rem 0.5rem;
+        border-radius: 8px;
+    }
+    
+    .filtros-form {
+        gap: 0.5rem;
+    }
+    
+    .form-control {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn-filtrar {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
     }
 }
 </style>
@@ -512,28 +555,6 @@ $ciudad = $ciudad ?? '';
                 <label for="ciudad">Ciudad</label>
                 <input type="text" class="form-control" id="ciudad" name="ciudad" 
                        value="<?= htmlspecialchars($ciudad) ?>" placeholder="Filtrar por ciudad...">
-            </div>
-            <div class="form-group">
-                <label for="experiencia">Experiencia mínima</label>
-                <select class="form-control" id="experiencia" name="experiencia">
-                    <option value="">Cualquier experiencia</option>
-                    <option value="1" <?= ($_GET['experiencia'] ?? '') == '1' ? 'selected' : '' ?>>1+ años</option>
-                    <option value="3" <?= ($_GET['experiencia'] ?? '') == '3' ? 'selected' : '' ?>>3+ años</option>
-                    <option value="5" <?= ($_GET['experiencia'] ?? '') == '5' ? 'selected' : '' ?>>5+ años</option>
-                    <option value="10" <?= ($_GET['experiencia'] ?? '') == '10' ? 'selected' : '' ?>>10+ años</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="idioma">Idioma</label>
-                <select class="form-control" id="idioma" name="idioma">
-                    <option value="">Cualquier idioma</option>
-                    <option value="Español" <?= ($_GET['idioma'] ?? '') == 'Español' ? 'selected' : '' ?>>Español</option>
-                    <option value="Inglés" <?= ($_GET['idioma'] ?? '') == 'Inglés' ? 'selected' : '' ?>>Inglés</option>
-                    <option value="Francés" <?= ($_GET['idioma'] ?? '') == 'Francés' ? 'selected' : '' ?>>Francés</option>
-                    <option value="Italiano" <?= ($_GET['idioma'] ?? '') == 'Italiano' ? 'selected' : '' ?>>Italiano</option>
-                    <option value="Alemán" <?= ($_GET['idioma'] ?? '') == 'Alemán' ? 'selected' : '' ?>>Alemán</option>
-                    <option value="Portugués" <?= ($_GET['idioma'] ?? '') == 'Portugués' ? 'selected' : '' ?>>Portugués</option>
-                </select>
             </div>
             <div class="form-group">
                 <label for="ordenar">Ordenar por</label>
@@ -712,8 +733,6 @@ $ciudad = $ciudad ?? '';
             // Construir parámetros de URL para mantener filtros
             $params = [];
             if (!empty($ciudad)) $params['ciudad'] = $ciudad;
-            if (!empty($_GET['experiencia'])) $params['experiencia'] = $_GET['experiencia'];
-            if (!empty($_GET['idioma'])) $params['idioma'] = $_GET['idioma'];
             if (!empty($_GET['ordenar'])) $params['ordenar'] = $_GET['ordenar'];
             $queryString = http_build_query($params);
             ?>

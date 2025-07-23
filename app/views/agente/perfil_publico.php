@@ -477,10 +477,10 @@ $calificaciones = $calificaciones ?? [];
             <?php endif; ?>
             
             <?php if (!empty($perfilPublico['telefono'])): ?>
-                <div class="contacto-item">
-                    <i class="fas fa-phone"></i>
-                    <span><?= htmlspecialchars($perfilPublico['telefono']) ?></span>
-                </div>
+                <a href="/chat/simple?agent=<?= $perfilPublico['id'] ?>&v=<?= time() ?>" class="contacto-item" style="text-decoration: none; cursor: pointer;">
+                    <i class="fas fa-comments"></i>
+                    <span>Contactar por chat</span>
+                </a>
             <?php endif; ?>
             
             <?php if (!empty($perfilPublico['horario_atencion'])): ?>

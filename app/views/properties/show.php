@@ -208,10 +208,15 @@ $content = ob_start();
                     
                     <div class="space-y-3">
                         <?php if (!empty($property['agente_telefono'])): ?>
-                            <div class="flex items-center" style="color: var(--text-secondary);">
-                                <i class="fas fa-phone mr-3" style="color: var(--color-verde-esmeralda);"></i>
-                                <span><?= htmlspecialchars($property['agente_telefono']) ?></span>
-                            </div>
+                            <a href="/chat/simple?agent=<?= $property['agente_id'] ?>&property=<?= $property['id'] ?>&v=<?= time() ?>" 
+                               class="flex items-center transition-all duration-200 hover:transform hover:scale-105"
+                               style="color: var(--text-secondary);"
+                               onmouseover="this.style.color='var(--color-verde-esmeralda)'"
+                               onmouseout="this.style.color='var(--text-secondary)'"
+                               title="Contactar al agente por chat">
+                                <i class="fas fa-comments mr-3" style="color: var(--color-verde-esmeralda);"></i>
+                                <span>Contactar por chat</span>
+                            </a>
                         <?php endif; ?>
                         
                         <?php if (!empty($property['agente_email'])): ?>

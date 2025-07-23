@@ -206,14 +206,14 @@ $pageTitle = $title;
                             </div>
                             <div class="text-xs" style="color: var(--text-secondary);">Agente Inmobiliario</div>
                         </div>
-                        <?php if (!empty($favorito['agente_telefono'])): ?>
-                        <a href="tel:<?= $favorito['agente_telefono'] ?>" 
-                           class="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
-                           style="background-color: rgba(42, 157, 143, 0.1);"
-                           onmouseover="this.style.backgroundColor='var(--color-verde-esmeralda-light)'"
-                           onmouseout="this.style.backgroundColor='rgba(42, 157, 143, 0.1)'"
-                           title="Llamar al agente">
-                            <i class="fas fa-phone text-sm" style="color: var(--color-verde-esmeralda);"></i>
+                        <?php if (!empty($favorito['agente_id'])): ?>
+                        <a href="/chat/simple?agent=<?= $favorito['agente_id'] ?>&v=<?= time() ?>" 
+                           class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:transform hover:scale-105"
+                           style="background: linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%);"
+                           onmouseover="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda-hover) 0%, var(--color-verde-esmeralda) 100%)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(42, 157, 143, 0.3)'"
+                           onmouseout="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                           title="Contactar al agente por chat">
+                            <i class="fas fa-comments text-sm" style="color: white;"></i>
                         </a>
                         <?php endif; ?>
                     </div>
