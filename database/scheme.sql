@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS `conversaciones_directas` (
   KEY `idx_estado` (`estado`),
   CONSTRAINT `conversaciones_directas_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `conversaciones_directas_ibfk_2` FOREIGN KEY (`agente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -215,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `favoritos_propiedades` (
   KEY `idx_fecha_agregado` (`fecha_agregado`),
   CONSTRAINT `favoritos_propiedades_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `favoritos_propiedades_ibfk_2` FOREIGN KEY (`propiedad_id`) REFERENCES `propiedades` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -255,7 +255,7 @@ CREATE TABLE IF NOT EXISTS `imagenes_propiedades` (
   KEY `idx_es_principal` (`es_principal`),
   KEY `idx_orden` (`orden`),
   CONSTRAINT `imagenes_propiedades_ibfk_1` FOREIGN KEY (`propiedad_id`) REFERENCES `propiedades` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -298,7 +298,7 @@ CREATE TABLE IF NOT EXISTS `logs_actividad` (
   KEY `idx_tabla_afectada` (`tabla_afectada`),
   KEY `idx_fecha_actividad` (`fecha_actividad`),
   CONSTRAINT `logs_actividad_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=143 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -338,7 +338,7 @@ CREATE TABLE IF NOT EXISTS `mensajes_directos` (
   KEY `idx_leido` (`leido`),
   CONSTRAINT `mensajes_directos_ibfk_1` FOREIGN KEY (`conversacion_id`) REFERENCES `conversaciones_directas` (`id`) ON DELETE CASCADE,
   CONSTRAINT `mensajes_directos_ibfk_2` FOREIGN KEY (`remitente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -578,7 +578,7 @@ CREATE TABLE IF NOT EXISTS `propiedades` (
   KEY `idx_propiedades_agente_fecha` (`agente_id`,`fecha_creacion`),
   CONSTRAINT `propiedades_ibfk_1` FOREIGN KEY (`agente_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
   CONSTRAINT `propiedades_ibfk_2` FOREIGN KEY (`cliente_vendedor_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -603,7 +603,7 @@ CREATE TABLE IF NOT EXISTS `reportes_irregularidades` (
   KEY `idx_fecha_reporte` (`fecha_reporte`),
   CONSTRAINT `reportes_irregularidades_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `reportes_irregularidades_ibfk_2` FOREIGN KEY (`admin_responsable_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -657,13 +657,13 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   `fecha_registro` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ultimo_acceso` datetime DEFAULT NULL,
   `perfil_publico_activo` tinyint(1) DEFAULT '0' COMMENT 'Indica si el perfil público del agente está activo',
-  `biografia` text COLLATE utf8mb4_unicode_ci COMMENT 'Biografía del agente',
+  `biografia` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Biografía del agente',
   `experiencia_anos` int DEFAULT '0' COMMENT 'Años de experiencia',
-  `especialidades` text COLLATE utf8mb4_unicode_ci COMMENT 'Especialidades del agente (separadas por comas)',
-  `foto_perfil` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Ruta de la foto de perfil',
-  `licencia_inmobiliaria` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Número de licencia inmobiliaria',
-  `horario_disponibilidad` text COLLATE utf8mb4_unicode_ci COMMENT 'Horarios de disponibilidad',
-  `idiomas` text COLLATE utf8mb4_unicode_ci COMMENT 'Idiomas que habla (separados por comas)',
+  `especialidades` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Especialidades del agente (separadas por comas)',
+  `foto_perfil` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Ruta de la foto de perfil',
+  `licencia_inmobiliaria` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Número de licencia inmobiliaria',
+  `horario_disponibilidad` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Horarios de disponibilidad',
+  `idiomas` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'Idiomas que habla (separados por comas)',
   `redes_sociales` json DEFAULT NULL COMMENT 'Redes sociales en formato JSON',
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
@@ -673,7 +673,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   KEY `idx_fecha_registro` (`fecha_registro`),
   KEY `idx_ciudad` (`ciudad`),
   KEY `idx_sector` (`sector`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
