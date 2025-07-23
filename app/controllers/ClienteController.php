@@ -207,9 +207,98 @@ class ClienteController {
     }
     
     /**
+     * Endpoint AJAX para cargar más propiedades del cliente
+     */
+    public function ajaxMisPropiedades() {
+        requireAuth();
+        requireRole(ROLE_CLIENTE);
+        
+        $userId = $_SESSION['user_id'];
+        $offset = isset($_GET['offset']) ? (int)$_GET['offset'] : 0;
+        $limit = 6;
+        
+        $propiedades = $this->getMisPropiedades($userId, $limit, $offset);
+        header('Content-Type: application/json');
+        echo json_encode(['propiedades' => $propiedades]);
+        exit;
+    }
+    
+    /**
+     * Eliminar una solicitud de compra del cliente
+     */
+    public function eliminarSolicitud() {
+        requireAuth();
+        requireRole(ROLE_CLIENTE);
+        
+        // Verificar método HTTP
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['error' => 'Método no permitido']);
+            exit;
+        }
+        
+        // Verificar CSRF token
+        if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Token de seguridad inválido']);
+            exit;
+        }
+        
+        $solicitudId = (int)($_POST['solicitud_id'] ?? 0);
+        $userId = $_SESSION['user_id'];
+        
+        if ($solicitudId <= 0) {
+            http_response_code(400);
+            echo json_encode(['error' => 'ID de solicitud inválido']);
+            exit;
+        }
+        
+        // Verificar que la solicitud pertenece al cliente
+        $solicitud = $this->solicitudModel->obtenerPorId($solicitudId);
+        if (!$solicitud || $solicitud['cliente_id'] != $userId) {
+            http_response_code(403);
+            echo json_encode(['error' => 'No tienes permisos para eliminar esta solicitud']);
+            exit;
+        }
+        
+        // Verificar si se puede eliminar
+        if (!$this->solicitudModel->puedeEliminar($solicitudId)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'No se puede eliminar esta solicitud en su estado actual']);
+            exit;
+        }
+        
+        // Determinar el tipo de mensaje según el estado
+        $mensajeEliminacion = 'Solicitud eliminada correctamente';
+        if ($solicitud['estado'] === 'cerrado') {
+            $mensajeEliminacion = 'Solicitud cerrada eliminada correctamente';
+        }
+        
+        // Eliminar la solicitud (usar eliminación lógica por seguridad)
+        $eliminado = $this->solicitudModel->eliminarLogico($solicitudId);
+        
+        if ($eliminado) {
+            // Registrar actividad
+            require_once APP_PATH . '/models/ActivityLog.php';
+            $activityLog = new ActivityLog();
+            $activityLog->logActivity($userId, 'eliminar_solicitud', [
+                'solicitud_id' => $solicitudId,
+                'propiedad_id' => $solicitud['propiedad_id'],
+                'propiedad_titulo' => $solicitud['titulo_propiedad']
+            ]);
+            
+            echo json_encode(['success' => true, 'message' => $mensajeEliminacion]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Error al eliminar la solicitud']);
+        }
+        exit;
+    }
+
+    /**
      * Obtener propiedades del cliente (las que ha enviado como solicitudes)
      */
-    private function getMisPropiedades($userId, $limit = 6) {
+    private function getMisPropiedades($userId, $limit = 6, $offset = 0) {
         try {
             $sql = "SELECT sc.id as solicitud_id,
                            sc.cliente_id,
@@ -217,35 +306,27 @@ class ClienteController {
                            sc.agente_id,
                            sc.estado,
                            sc.fecha_solicitud,
-                           sc.mensaje,
-                           p.id as propiedad_id,
+                           p.id as p_propiedad_id,
                            p.titulo as titulo_propiedad,
                            p.precio as precio_propiedad,
-                           p.moneda as moneda_propiedad,
                            p.ciudad as ciudad_propiedad,
                            p.sector as sector_propiedad,
-                           p.direccion as direccion_propiedad,
                            p.tipo as tipo_propiedad,
                            p.habitaciones as habitaciones_propiedad,
                            p.banos as banos_propiedad,
-                           p.area as area_propiedad,
-                           p.foto_principal as foto_propiedad,
-                           p.estado as estado_propiedad,
+                           p.metros_cuadrados as area_propiedad,
+                           (SELECT ruta FROM imagenes_propiedades WHERE propiedad_id = p.id AND es_principal = 1 LIMIT 1) as foto_propiedad,
                            ua.nombre as nombre_agente,
                            ua.apellido as apellido_agente,
-                           ua.email as email_agente,
-                           ua.telefono as telefono_agente,
                            ua.foto_perfil as foto_agente
                     FROM solicitudes_compra sc
                     INNER JOIN propiedades p ON sc.propiedad_id = p.id
                     INNER JOIN usuarios ua ON sc.agente_id = ua.id
                     WHERE sc.cliente_id = ?
                     ORDER BY sc.fecha_solicitud DESC
-                    LIMIT ?";
-            
+                    LIMIT ? OFFSET ?";
             $db = new Database();
-            return $db->select($sql, [$userId, $limit]);
-            
+            return $db->select($sql, [$userId, $limit, $offset]);
         } catch (Exception $e) {
             error_log("Error obteniendo propiedades del cliente: " . $e->getMessage());
             return [];

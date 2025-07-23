@@ -31,6 +31,8 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Gestión de sesiones** mejorada
 - **Corrección de rutas** de fotos de perfil
 - **Variables de sesión** optimizadas
+- **Dashboard personalizado** para clientes con estadísticas
+- **Gestión de propiedades solicitadas** con eliminación segura
 
 ### 💬 Sistema de Chat Integrado
 - **Chat en tiempo real** entre clientes y agentes
@@ -58,9 +60,14 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 
 ### 📝 Solicitudes de Compra
 - **Formularios de solicitud** para propiedades
-- **Seguimiento de estado** de solicitudes
+- **Seguimiento de estado** de solicitudes (nuevo, en revisión, reunión agendada, cerrado)
 - **Comunicación integrada** con agentes
 - **Historial de solicitudes** por cliente
+- **Eliminación de solicitudes** con confirmación y actualización visual
+- **Estados permitidos** para eliminación (nuevo, en revisión, cerrado)
+- **Paginación incremental** con carga de más propiedades
+- **Fotos de propiedades** y agentes en las tarjetas
+- **Información completa** de propiedades (precio, ubicación, características)
 
 ### 🔍 Búsqueda y Filtros Avanzados
 - **Búsqueda por nombre completo** de agentes con espacios
@@ -438,6 +445,28 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 - **Ratchet** por el servidor WebSocket
 - **PHPMailer** por el envío de emails
 
+## 🆕 Mejoras Recientes (v2.2.0)
+
+### Dashboard del Cliente
+- **Estadísticas en tiempo real**: Favoritos, solicitudes y citas
+- **Propiedades solicitadas**: Vista completa con fotos y datos
+- **Eliminación de solicitudes**: Botones con confirmación
+- **Paginación incremental**: Carga de más propiedades
+- **Información completa**: Precio, ubicación, características y agente
+
+### Sistema de Solicitudes
+- **Estados mejorados**: Nuevo, en revisión, reunión agendada, cerrado
+- **Eliminación inteligente**: Solo estados permitidos
+- **Confirmación visual**: Mensajes de éxito/error
+- **Actualización dinámica**: DOM se actualiza automáticamente
+- **Seguridad**: Validación de permisos y CSRF
+
+### Optimizaciones Técnicas
+- **Eliminación física**: Mejor rendimiento que eliminación lógica
+- **Alias de campos**: Estructura de datos optimizada
+- **Manejo de errores**: Mejor experiencia de usuario
+- **Código limpio**: Eliminación de archivos de debug
+
 ## 🐛 Problemas Conocidos y Soluciones
 
 ### Error 500 en Chat
@@ -467,6 +496,16 @@ Para soporte técnico o consultas:
 - 🐛 Issues: https://github.com/propeasy/propeasy/issues
 
 ## 🔄 Changelog
+
+### v2.2.0 (2024-12-23)
+- 🗑️ Sistema de eliminación de solicitudes de compra
+- 📊 Dashboard del cliente mejorado con estadísticas
+- 🔄 Paginación incremental en propiedades solicitadas
+- 🖼️ Fotos de propiedades y agentes en tarjetas
+- 📋 Estados de solicitudes (nuevo, en revisión, reunión agendada, cerrado)
+- ✅ Confirmación de eliminación con actualización visual
+- 🔒 Eliminación física segura de solicitudes
+- 🎯 Lógica de estados permitidos para eliminación
 
 ### v2.1.0 (2024-12-23)
 - 🔧 Corrección de errores 500 en rutas de chat

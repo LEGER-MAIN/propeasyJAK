@@ -14,7 +14,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900">Dashboard del Cliente</h1>
-                    <p class="mt-2 text-gray-600">Bienvenido, <?= htmlspecialchars($_SESSION['user_nombre'] ?? 'Usuario') ?></p>
+                    <p class="mt-2 text-gray-600">Bienvenido, <?= htmlspecialchars($_SESSION['user_nombre'] ?? $_SESSION['nombre'] ?? 'Usuario') ?></p>
                 </div>
                 <div class="flex items-center space-x-3">
                     <a href="/properties" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors">
@@ -234,7 +234,7 @@
                                         </div>
                                     </div>
                                     <div class="flex-shrink-0">
-                                        <a href="/solicitudes/<?= $solicitud['id'] ?>" 
+                                        <a href="/solicitudes/<?= $solicitud['solicitud_id'] ?>" 
                                            class="text-primary-600 hover:text-primary-500 text-sm font-medium">
                                             Ver
                                         </a>
@@ -344,135 +344,126 @@
             </div>
             <div class="p-6">
                 <?php if (!empty($misPropiedades)): ?>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div id="mis-propiedades-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <?php foreach ($misPropiedades as $propiedad): ?>
-                        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 hover:transform hover:scale-105">
-                            <!-- Imagen de la propiedad -->
-                            <div class="relative h-48 bg-gray-200">
-                                <?php if (!empty($propiedad['foto_propiedad'])): ?>
-                                    <img src="<?= htmlspecialchars($propiedad['foto_propiedad']) ?>" 
-                                         alt="<?= htmlspecialchars($propiedad['titulo_propiedad']) ?>" 
-                                         class="w-full h-full object-cover">
-                                <?php else: ?>
-                                    <div class="w-full h-full flex items-center justify-center">
-                                        <i class="fas fa-home text-4xl text-gray-400"></i>
-                                    </div>
-                                <?php endif; ?>
-                                
-                                <!-- Estado de la solicitud -->
-                                <div class="absolute top-2 right-2">
-                                    <?php
-                                    $estadoClass = '';
-                                    $estadoText = '';
-                                    switch ($propiedad['estado']) {
-                                        case 'nueva':
-                                            $estadoClass = 'bg-blue-100 text-blue-800';
-                                            $estadoText = 'Nueva';
-                                            break;
-                                        case 'en_revision':
-                                            $estadoClass = 'bg-yellow-100 text-yellow-800';
-                                            $estadoText = 'En Revisión';
-                                            break;
-                                        case 'reunion_agendada':
-                                            $estadoClass = 'bg-green-100 text-green-800';
-                                            $estadoText = 'Reunión Agendada';
-                                            break;
-                                        case 'cerrado':
-                                            $estadoClass = 'bg-gray-100 text-gray-800';
-                                            $estadoText = 'Cerrado';
-                                            break;
-                                        default:
-                                            $estadoClass = 'bg-gray-100 text-gray-800';
-                                            $estadoText = ucfirst($propiedad['estado']);
-                                    }
-                                    ?>
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $estadoClass ?>">
-                                        <?= $estadoText ?>
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <!-- Información de la propiedad -->
-                            <div class="p-4">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-2">
-                                    <?= htmlspecialchars($propiedad['titulo_propiedad']) ?>
-                                </h3>
-                                
-                                <div class="flex items-center text-sm text-gray-600 mb-2">
-                                    <i class="fas fa-map-marker-alt mr-1"></i>
-                                    <?= htmlspecialchars($propiedad['ciudad_propiedad']) ?>
-                                    <?= !empty($propiedad['sector_propiedad']) ? ', ' . htmlspecialchars($propiedad['sector_propiedad']) : '' ?>
-                                </div>
-                                
-                                <div class="flex items-center justify-between mb-3">
-                                    <span class="text-lg font-bold text-primary-600">
-                                        $<?= number_format($propiedad['precio_propiedad'], 0) ?>
-                                    </span>
-                                    <span class="text-sm text-gray-500">
-                                        <?= ucfirst($propiedad['tipo_propiedad']) ?>
-                                    </span>
-                                </div>
-                                
-                                <!-- Características -->
-                                <div class="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                                    <?php if (!empty($propiedad['habitaciones_propiedad'])): ?>
-                                        <span><i class="fas fa-bed mr-1"></i><?= $propiedad['habitaciones_propiedad'] ?> hab</span>
-                                    <?php endif; ?>
-                                    <?php if (!empty($propiedad['banos_propiedad'])): ?>
-                                        <span><i class="fas fa-bath mr-1"></i><?= $propiedad['banos_propiedad'] ?> baños</span>
-                                    <?php endif; ?>
-                                    <?php if (!empty($propiedad['area_propiedad'])): ?>
-                                        <span><i class="fas fa-ruler-combined mr-1"></i><?= $propiedad['area_propiedad'] ?> m²</span>
-                                    <?php endif; ?>
-                                </div>
-                                
-                                <!-- Información del agente -->
-                                <div class="border-t border-gray-200 pt-3">
-                                    <div class="flex items-center">
-                                        <?php if (!empty($propiedad['foto_agente'])): ?>
-                                            <img src="<?= htmlspecialchars($propiedad['foto_agente']) ?>" 
-                                                 alt="Agente" 
-                                                 class="w-8 h-8 rounded-full object-cover mr-2">
-                                        <?php else: ?>
-                                            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center mr-2">
-                                                <i class="fas fa-user text-xs text-gray-600"></i>
-                                            </div>
-                                        <?php endif; ?>
-                                        <div class="flex-1">
-                                            <p class="text-sm font-medium text-gray-900">
-                                                <?= htmlspecialchars($propiedad['nombre_agente'] . ' ' . $propiedad['apellido_agente']) ?>
-                                            </p>
-                                            <p class="text-xs text-gray-500">Agente</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Fecha de solicitud -->
-                                <div class="mt-3 text-xs text-gray-500">
-                                    <i class="fas fa-calendar-alt mr-1"></i>
-                                    Solicitado: <?= date('d/m/Y', strtotime($propiedad['fecha_solicitud'])) ?>
-                                </div>
-                                
-                                <!-- Acciones -->
-                                <div class="mt-4 flex space-x-2">
-                                    <a href="/properties/<?= $propiedad['propiedad_id'] ?>" 
-                                       class="flex-1 text-center px-3 py-2 text-sm font-medium text-primary-600 border border-primary-600 rounded-md hover:bg-primary-50 transition-colors">
-                                        <i class="fas fa-eye mr-1"></i>Ver Propiedad
-                                    </a>
-                                    <a href="/chat/simple?agent=<?= $propiedad['agente_id'] ?>&v=<?= time() ?>" 
-                                       class="flex-1 text-center px-3 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 transition-colors">
-                                        <i class="fas fa-comments mr-1"></i>Contactar
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                            <?php include APP_PATH . '/views/components/card_propiedad_cliente.php'; ?>
                         <?php endforeach; ?>
                     </div>
+                    <?php if (count($misPropiedades) >= 6): ?>
                     <div class="mt-6 text-center">
-                        <a href="/profile" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-600 bg-primary-50 hover:bg-primary-100 transition-colors">
-                            Ver todas mis propiedades
-                        </a>
+                        <button id="cargar-mas-propiedades" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-600 bg-primary-50 hover:bg-primary-100 transition-colors">
+                            Cargar más propiedades
+                        </button>
                     </div>
+                    <?php endif; ?>
+                    <script>
+                    let offsetPropiedades = 6;
+                    
+                    // Función para eliminar solicitud
+                    function eliminarSolicitud(solicitudId) {
+                        if (!confirm('¿Estás seguro de que quieres eliminar esta solicitud? Esta acción no se puede deshacer.')) {
+                            return;
+                        }
+                        
+                        const formData = new FormData();
+                        formData.append('solicitud_id', solicitudId);
+                        formData.append('csrf_token', '<?= generateCSRFToken() ?>');
+                        
+                        fetch('/cliente/eliminar-solicitud', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Eliminar la tarjeta del DOM
+                                const card = document.querySelector(`[data-solicitud-id="${solicitudId}"]`);
+                                if (card) {
+                                    card.remove();
+                                    
+                                    // Si no quedan propiedades, mostrar mensaje
+                                    const remainingCards = document.querySelectorAll('#mis-propiedades-list .bg-white');
+                                    if (remainingCards.length === 0) {
+                                        document.getElementById('mis-propiedades-list').innerHTML = `
+                                            <div class="text-center py-8 col-span-full">
+                                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                    <i class="fas fa-home text-gray-400 text-xl"></i>
+                                                </div>
+                                                <h3 class="text-lg font-medium text-gray-900 mb-2">No tienes propiedades</h3>
+                                                <p class="text-gray-500 mb-4">Cuando envíes solicitudes de compra, aparecerán aquí tus propiedades</p>
+                                                <a href="/properties" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 transition-colors">
+                                                    <i class="fas fa-search mr-2"></i>
+                                                    Explorar Propiedades
+                                                </a>
+                                            </div>
+                                        `;
+                                    }
+                                }
+                                
+                                // Mostrar mensaje de éxito
+                                showNotification('Solicitud eliminada correctamente', 'success');
+                            } else {
+                                showNotification(data.error || 'Error al eliminar la solicitud', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showNotification('Error al eliminar la solicitud', 'error');
+                        });
+                    }
+                    
+                    // Función para mostrar notificaciones
+                    function showNotification(message, type = 'info') {
+                        const notification = document.createElement('div');
+                        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg ${
+                            type === 'success' ? 'bg-green-500 text-white' : 
+                            type === 'error' ? 'bg-red-500 text-white' : 
+                            'bg-blue-500 text-white'
+                        }`;
+                        notification.textContent = message;
+                        
+                        document.body.appendChild(notification);
+                        
+                        setTimeout(() => {
+                            notification.remove();
+                        }, 3000);
+                    }
+                    
+                    document.getElementById('cargar-mas-propiedades').addEventListener('click', function() {
+                        this.disabled = true;
+                        this.textContent = 'Cargando...';
+                        fetch('/cliente/mis-propiedades-ajax?offset=' + offsetPropiedades)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.propiedades && data.propiedades.length > 0) {
+                                    let html = '';
+                                    data.propiedades.forEach(function(propiedad) {
+                                        html += renderPropiedadCard(propiedad);
+                                    });
+                                    document.getElementById('mis-propiedades-list').insertAdjacentHTML('beforeend', html);
+                                    offsetPropiedades += data.propiedades.length;
+                                    if (data.propiedades.length < 6) {
+                                        document.getElementById('cargar-mas-propiedades').style.display = 'none';
+                                    } else {
+                                        document.getElementById('cargar-mas-propiedades').disabled = false;
+                                        document.getElementById('cargar-mas-propiedades').textContent = 'Cargar más propiedades';
+                                    }
+                                } else {
+                                    document.getElementById('cargar-mas-propiedades').style.display = 'none';
+                                }
+                            })
+                            .catch(() => {
+                                document.getElementById('cargar-mas-propiedades').disabled = false;
+                                document.getElementById('cargar-mas-propiedades').textContent = 'Cargar más propiedades';
+                            });
+                    });
+                    
+                    function renderPropiedadCard(propiedad) {
+                        // Aquí puedes copiar el HTML de la tarjeta y reemplazar los valores PHP por JS
+                        // Por simplicidad, solo muestro el título:
+                        return `<div class=\"bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-200 hover:transform hover:scale-105\"><div class=\"p-4\"><h3 class=\"text-lg font-semibold text-gray-900 mb-2\">${propiedad.titulo_propiedad}</h3></div></div>`;
+                    }
+                    </script>
                 <?php else: ?>
                     <div class="text-center py-8">
                         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">

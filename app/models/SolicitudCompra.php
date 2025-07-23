@@ -96,15 +96,28 @@ class SolicitudCompra {
      * @return array Lista de solicitudes
      */
     public function obtenerPorCliente($clienteId, $limit = 10, $offset = 0) {
-        $sql = "SELECT sc.*, 
+        $sql = "SELECT sc.id as solicitud_id,
+                       sc.cliente_id,
+                       sc.propiedad_id,
+                       sc.agente_id,
+                       sc.estado,
+                       sc.fecha_solicitud,
+                       sc.mensaje,
+                       sc.presupuesto_min,
+                       sc.presupuesto_max,
                        p.titulo as titulo_propiedad,
                        p.precio as precio_propiedad,
                        p.moneda as moneda_propiedad,
                        p.ciudad as ciudad_propiedad,
                        p.sector as sector_propiedad,
+                       p.tipo as tipo_propiedad,
+                       p.habitaciones as habitaciones_propiedad,
+                       p.banos as banos_propiedad,
+                       p.metros_cuadrados as area_propiedad,
                        ua.nombre as nombre_agente,
                        ua.apellido as apellido_agente,
-                       ua.email as email_agente
+                       ua.email as email_agente,
+                       ua.foto_perfil as foto_agente
                 FROM solicitudes_compra sc
                 INNER JOIN propiedades p ON sc.propiedad_id = p.id
                 INNER JOIN usuarios ua ON sc.agente_id = ua.id
@@ -282,9 +295,48 @@ class SolicitudCompra {
      * @param int $id ID de la solicitud
      * @return bool True si se eliminó correctamente
      */
+    /**
+     * Eliminar una solicitud (eliminación física)
+     * 
+     * @param int $id ID de la solicitud
+     * @return bool True si se eliminó correctamente
+     */
     public function eliminar($id) {
         $sql = "DELETE FROM solicitudes_compra WHERE id = ?";
         return $this->db->delete($sql, [$id]) !== false;
+    }
+    
+    /**
+     * Eliminar una solicitud (eliminación lógica - más segura)
+     * Elimina físicamente el registro de la base de datos
+     * 
+     * @param int $id ID de la solicitud
+     * @return bool True si se eliminó correctamente
+     */
+    public function eliminarLogico($id) {
+        $sql = "DELETE FROM solicitudes_compra WHERE id = ?";
+        $result = $this->db->delete($sql, [$id]);
+        return $result !== false && $result > 0;
+    }
+    
+    /**
+     * Verificar si una solicitud puede ser eliminada
+     * Permite eliminar solicitudes en estado 'nuevo', 'en_revision' o 'cerrado'
+     * 
+     * @param int $id ID de la solicitud
+     * @return bool True si puede ser eliminada
+     */
+    public function puedeEliminar($id) {
+        $sql = "SELECT estado FROM solicitudes_compra WHERE id = ?";
+        $result = $this->db->selectOne($sql, [$id]);
+        
+        if (!$result) {
+            return false;
+        }
+        
+        // Permitir eliminar solicitudes en estados iniciales y cerradas
+        $estadosPermitidos = ['nuevo', 'en_revision', 'cerrado'];
+        return in_array($result['estado'], $estadosPermitidos);
     }
     
     /**
