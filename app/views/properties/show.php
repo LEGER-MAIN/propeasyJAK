@@ -104,12 +104,9 @@ $content = ob_start();
                         <!-- Botón de favorito -->
                         <?php if (isAuthenticated()): ?>
                         <div class="mt-3">
-                            <button class="favorite-toggle rounded-md px-4 py-2 transition-all duration-200 flex items-center hover:transform hover:scale-105" 
+                            <button class="btn btn-outline-success favorite-toggle px-4 py-2 rounded-md flex items-center" 
                                     data-propiedad-id="<?= $property['id'] ?>"
-                                    title="Agregar a favoritos"
-                                    style="background-color: var(--bg-light); color: var(--color-verde-esmeralda); border: 2px solid var(--color-verde-esmeralda);"
-                                    onmouseover="this.style.backgroundColor='rgba(42, 157, 143, 0.1)'; this.style.borderColor='var(--color-verde-esmeralda-hover)';"
-                                    onmouseout="this.style.backgroundColor='var(--bg-light)'; this.style.borderColor='var(--color-verde-esmeralda)';">
+                                    title="Agregar a favoritos">
                                 <i class="far fa-heart mr-2"></i>
                                 <span>Agregar a Favoritos</span>
                             </button>
@@ -227,24 +224,33 @@ $content = ob_start();
                     
                     <div class="mt-6">
                         <div class="flex space-x-2">
-                            <a href="mailto:<?= htmlspecialchars($property['agente_email']) ?>" 
-                               class="flex-1 text-center py-2 px-4 rounded-md font-medium transition-all duration-200 hover:transform hover:scale-105 hover:shadow-lg"
-                               style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); color: var(--text-light);"
-                               onmouseover="this.style.background='linear-gradient(135deg, var(--color-azul-marino-hover) 0%, var(--color-azul-marino) 100%)';"
-                               onmouseout="this.style.background='linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%)';">
-                                <i class="fas fa-envelope mr-2"></i>Email
-                            </a>
+                            <?php if (!empty($property['agente_email'])): ?>
+                                <a href="mailto:<?= htmlspecialchars($property['agente_email']) ?>?subject=Consulta sobre <?= urlencode($property['titulo']) ?>&body=Hola <?= htmlspecialchars($property['agente_nombre']) ?>,%0D%0A%0D%0AMe interesa la propiedad: <?= urlencode($property['titulo']) ?>%0D%0APrecio: $<?= number_format($property['precio']) ?> <?= $property['moneda'] ?>%0D%0A%0D%0APor favor, contáctame para más información.%0D%0A%0D%0ASaludos," 
+                                   class="btn btn-primary flex-1 text-center py-2 px-4 rounded-md"
+                                   title="Enviar email a <?= htmlspecialchars($property['agente_nombre']) ?>"
+                                   onclick="trackContact('email', '<?= htmlspecialchars($property['agente_email']) ?>')">
+                                    <i class="fas fa-envelope mr-2"></i>Email
+                                </a>
+                            <?php endif; ?>
                             
                             <?php if (!empty($property['agente_telefono'])): ?>
                                 <a href="tel:<?= htmlspecialchars($property['agente_telefono']) ?>" 
-                                   class="flex-1 text-center py-2 px-4 rounded-md font-medium transition-all duration-200 hover:transform hover:scale-105 hover:shadow-lg"
-                                   style="background: linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%); color: var(--text-light);"
-                                   onmouseover="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda-hover) 0%, var(--color-verde-esmeralda) 100%)';"
-                                   onmouseout="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%)';">
+                                   class="btn btn-success flex-1 text-center py-2 px-4 rounded-md"
+                                   title="Llamar a <?= htmlspecialchars($property['agente_nombre']) ?>"
+                                   onclick="trackContact('phone', '<?= htmlspecialchars($property['agente_telefono']) ?>')">
                                     <i class="fas fa-phone mr-2"></i>Llamar
                                 </a>
                             <?php endif; ?>
                         </div>
+                        
+                        <?php if (empty($property['agente_email']) && empty($property['agente_telefono'])): ?>
+                            <div class="text-center py-3 px-4 rounded-md" style="background-color: var(--bg-secondary); border: 1px solid var(--color-gris-claro);">
+                                <p class="text-sm" style="color: var(--text-secondary);">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    Información de contacto no disponible
+                                </p>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endif; ?>
@@ -256,10 +262,7 @@ $content = ob_start();
                     <p class="mb-4" style="color: var(--text-secondary);">Envía una solicitud de compra para que el agente se ponga en contacto contigo.</p>
                     
                     <a href="/solicitudes/create/<?= $property['id'] ?>" 
-                       class="w-full text-center py-3 px-4 rounded-md font-medium transition-all duration-200 hover:transform hover:scale-105 hover:shadow-lg flex items-center justify-center"
-                       style="background: linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%); color: var(--text-light);"
-                       onmouseover="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda-hover) 0%, var(--color-verde-esmeralda) 100%)';"
-                       onmouseout="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%)';">
+                       class="btn btn-success w-full text-center py-3 px-4 rounded-md flex items-center justify-center">
                         <i class="fas fa-handshake mr-2"></i>Solicitar Compra
                     </a>
                 </div>
@@ -267,10 +270,7 @@ $content = ob_start();
                 <div class="rounded-lg shadow-lg p-6 mb-6" style="background-color: var(--bg-light); border: 1px solid var(--color-gris-claro);">
                     <h3 class="text-lg font-semibold mb-4" style="color: var(--color-azul-marino);">¿Te interesa esta propiedad?</h3>
                     <p class="mb-4" style="color: var(--text-secondary);">Inicia sesión para solicitar la compra de esta propiedad.</p>
-                    <a href="/login" class="w-full text-center py-2 px-4 rounded-md font-medium transition-all duration-200 hover:transform hover:scale-105 hover:shadow-lg"
-                       style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); color: var(--text-light);"
-                       onmouseover="this.style.background='linear-gradient(135deg, var(--color-azul-marino-hover) 0%, var(--color-azul-marino) 100%)';"
-                       onmouseout="this.style.background='linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%)';">
+                    <a href="/login" class="btn btn-primary w-full text-center py-2 px-4 rounded-md">
                         Iniciar Sesión
                     </a>
                 </div>
@@ -292,18 +292,12 @@ $content = ob_start();
                         <h3 class="text-lg font-semibold mb-4" style="color: var(--color-azul-marino);">Acciones</h3>
                         <div class="space-y-2">
                             <a href="/properties/edit/<?= $property['id'] ?>" 
-                               class="w-full text-center py-2 px-4 rounded-md font-medium transition-all duration-200 hover:transform hover:scale-105 hover:shadow-lg"
-                               style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); color: var(--text-light);"
-                               onmouseover="this.style.background='linear-gradient(135deg, var(--color-azul-marino-hover) 0%, var(--color-azul-marino) 100%)';"
-                               onmouseout="this.style.background='linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%)';">
+                               class="btn btn-primary w-full text-center py-2 px-4 rounded-md">
                                 <i class="fas fa-edit mr-2"></i>Editar Propiedad
                             </a>
                             <form action="/properties/delete/<?= $property['id'] ?>" method="POST" 
                                   onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta propiedad?')">
-                                <button type="submit" class="w-full py-2 px-4 rounded-md font-medium transition-all duration-200 hover:transform hover:scale-105 hover:shadow-lg"
-                                        style="background: linear-gradient(135deg, var(--danger) 0%, #c53030 100%); color: var(--text-light);"
-                                        onmouseover="this.style.background='linear-gradient(135deg, #c53030 0%, var(--danger) 100%)';"
-                                        onmouseout="this.style.background='linear-gradient(135deg, var(--danger) 0%, #c53030 100%)';">
+                                <button type="submit" class="btn btn-danger w-full py-2 px-4 rounded-md">
                                     <i class="fas fa-trash mr-2"></i>Eliminar Propiedad
                                 </button>
                             </form>
@@ -320,6 +314,146 @@ $content = ob_start();
 function changeMainImage(imageSrc) {
     document.getElementById('main-image').src = imageSrc;
 }
+
+// Función para tracking de contactos
+function trackContact(type, contact) {
+    // Mostrar confirmación visual
+    const button = event.target.closest('a');
+    const originalText = button.innerHTML;
+    
+    if (type === 'email') {
+        button.innerHTML = '<i class="fas fa-check mr-2"></i>Email Enviado';
+        button.style.backgroundColor = 'var(--color-verde-esmeralda)';
+        button.style.color = 'white';
+        
+        // Restaurar después de 2 segundos
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.style.backgroundColor = '';
+            button.style.color = '';
+        }, 2000);
+        
+        console.log('Email contact tracked:', contact);
+    } else if (type === 'phone') {
+        button.innerHTML = '<i class="fas fa-check mr-2"></i>Llamando...';
+        button.style.backgroundColor = 'var(--color-verde-esmeralda)';
+        button.style.color = 'white';
+        
+        // Restaurar después de 3 segundos
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.style.backgroundColor = '';
+            button.style.color = '';
+        }, 3000);
+        
+        console.log('Phone contact tracked:', contact);
+    }
+    
+    // Aquí podrías enviar datos a Google Analytics o tu sistema de tracking
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'contact_click', {
+            'contact_type': type,
+            'property_id': <?= $property['id'] ?>,
+            'property_title': '<?= addslashes($property['titulo']) ?>'
+        });
+    }
+}
+
+// Mejorar la experiencia de usuario para dispositivos móviles
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneButtons = document.querySelectorAll('a[href^="tel:"]');
+    const emailButtons = document.querySelectorAll('a[href^="mailto:"]');
+    
+    // Agregar indicadores visuales para dispositivos móviles
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        phoneButtons.forEach(button => {
+            button.style.fontSize = '1.1rem';
+            button.style.padding = '0.75rem 1rem';
+        });
+        
+        emailButtons.forEach(button => {
+            button.style.fontSize = '1.1rem';
+            button.style.padding = '0.75rem 1rem';
+        });
+    }
+    
+    // Agregar tooltips informativos
+    phoneButtons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.title = 'Toca para llamar directamente';
+        });
+        
+        // Manejar casos donde el dispositivo no soporte llamadas
+        button.addEventListener('click', function(e) {
+            const phoneNumber = this.href.replace('tel:', '');
+            
+            // Verificar si el dispositivo soporta llamadas
+            if (!navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i)) {
+                e.preventDefault();
+                
+                // Mostrar el número para copiar
+                if (confirm('Tu dispositivo no soporta llamadas directas. ¿Quieres copiar el número al portapapeles?')) {
+                    navigator.clipboard.writeText(phoneNumber).then(() => {
+                        alert('Número copiado al portapapeles: ' + phoneNumber);
+                    }).catch(() => {
+                        alert('Número del agente: ' + phoneNumber);
+                    });
+                }
+            }
+        });
+    });
+    
+    emailButtons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.title = 'Toca para abrir tu aplicación de email';
+        });
+        
+        // Manejar casos donde no haya aplicación de email
+        button.addEventListener('click', function(e) {
+            const email = this.href.replace('mailto:', '').split('?')[0];
+            
+            // Verificar si hay aplicación de email
+            if (!navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i)) {
+                e.preventDefault();
+                
+                if (confirm('¿Quieres copiar el email al portapapeles?')) {
+                    navigator.clipboard.writeText(email).then(() => {
+                        alert('Email copiado al portapapeles: ' + email);
+                    }).catch(() => {
+                        alert('Email del agente: ' + email);
+                    });
+                }
+            }
+        });
+    });
+    
+    // Agregar indicadores de estado de carga
+    phoneButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Conectando...';
+            this.disabled = true;
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }, 2000);
+        });
+    });
+    
+    emailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Abriendo...';
+            this.disabled = true;
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }, 1500);
+        });
+    });
+});
 </script>
 
 <?php

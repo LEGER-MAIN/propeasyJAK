@@ -2,16 +2,20 @@
     /* Colores principales */
     --color-azul-marino: #1D3557;
     --color-azul-marino-hover: #152a47;
+    --color-azul-marino-light: #E8F2F8;
     --color-verde-esmeralda: #2A9D8F;
     --color-dorado-suave: #E9C46A;
     --color-rojo-error: #E76F51;
+    --color-rojo-coral: #E76F51;
     --color-gris-claro: #F1FAEE;
     --color-gris-medio: #A8DADC;
+    --color-azul-claro: #3498DB;
     
     /* Colores de texto */
     --text-primary: #2D3748;
     --text-secondary: #718096;
     --text-light: #FFFFFF;
+    --text-muted: #A0AEC0;
     
     /* Colores de estado */
     --success: #2A9D8F;
@@ -23,11 +27,13 @@
     /* Fondos */
     --bg-light: #FFFFFF;
     --bg-secondary: #F7FAFC;
+    --bg-primary: #F8FAFC;
     
     /* Sombras */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
 /* Estilos base */
@@ -49,7 +55,7 @@ a:hover {
     color: var(--color-azul-marino-hover);
 }
 
-/* Botones */
+/* Botones base */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -62,8 +68,20 @@ a:hover {
     text-decoration: none;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    position: relative;
+    overflow: hidden;
 }
 
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Botones primarios */
 .btn-primary {
     background-color: var(--color-azul-marino);
     color: white;
@@ -73,8 +91,53 @@ a:hover {
 .btn-primary:hover {
     background-color: var(--color-azul-marino-hover);
     border-color: var(--color-azul-marino-hover);
+    color: white;
 }
 
+/* Clases de Tailwind para botones */
+.bg-primary-600 {
+    background-color: var(--color-azul-marino) !important;
+}
+
+.hover\:bg-primary-700:hover {
+    background-color: var(--color-azul-marino-hover) !important;
+}
+
+.hover\:from-primary-700:hover {
+    background: linear-gradient(135deg, var(--color-azul-marino-hover) 0%, #0f1f2e 100%) !important;
+}
+
+.hover\:to-primary-800:hover {
+    background: linear-gradient(135deg, var(--color-azul-marino-hover) 0%, #0f1f2e 100%) !important;
+}
+
+/* Efectos de transformación */
+.hover\:scale-105:hover {
+    transform: scale(1.05) !important;
+}
+
+.hover\:shadow-xl:hover {
+    box-shadow: var(--shadow-xl) !important;
+}
+
+/* Transiciones */
+.transition-all {
+    transition: all 0.2s ease-in-out !important;
+}
+
+.transition-colors {
+    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out !important;
+}
+
+.transition-shadow {
+    transition: box-shadow 0.2s ease-in-out !important;
+}
+
+.duration-200 {
+    transition-duration: 200ms !important;
+}
+
+/* Botones secundarios */
 .btn-secondary {
     background-color: var(--color-gris-medio);
     color: var(--text-primary);
@@ -84,6 +147,7 @@ a:hover {
 .btn-secondary:hover {
     background-color: #9bc5c7;
     border-color: #9bc5c7;
+    color: var(--text-primary);
 }
 
 .btn-success {
@@ -95,6 +159,7 @@ a:hover {
 .btn-success:hover {
     background-color: var(--success-dark);
     border-color: var(--success-dark);
+    color: white;
 }
 
 .btn-danger {
@@ -106,6 +171,36 @@ a:hover {
 .btn-danger:hover {
     background-color: #d65a3d;
     border-color: #d65a3d;
+    color: white;
+}
+
+/* Botones con gradiente */
+.bg-gradient-to-r {
+    background: linear-gradient(to right, var(--color-azul-marino), var(--color-azul-marino-hover)) !important;
+}
+
+.from-primary-600 {
+    background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%) !important;
+}
+
+.to-primary-700 {
+    background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%) !important;
+}
+
+/* Efectos hover para enlaces de botones */
+a.bg-primary-600:hover {
+    background-color: var(--color-azul-marino-hover) !important;
+    color: white !important;
+    text-decoration: none !important;
+}
+
+/* Efectos hover para cards */
+.hover\:shadow-lg:hover {
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.hover\:border-gray-400:hover {
+    border-color: #9ca3af !important;
 }
 
 /* Formularios */
@@ -249,6 +344,11 @@ th {
     border-radius: 0.5rem;
     box-shadow: var(--shadow-sm);
     overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .card-header {
@@ -313,4 +413,60 @@ footer {
 
 .bg-info {
     background-color: var(--info);
+}
+
+/* Efectos adicionales para botones */
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(29, 53, 87, 0.1);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Efectos hover para elementos interactivos */
+.hover\:opacity-75:hover {
+    opacity: 0.75 !important;
+}
+
+.hover\:opacity-90:hover {
+    opacity: 0.9 !important;
+}
+
+/* Efectos de sombra mejorados */
+.shadow-lg {
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.shadow-xl {
+    box-shadow: var(--shadow-xl) !important;
+}
+
+/* Efectos de borde mejorados */
+.border-2 {
+    border-width: 2px !important;
+}
+
+.border-gray-300 {
+    border-color: #d1d5db !important;
+}
+
+/* Efectos de focus mejorados */
+.focus\:outline-none:focus {
+    outline: none !important;
+}
+
+.focus\:ring-2:focus {
+    box-shadow: 0 0 0 2px rgba(29, 53, 87, 0.1) !important;
+}
+
+.focus\:ring-primary-500:focus {
+    box-shadow: 0 0 0 2px rgba(29, 53, 87, 0.1) !important;
+}
+
+.focus\:border-primary-500:focus {
+    border-color: var(--color-azul-marino) !important;
 } 

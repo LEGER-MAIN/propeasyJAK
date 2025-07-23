@@ -72,6 +72,9 @@
     <!-- Estilos principales con nueva paleta de colores -->
     <link rel="stylesheet" href="/css/main.css?v=<?= time() ?>&cb=<?= rand(1000, 9999) ?>&fix=<?= rand(10000, 99999) ?>">
     
+    <!-- Estilos para efectos hover de botones -->
+    <link rel="stylesheet" href="/css/buttons.css?v=<?= time() ?>">
+    
     <!-- Estilos para notificaciones de citas -->
     <link rel="stylesheet" href="/css/appointment-notifications.css?v=<?= time() ?>">
     

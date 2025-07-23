@@ -159,7 +159,7 @@ $content = ob_start();
                     <i class="fas fa-search mr-2"></i>
                     Buscar Propiedades
                 </button>
-                <a href="/properties" class="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-center" style="background: linear-gradient(135deg, var(--color-gris-claro) 0%, #cbd5e0 100%); color: var(--text-primary);">
+                <a href="/properties" class="btn btn-outline-secondary px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 text-center">
                     <i class="fas fa-times mr-2"></i>
                     Limpiar Filtros
                 </a>

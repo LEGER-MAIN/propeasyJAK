@@ -65,13 +65,17 @@ $csrfToken = generateCSRFToken();
                         <option value="negociacion">Negociación</option>
                     </select>
                 </div>
-                <div class="flex items-end">
+                <div class="flex items-end space-x-3">
                     <button id="aplicar_filtros" 
-                            class="w-full px-4 py-2 rounded-md transition-all duration-200"
+                            class="flex-1 px-4 py-2 rounded-md transition-all duration-200"
                             style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); color: white;"
                             onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(29, 53, 87, 0.3)'"
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
                         Aplicar Filtros
+                    </button>
+                    <button id="limpiar_filtros" 
+                            class="btn btn-outline-secondary px-4 py-2 rounded-md">
+                        <i class="fas fa-times mr-1"></i> Limpiar
                     </button>
                 </div>
             </div>
@@ -307,5 +311,16 @@ document.getElementById('aplicar_filtros').addEventListener('click', function() 
     if (tipo) url += `tipo=${tipo}&`;
     
     window.location.href = url;
+});
+
+// Botón de limpiar filtros
+document.getElementById('limpiar_filtros').addEventListener('click', function() {
+    // Limpiar todos los campos del formulario
+    document.getElementById('filtro_fecha').value = '';
+    document.getElementById('filtro_estado').value = '';
+    document.getElementById('filtro_tipo').value = '';
+    
+    // Redirigir a la página sin filtros
+    window.location.href = '/appointments';
 });
 </script> 

@@ -1,0 +1,619 @@
+/* Estilos específicos para botones con efectos hover mejorados */
+
+/* Efectos hover para botones principales */
+.btn-primary,
+.bg-primary-600,
+[class*="bg-primary"] {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary:hover,
+.bg-primary-600:hover,
+[class*="bg-primary"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(29, 53, 87, 0.3);
+}
+
+.btn-primary:active,
+.bg-primary-600:active,
+[class*="bg-primary"]:active {
+    transform: translateY(0);
+    box-shadow: 0 5px 15px rgba(29, 53, 87, 0.2);
+}
+
+/* Efecto de brillo en hover */
+.btn-primary::before,
+.bg-primary-600::before,
+[class*="bg-primary"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-primary:hover::before,
+.bg-primary-600:hover::before,
+[class*="bg-primary"]:hover::before {
+    left: 100%;
+}
+
+/* Efectos para botones con gradiente */
+.bg-gradient-to-r,
+.from-primary-600,
+.to-primary-700 {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.bg-gradient-to-r:hover,
+.from-primary-600:hover,
+.to-primary-700:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(29, 53, 87, 0.4);
+}
+
+/* Efectos para botones de acción */
+.btn-action {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Efectos para enlaces de botones */
+a[class*="bg-primary"] {
+    display: inline-block;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a[class*="bg-primary"]:hover {
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(29, 53, 87, 0.25);
+}
+
+/* Efectos para botones de formulario */
+button[type="submit"] {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(29, 53, 87, 0.25);
+}
+
+/* Efectos para botones de cards */
+.card .btn,
+.card a[class*="bg-primary"] {
+    transition: all 0.3s ease;
+}
+
+.card .btn:hover,
+.card a[class*="bg-primary"]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(29, 53, 87, 0.2);
+}
+
+/* Efectos para botones de navegación */
+.nav-link {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-azul-marino);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Efectos para botones de estado */
+.btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(42, 157, 143, 0.3);
+}
+
+.btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(231, 111, 81, 0.3);
+}
+
+.btn-warning:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(233, 196, 106, 0.3);
+}
+
+/* Efectos para botones deshabilitados */
+.btn:disabled,
+.btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Efectos para botones pequeños */
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.btn-sm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(29, 53, 87, 0.2);
+}
+
+/* Efectos para botones grandes */
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+}
+
+.btn-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(29, 53, 87, 0.3);
+}
+
+/* Efectos para botones con iconos */
+.btn i,
+.btn svg {
+    transition: transform 0.3s ease;
+}
+
+.btn:hover i,
+.btn:hover svg {
+    transform: scale(1.1);
+}
+
+/* Efectos para botones de carga */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Efectos para botones de toggle */
+.btn-toggle {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-toggle::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+}
+
+.btn-toggle:hover::before {
+    transform: translateX(0);
+}
+
+/* Efectos para botones de grupo */
+.btn-group .btn {
+    border-radius: 0;
+}
+
+.btn-group .btn:first-child {
+    border-top-left-radius: 0.375rem;
+    border-bottom-left-radius: 0.375rem;
+}
+
+.btn-group .btn:last-child {
+    border-top-right-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+}
+
+/* Efectos para botones flotantes */
+.btn-floating {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.btn-floating:hover {
+    transform: translateY(-2px) scale(1.1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Efectos para botones de descarga */
+.btn-download {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-download::after {
+    content: '⬇';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: right 0.3s ease;
+}
+
+.btn-download:hover::after {
+    right: 10px;
+}
+
+/* Efectos para botones de compartir */
+.btn-share {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-share::before {
+    content: '📤';
+    position: absolute;
+    left: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: left 0.3s ease;
+}
+
+.btn-share:hover::before {
+    left: 10px;
+}
+
+/* Efectos para botones de like/favorito */
+.btn-like {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-like:hover {
+    animation: pulse 0.6s ease-in-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Efectos para botones de eliminar */
+.btn-delete {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-delete:hover {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+/* Efectos para botones de confirmación */
+.btn-confirm {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-confirm:hover {
+    animation: bounce 0.6s ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-5px); }
+    60% { transform: translateY(-3px); }
+}
+
+/* Botones Outline - Estilos base */
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-success,
+.btn-outline-danger,
+.btn-outline-warning,
+.btn-outline-info {
+    position: relative;
+    background-color: transparent;
+    border: 2px solid;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+/* Botón Outline Primary */
+.btn-outline-primary {
+    color: var(--color-azul-marino);
+    border-color: var(--color-azul-marino);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--color-azul-marino);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(29, 53, 87, 0.3);
+}
+
+/* Botón Outline Secondary */
+.btn-outline-secondary {
+    color: #1a202c !important;
+    border-color: var(--color-gris-claro);
+    background-color: var(--color-gris-claro);
+    text-decoration: none !important;
+    font-weight: 600;
+    border-width: 2px;
+    border-style: solid;
+}
+
+/* Asegurar que el texto sea visible en botones outline secondary */
+.btn-outline-secondary,
+.btn-outline-secondary i,
+.btn-outline-secondary span {
+    color: #1a202c !important;
+    text-shadow: none !important;
+}
+
+/* Reglas específicas para enlaces con btn-outline-secondary */
+a.btn-outline-secondary,
+a.btn-outline-secondary:visited,
+a.btn-outline-secondary:link {
+    color: #1a202c !important;
+    text-decoration: none !important;
+}
+
+/* Reglas específicas para botones outline success */
+.btn-outline-success,
+.btn-outline-success i,
+.btn-outline-success span {
+    color: var(--color-verde-esmeralda) !important;
+    text-shadow: none !important;
+}
+
+a.btn-outline-success,
+a.btn-outline-success:visited,
+a.btn-outline-success:link {
+    color: var(--color-verde-esmeralda) !important;
+    text-decoration: none !important;
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--color-azul-marino-light) !important;
+    border-color: var(--color-azul-marino) !important;
+    color: var(--color-azul-marino) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(29, 53, 87, 0.2);
+    text-decoration: none !important;
+}
+
+/* Botón Outline Success */
+.btn-outline-success {
+    color: var(--color-verde-esmeralda) !important;
+    border-color: var(--color-verde-esmeralda);
+    background-color: transparent;
+    text-decoration: none !important;
+    font-weight: 500;
+    border-width: 2px;
+    border-style: solid;
+}
+
+.btn-outline-success:hover {
+    background-color: var(--color-verde-esmeralda) !important;
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(42, 157, 143, 0.3);
+    text-decoration: none !important;
+}
+
+/* Botón Outline Danger */
+.btn-outline-danger {
+    color: var(--color-rojo-coral);
+    border-color: var(--color-rojo-coral);
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--color-rojo-coral);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(231, 111, 81, 0.3);
+}
+
+/* Botón Outline Warning */
+.btn-outline-warning {
+    color: var(--color-dorado-suave);
+    border-color: var(--color-dorado-suave);
+}
+
+.btn-outline-warning:hover {
+    background-color: var(--color-dorado-suave);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(233, 196, 106, 0.3);
+}
+
+/* Botón Outline Info */
+.btn-outline-info {
+    color: var(--color-azul-claro);
+    border-color: var(--color-azul-claro);
+}
+
+.btn-outline-info:hover {
+    background-color: var(--color-azul-claro);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+}
+
+/* Efecto de brillo para botones outline */
+.btn-outline-primary::before,
+.btn-outline-secondary::before,
+.btn-outline-success::before,
+.btn-outline-danger::before,
+.btn-outline-warning::before,
+.btn-outline-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-outline-primary:hover::before,
+.btn-outline-secondary:hover::before,
+.btn-outline-success:hover::before,
+.btn-outline-danger:hover::before,
+.btn-outline-warning:hover::before,
+.btn-outline-info:hover::before {
+    left: 100%;
+}
+
+/* Estados activos para botones outline */
+.btn-outline-primary:active,
+.btn-outline-secondary:active,
+.btn-outline-success:active,
+.btn-outline-danger:active,
+.btn-outline-warning:active,
+.btn-outline-info:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Botones outline deshabilitados */
+.btn-outline-primary:disabled,
+.btn-outline-secondary:disabled,
+.btn-outline-success:disabled,
+.btn-outline-danger:disabled,
+.btn-outline-warning:disabled,
+.btn-outline-info:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Tamaños para botones outline */
+.btn-outline-primary.btn-sm,
+.btn-outline-secondary.btn-sm,
+.btn-outline-success.btn-sm,
+.btn-outline-danger.btn-sm,
+.btn-outline-warning.btn-sm,
+.btn-outline-info.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-width: 1px;
+}
+
+.btn-outline-primary.btn-lg,
+.btn-outline-secondary.btn-lg,
+.btn-outline-success.btn-lg,
+.btn-outline-danger.btn-lg,
+.btn-outline-warning.btn-lg,
+.btn-outline-info.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+    border-width: 3px;
+}
+
+/* Estilos específicos para botones de contacto */
+.btn[href^="tel:"],
+.btn[href^="mailto:"] {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn[href^="tel:"]:hover,
+.btn[href^="mailto:"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn[href^="tel:"]:active,
+.btn[href^="mailto:"]:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Efecto de pulso para botones de contacto */
+.btn[href^="tel:"]::before,
+.btn[href^="mailto:"]::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn[href^="tel:"]:active::before,
+.btn[href^="mailto:"]:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+    .btn[href^="tel:"],
+    .btn[href^="mailto:"] {
+        min-height: 48px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .btn[href^="tel:"] i,
+    .btn[href^="mailto:"] i {
+        font-size: 1.2rem;
+    }
+} 

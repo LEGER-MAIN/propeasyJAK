@@ -17,13 +17,13 @@ ob_start();
             
             <!-- Búsqueda rápida -->
             <div class="max-w-5xl mx-auto">
-                <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 p-8">
+                <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 p-8">
                     <form action="/properties" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div class="space-y-2">
-                            <label for="tipo" class="block text-sm font-semibold mb-2" style="color: white !important; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3); font-size: 14px;">
+                            <label for="tipo" class="block text-sm font-semibold mb-2" style="color: var(--color-azul-marino) !important; font-weight: 700; font-size: 14px;">
                                 <i class="fas fa-home mr-2" style="color: var(--color-dorado-suave) !important;"></i>Tipo de Propiedad
                             </label>
-                            <select name="tipo" id="tipo" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-gray-700 font-medium shadow-sm hover:border-gray-300" style="border-color: var(--color-gris-claro);">
+                            <select name="tipo" id="tipo" class="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-gray-800 font-medium shadow-sm hover:border-gray-400">
                                 <option value="">Todos los tipos</option>
                                 <option value="casa">🏠 Casa</option>
                                 <option value="apartamento">🏢 Apartamento</option>
@@ -33,22 +33,25 @@ ob_start();
                             </select>
                         </div>
                         <div class="space-y-2">
-                            <label for="ciudad" class="block text-sm font-semibold mb-2" style="color: white !important; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3); font-size: 14px;">
+                            <label for="ciudad" class="block text-sm font-semibold mb-2" style="color: var(--color-azul-marino) !important; font-weight: 700; font-size: 14px;">
                                 <i class="fas fa-map-marker-alt mr-2" style="color: var(--color-dorado-suave) !important;"></i>Ciudad
                             </label>
                             <input type="text" name="ciudad" id="ciudad" placeholder="Ej: Santo Domingo" 
-                                   class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-gray-700 font-medium shadow-sm hover:border-gray-300 placeholder-gray-400" style="border-color: var(--color-gris-claro);">
+                                   class="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-gray-800 font-medium shadow-sm hover:border-gray-400 placeholder-gray-500">
                         </div>
                         <div class="space-y-2">
-                            <label for="precio_max" class="block text-sm font-semibold mb-2" style="color: white !important; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.3); font-size: 14px;">
+                            <label for="precio_max" class="block text-sm font-semibold mb-2" style="color: var(--color-azul-marino) !important; font-weight: 700; font-size: 14px;">
                                 <i class="fas fa-dollar-sign mr-2" style="color: var(--color-dorado-suave) !important;"></i>Precio Máximo
                             </label>
                             <input type="number" name="precio_max" id="precio_max" placeholder="Ej: 500,000" min="0" step="1000"
-                                   class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-gray-700 font-medium shadow-sm hover:border-gray-300 placeholder-gray-400" style="border-color: var(--color-gris-claro);">
+                                   class="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-gray-800 font-medium shadow-sm hover:border-gray-400 placeholder-gray-500">
                         </div>
-                        <div class="flex items-end">
-                            <button type="submit" class="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white px-6 py-3 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold text-lg" style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%);">
+                        <div class="flex items-end space-x-3">
+                            <button type="submit" class="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white px-6 py-3 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl font-semibold text-lg" style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); border: none;">
                                 <i class="fas fa-search mr-2"></i> Buscar Propiedades
+                            </button>
+                            <button type="button" id="limpiarFiltros" class="btn btn-outline-secondary px-6 py-3 rounded-xl font-semibold text-lg">
+                                <i class="fas fa-times mr-2"></i> Limpiar
                             </button>
                         </div>
                     </form>
@@ -319,6 +322,27 @@ ob_start();
     </div>
 </section>
 <?php endif; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Botón de limpiar filtros
+    const limpiarFiltrosBtn = document.getElementById('limpiarFiltros');
+    if (limpiarFiltrosBtn) {
+        limpiarFiltrosBtn.addEventListener('click', function() {
+            // Limpiar todos los campos del formulario
+            document.getElementById('tipo').value = '';
+            document.getElementById('ciudad').value = '';
+            document.getElementById('precio_max').value = '';
+            
+            // Efecto visual de confirmación
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+    }
+});
+</script>
 
 <?php
 // Capturar el contenido y pasarlo al layout
