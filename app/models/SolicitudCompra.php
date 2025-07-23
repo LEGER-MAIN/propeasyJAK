@@ -334,7 +334,7 @@ class SolicitudCompra {
             return false;
         }
         
-        // Permitir eliminar solicitudes en estados iniciales y cerradas
+        // Permitir eliminar solicitudes en estados iniciales, en revisión y cerradas
         $estadosPermitidos = ['nuevo', 'en_revision', 'cerrado'];
         return in_array($result['estado'], $estadosPermitidos);
     }

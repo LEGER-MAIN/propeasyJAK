@@ -445,7 +445,21 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 - **Ratchet** por el servidor WebSocket
 - **PHPMailer** por el envío de emails
 
-## 🆕 Mejoras Recientes (v2.2.0)
+## 🆕 Mejoras Recientes (v2.3.0)
+
+### Sistema de Chat Unificado
+- **Botones de contacto unificados**: Todos los botones "Contactar" y "Chat" usan la misma lógica
+- **Redirección automática**: Chat simple con agente preseleccionado automáticamente
+- **Preselección de conversaciones**: Selección automática de conversaciones existentes
+- **Creación automática**: Nuevas conversaciones se crean y seleccionan automáticamente
+- **Consistencia**: Misma experiencia en todas las páginas (agentes, solicitudes, propiedades)
+
+### Sistema de Eliminación de Solicitudes
+- **Lógica unificada**: Misma funcionalidad en dashboard y página de solicitudes
+- **Estados permitidos**: Solo se pueden eliminar solicitudes en estados apropiados
+- **Seguridad mejorada**: Validación de permisos, CSRF y registro de actividades
+- **Eliminación física**: Mejor rendimiento y limpieza de base de datos
+- **Confirmación visual**: Mensajes de éxito/error con actualización automática
 
 ### Dashboard del Cliente
 - **Estadísticas en tiempo real**: Favoritos, solicitudes y citas
@@ -454,24 +468,17 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 - **Paginación incremental**: Carga de más propiedades
 - **Información completa**: Precio, ubicación, características y agente
 
-### Sistema de Solicitudes
-- **Estados mejorados**: Nuevo, en revisión, reunión agendada, cerrado
-- **Eliminación inteligente**: Solo estados permitidos
-- **Confirmación visual**: Mensajes de éxito/error
-- **Actualización dinámica**: DOM se actualiza automáticamente
-- **Seguridad**: Validación de permisos y CSRF
-
 ### Optimizaciones Técnicas
-- **Eliminación física**: Mejor rendimiento que eliminación lógica
 - **Alias de campos**: Estructura de datos optimizada
 - **Manejo de errores**: Mejor experiencia de usuario
 - **Código limpio**: Eliminación de archivos de debug
+- **Lógica simplificada**: Reducción de complejidad en funciones de chat
 
 ## 🐛 Problemas Conocidos y Soluciones
 
-### Error 500 en Chat
-**Problema**: Error interno del servidor al acceder a `/chat/iniciar/{id}`
-**Solución**: Los botones "Contactar" ahora redirigen a `/chat/simple?agent={id}`
+### ✅ Chat Unificado Resuelto
+**Problema**: Inconsistencia en botones "Contactar" y "Chat" entre páginas
+**Solución**: Todos los botones ahora usan `/chat/simple?agent={id}` con preselección automática
 
 ### Caché del Navegador
 **Problema**: Cambios no se reflejan inmediatamente
@@ -496,6 +503,16 @@ Para soporte técnico o consultas:
 - 🐛 Issues: https://github.com/propeasy/propeasy/issues
 
 ## 🔄 Changelog
+
+### v2.3.0 (2024-12-23)
+- 💬 Sistema de chat unificado en todas las páginas
+- 🔗 Botones "Contactar" y "Chat" con lógica consistente
+- 🎯 Preselección automática de agentes en chat
+- 🔄 Selección automática de conversaciones existentes
+- 🗑️ Lógica unificada de eliminación de solicitudes
+- 🔒 Estados permitidos para eliminación (nuevo, en revisión, cerrado)
+- 📱 Experiencia consistente en todas las páginas
+- ⚡ Optimizaciones de rendimiento en chat
 
 ### v2.2.0 (2024-12-23)
 - 🗑️ Sistema de eliminación de solicitudes de compra

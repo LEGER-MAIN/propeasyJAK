@@ -27,6 +27,14 @@ class SolicitudController {
     }
     
     /**
+     * Verificar si la petición es AJAX
+     */
+    private function isAjaxRequest() {
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+               strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    }
+    
+    /**
      * Mostrar formulario de solicitud de compra
      * 
      * @param int $propiedadId ID de la propiedad
@@ -238,7 +246,14 @@ class SolicitudController {
         }
         
         $pageTitle = 'Mis Solicitudes - ' . APP_NAME;
+        
+        // Capturar el contenido de la vista
+        ob_start();
         include APP_PATH . '/views/solicitudes/index.php';
+        $content = ob_get_clean();
+        
+        // Incluir el layout principal
+        include APP_PATH . '/views/layouts/main.php';
     }
     
     /**
@@ -313,37 +328,71 @@ class SolicitudController {
         
         // Verificar método POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            if (isAjaxRequest()) {
+                http_response_code(405);
+                echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+                return;
+            }
             redirect('/solicitudes');
         }
         
         // Verificar CSRF token
         if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+            if (isAjaxRequest()) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'Token de seguridad inválido']);
+                return;
+            }
             setFlashMessage('error', 'Token de seguridad inválido.');
             redirect('/solicitudes');
         }
         
         $solicitud = $this->solicitudModel->obtenerPorId($id);
         if (!$solicitud) {
+            if (isAjaxRequest()) {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'Solicitud no encontrada']);
+                return;
+            }
             setFlashMessage('error', 'Solicitud no encontrada.');
             redirect('/solicitudes');
         }
         
         // Verificar que el usuario sea el cliente de la solicitud o sea admin
         if ($solicitud['cliente_id'] != $_SESSION['user_id'] && !hasRole(ROLE_ADMIN)) {
+            if (isAjaxRequest()) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'No tienes permisos para eliminar esta solicitud']);
+                return;
+            }
             setFlashMessage('error', 'No tienes permisos para eliminar esta solicitud.');
             redirect('/solicitudes');
         }
         
-        // Solo se pueden eliminar solicitudes en estado 'nuevo'
-        if ($solicitud['estado'] !== REQUEST_STATUS_NEW) {
-            setFlashMessage('error', 'Solo se pueden eliminar solicitudes en estado "nuevo".');
+        // Verificar si la solicitud puede ser eliminada según el modelo
+        if (!$this->solicitudModel->puedeEliminar($id)) {
+            if (isAjaxRequest()) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'No se puede eliminar esta solicitud en su estado actual']);
+                return;
+            }
+            setFlashMessage('error', 'No se puede eliminar esta solicitud en su estado actual.');
             redirect('/solicitudes/' . $id);
         }
         
-        if ($this->solicitudModel->eliminar($id)) {
+        if ($this->solicitudModel->eliminarLogico($id)) {
+            if (isAjaxRequest()) {
+                echo json_encode(['success' => true, 'message' => 'Solicitud eliminada correctamente']);
+                return;
+            }
             setFlashMessage('success', 'Solicitud eliminada correctamente.');
             redirect('/solicitudes');
         } else {
+            if (isAjaxRequest()) {
+                http_response_code(500);
+                echo json_encode(['success' => false, 'message' => 'Error al eliminar la solicitud']);
+                return;
+            }
             setFlashMessage('error', 'Error al eliminar la solicitud.');
             redirect('/solicitudes/' . $id);
         }

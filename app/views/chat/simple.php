@@ -612,7 +612,41 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 if (data.success) {
                     console.log('✅ Conversación creada');
                     elements.searchModal.classList.add('hidden');
-                    loadConversations(); // Recargar conversaciones
+                    
+                    // Recargar conversaciones y seleccionar la nueva
+                    await loadConversations();
+                    
+                    // Buscar la conversación recién creada y seleccionarla
+                    const newConversation = conversations.find(conv => 
+                        conv.agente_id == userId || conv.cliente_id == userId
+                    );
+                    
+                    if (newConversation) {
+                        console.log('✅ Seleccionando conversación recién creada:', newConversation);
+                        // Seleccionar la conversación directamente
+                        currentChat = newConversation;
+                        currentChat.user_id = newConversation.agente_id || newConversation.cliente_id;
+                        currentChat.current_user_id = <?= $user_id ?? 0 ?>;
+                        
+                        // Actualizar UI
+                        document.querySelectorAll('.conversation-item').forEach(item => {
+                            item.classList.remove('bg-green-50', 'border-green-200');
+                        });
+                        const conversationElement = document.querySelector(`[data-conversation-id="${newConversation.conversacion_id}"]`);
+                        if (conversationElement) {
+                            conversationElement.classList.add('bg-green-50', 'border-green-200');
+                        }
+                        
+                        // Actualizar header
+                        elements.chatTitle.textContent = `${newConversation.nombre_otro_usuario} ${newConversation.apellido_otro_usuario}`;
+                        elements.chatSubtitle.textContent = 'En línea';
+                        
+                        // Mostrar área de mensajes
+                        elements.messageInputContainer.classList.remove('hidden');
+                        
+                        // Cargar mensajes
+                        loadMessages(newConversation.conversacion_id);
+                    }
                 } else {
                     console.error('❌ Error:', data.error);
                     alert('Error: ' + (data.error || 'Error desconocido'));
@@ -628,43 +662,49 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             try {
                 console.log('🎯 Seleccionando agente por ID:', agentId);
                 
-                // Primero verificar si ya existe una conversación con este agente
+                // Esperar a que las conversaciones se carguen si no están disponibles
+                if (!conversations || conversations.length === 0) {
+                    console.log('⏳ Esperando a que se carguen las conversaciones...');
+                    await loadConversations();
+                }
+                
+                // Buscar conversación existente con este agente
                 const existingConversation = conversations.find(conv => 
                     conv.agente_id == agentId || conv.cliente_id == agentId
                 );
                 
                 if (existingConversation) {
-                    console.log('✅ Conversación existente encontrada, seleccionando...');
-                    selectConversation(existingConversation);
+                    console.log('✅ Conversación existente encontrada:', existingConversation);
+                    // Seleccionar la conversación directamente
+                    currentChat = existingConversation;
+                    currentChat.user_id = existingConversation.agente_id || existingConversation.cliente_id;
+                    currentChat.current_user_id = <?= $user_id ?? 0 ?>;
+                    
+                    // Actualizar UI
+                    document.querySelectorAll('.conversation-item').forEach(item => {
+                        item.classList.remove('bg-green-50', 'border-green-200');
+                    });
+                    const conversationElement = document.querySelector(`[data-conversation-id="${existingConversation.conversacion_id}"]`);
+                    if (conversationElement) {
+                        conversationElement.classList.add('bg-green-50', 'border-green-200');
+                    }
+                    
+                    // Actualizar header
+                    elements.chatTitle.textContent = `${existingConversation.nombre_otro_usuario} ${existingConversation.apellido_otro_usuario}`;
+                    elements.chatSubtitle.textContent = 'En línea';
+                    
+                    // Mostrar área de mensajes
+                    elements.messageInputContainer.classList.remove('hidden');
+                    
+                    // Cargar mensajes
+                    loadMessages(existingConversation.conversacion_id);
                     return;
                 }
                 
-                // Si no existe, buscar el agente y crear conversación
-                console.log('🔍 Buscando información del agente...');
-                // Usar una búsqueda más específica para encontrar el agente por ID
-                const response = await fetch(`/chat/search-users?q=id:${agentId}`, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
+                // Si no existe, crear conversación directamente
+                console.log('🔍 Creando nueva conversación con agente:', agentId);
+                await createConversation(agentId, 'Agente');
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (data.success && data.users && data.users.length > 0) {
-                    const agent = data.users.find(user => user.id == agentId);
-                    if (agent) {
-                        console.log('✅ Agente encontrado:', agent);
-                        await createConversation(agent.id, `${agent.nombre} ${agent.apellido}`);
-                    } else {
-                        console.error('❌ Agente no encontrado en los resultados');
-                    }
-                } else {
-                    console.error('❌ No se encontró información del agente');
-                }
             } catch (error) {
                 console.error('❌ Error seleccionando agente:', error);
             }
@@ -840,7 +880,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 // Buscar el agente y crear conversación automáticamente
                 setTimeout(() => {
                     selectAgentById(selectedAgentId);
-                }, 1000); // Esperar a que se carguen las conversaciones
+                }, 2000); // Esperar a que se carguen las conversaciones
             }
             
             // BOTÓN ENVIAR

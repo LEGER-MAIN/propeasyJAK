@@ -1353,7 +1353,7 @@ El equipo de " . APP_NAME;
         requireAuth();
         
         // Verificar que sea cliente
-        if ($_SESSION['user_type'] !== 'cliente') {
+        if ($_SESSION['user_rol'] !== 'cliente') {
             http_response_code(403);
             echo json_encode(['error' => 'Solo clientes pueden ver citas pendientes']);
             return;

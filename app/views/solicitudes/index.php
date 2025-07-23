@@ -4,7 +4,54 @@
  * PropEasy - Sistema Web de Venta de Bienes Raíces
  */
 
-$content = ob_start();
+// Funciones auxiliares
+function getEstadoBadgeStyle($estado) {
+    switch ($estado) {
+        case REQUEST_STATUS_NEW:
+            return 'background-color: rgba(233, 196, 106, 0.1); color: var(--color-dorado-suave); border: 1px solid var(--color-dorado-suave);';
+        case REQUEST_STATUS_REVIEW:
+            return 'background-color: rgba(29, 53, 87, 0.1); color: var(--color-azul-marino); border: 1px solid var(--color-azul-marino);';
+        case REQUEST_STATUS_MEETING:
+            return 'background-color: var(--color-verde-esmeralda); color: white; border: 1px solid var(--color-verde-esmeralda);';
+        case REQUEST_STATUS_CLOSED:
+            return 'background-color: rgba(221, 226, 230, 0.3); color: var(--text-secondary); border: 1px solid var(--color-gris-claro);';
+        default:
+            return 'background-color: rgba(221, 226, 230, 0.3); color: var(--text-secondary); border: 1px solid var(--color-gris-claro);';
+    }
+}
+
+function getEstadoBadgeClass($estado) {
+    switch ($estado) {
+        case REQUEST_STATUS_NEW:
+            return 'bg-yellow-100 text-yellow-800';
+        case REQUEST_STATUS_REVIEW:
+            return 'bg-blue-100 text-blue-800';
+        case REQUEST_STATUS_MEETING:
+            return 'bg-green-100 text-green-800';
+        case REQUEST_STATUS_CLOSED:
+            return 'bg-gray-100 text-gray-800';
+        default:
+            return 'bg-gray-100 text-gray-800';
+    }
+}
+
+function getEstadoText($estado) {
+    switch ($estado) {
+        case REQUEST_STATUS_NEW:
+            return 'Nuevo';
+        case REQUEST_STATUS_REVIEW:
+            return 'En Revisión';
+        case REQUEST_STATUS_MEETING:
+            return 'Reunión Agendada';
+        case REQUEST_STATUS_CLOSED:
+            return 'Cerrado';
+        default:
+            return 'Desconocido';
+    }
+}
+
+// Generar token CSRF para JavaScript
+$csrfToken = generateCSRFToken();
 ?>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6" style="background-color: var(--bg-primary);">
@@ -160,7 +207,7 @@ $content = ob_start();
                         </div>
                         <div class="flex items-center space-x-2">
                             <a 
-                                href="/solicitudes/<?= $solicitud['id'] ?>" 
+                                href="/solicitudes/<?= $solicitud['solicitud_id'] ?>" 
                                 class="inline-flex items-center px-3 py-2 border shadow-sm text-sm leading-4 font-medium rounded-md transition-all duration-200"
                                 style="border-color: var(--color-gris-claro); color: var(--text-primary); background-color: var(--bg-light);"
                                 onmouseover="this.style.backgroundColor='var(--color-gris-claro)'; this.style.transform='translateY(-2px)'"
@@ -169,7 +216,7 @@ $content = ob_start();
                                 Ver Detalles
                             </a>
                             <a 
-                                href="/chat/<?= $solicitud['id'] ?>" 
+                                href="/chat/simple?agent=<?= $solicitud['agente_id'] ?>&v=<?= time() ?>" 
                                 class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white transition-all duration-200"
                                 style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%);"
                                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(29, 53, 87, 0.3)'"
@@ -177,6 +224,29 @@ $content = ob_start();
                             >
                                 Chat
                             </a>
+                            <?php if (!hasRole(ROLE_AGENTE)): ?>
+                                <?php if (in_array($solicitud['estado'], ['nuevo', 'en_revision'])): ?>
+                                    <button 
+                                        onclick="eliminarSolicitud(<?= $solicitud['solicitud_id'] ?>)" 
+                                        class="inline-flex items-center px-3 py-2 border text-sm leading-4 font-medium rounded-md transition-all duration-200"
+                                        style="border-color: #dc2626; color: #dc2626; background-color: transparent;"
+                                        onmouseover="this.style.backgroundColor='#fef2f2'; this.style.transform='translateY(-2px)'"
+                                        onmouseout="this.style.backgroundColor='transparent'; this.style.transform='translateY(0)'"
+                                    >
+                                        <i class="fas fa-trash mr-1"></i>Eliminar
+                                    </button>
+                                <?php elseif ($solicitud['estado'] === 'cerrado'): ?>
+                                    <button 
+                                        onclick="eliminarSolicitud(<?= $solicitud['solicitud_id'] ?>)" 
+                                        class="inline-flex items-center px-3 py-2 border text-sm leading-4 font-medium rounded-md transition-all duration-200"
+                                        style="border-color: #dc2626; color: #dc2626; background-color: transparent;"
+                                        onmouseover="this.style.backgroundColor='#fef2f2'; this.style.transform='translateY(-2px)'"
+                                        onmouseout="this.style.backgroundColor='transparent'; this.style.transform='translateY(0)'"
+                                    >
+                                        <i class="fas fa-trash mr-1"></i>Eliminar (Cerrada)
+                                    </button>
+                                <?php endif; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -187,40 +257,49 @@ $content = ob_start();
     </div>
 
     <!-- Paginación -->
-    <?php if (!empty($solicitudes) && count($solicitudes) >= 10): ?>
+    <?php if (!empty($solicitudes) && count($solicitudes) >= $limit): ?>
     <div class="mt-6 flex items-center justify-between">
         <div class="flex-1 flex justify-between sm:hidden">
             <?php if ($page > 1): ?>
-            <a href="?page=<?= $page - 1 ?>" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md transition-all duration-200" style="border-color: var(--color-gris-claro); color: var(--text-primary); background-color: var(--bg-light);" onmouseover="this.style.backgroundColor='var(--color-gris-claro)'" onmouseout="this.style.backgroundColor='var(--bg-light)'">
+            <a href="?page=<?= $page - 1 ?>" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                 Anterior
             </a>
             <?php endif; ?>
-            <a href="?page=<?= $page + 1 ?>" class="ml-3 relative inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md transition-all duration-200" style="border-color: var(--color-gris-claro); color: var(--text-primary); background-color: var(--bg-light);" onmouseover="this.style.backgroundColor='var(--color-gris-claro)'" onmouseout="this.style.backgroundColor='var(--bg-light)'">
+            <?php if (count($solicitudes) == $limit): ?>
+            <a href="?page=<?= $page + 1 ?>" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                 Siguiente
             </a>
+            <?php endif; ?>
         </div>
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-                <p class="text-sm" style="color: var(--text-secondary);">
-                    Mostrando página <span class="font-medium" style="color: var(--text-primary);"><?= $page ?></span>
+                <p class="text-sm text-gray-700">
+                    Mostrando <span class="font-medium"><?= ($page - 1) * $limit + 1 ?></span> a <span class="font-medium"><?= ($page - 1) * $limit + count($solicitudes) ?></span> de <span class="font-medium"><?= $estadisticas['total_solicitudes'] ?? '?' ?></span> resultados
                 </p>
             </div>
             <div>
-                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                     <?php if ($page > 1): ?>
-                    <a href="?page=<?= $page - 1 ?>" class="relative inline-flex items-center px-2 py-2 rounded-l-md border text-sm font-medium transition-all duration-200" style="border-color: var(--color-gris-claro); background-color: var(--bg-light); color: var(--text-secondary);" onmouseover="this.style.backgroundColor='var(--color-gris-claro)'; this.style.color='var(--text-primary)'" onmouseout="this.style.backgroundColor='var(--bg-light)'; this.style.color='var(--text-secondary)'">
+                    <a href="?page=<?= $page - 1 ?>" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                         <span class="sr-only">Anterior</span>
-                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
                         </svg>
                     </a>
                     <?php endif; ?>
-                    <a href="?page=<?= $page + 1 ?>" class="relative inline-flex items-center px-2 py-2 rounded-r-md border text-sm font-medium transition-all duration-200" style="border-color: var(--color-gris-claro); background-color: var(--bg-light); color: var(--text-secondary);" onmouseover="this.style.backgroundColor='var(--color-gris-claro)'; this.style.color='var(--text-primary)'" onmouseout="this.style.backgroundColor='var(--bg-light)'; this.style.color='var(--text-secondary)'">
+                    
+                    <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                        Página <?= $page ?>
+                    </span>
+                    
+                    <?php if (count($solicitudes) == $limit): ?>
+                    <a href="?page=<?= $page + 1 ?>" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                         <span class="sr-only">Siguiente</span>
-                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                         </svg>
                     </a>
+                    <?php endif; ?>
                 </nav>
             </div>
         </div>
@@ -228,54 +307,38 @@ $content = ob_start();
     <?php endif; ?>
 </div>
 
-<?php
-$content = ob_get_clean();
+<!-- Token CSRF oculto para JavaScript -->
+<input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
 
-// Funciones auxiliares
-function getEstadoBadgeStyle($estado) {
-    switch ($estado) {
-        case REQUEST_STATUS_NEW:
-            return 'background-color: rgba(233, 196, 106, 0.1); color: var(--color-dorado-suave); border: 1px solid var(--color-dorado-suave);';
-        case REQUEST_STATUS_REVIEW:
-            return 'background-color: rgba(29, 53, 87, 0.1); color: var(--color-azul-marino); border: 1px solid var(--color-azul-marino);';
-        case REQUEST_STATUS_MEETING:
-            return 'background-color: var(--color-verde-esmeralda); color: white; border: 1px solid var(--color-verde-esmeralda);';
-        case REQUEST_STATUS_CLOSED:
-            return 'background-color: rgba(221, 226, 230, 0.3); color: var(--text-secondary); border: 1px solid var(--color-gris-claro);';
-        default:
-            return 'background-color: rgba(221, 226, 230, 0.3); color: var(--text-secondary); border: 1px solid var(--color-gris-claro);';
+<script>
+function eliminarSolicitud(solicitudId) {
+    if (confirm('¿Estás seguro de que quieres eliminar esta solicitud? Esta acción no se puede deshacer.')) {
+        const formData = new FormData();
+        formData.append('csrf_token', '<?= $csrfToken ?>');
+        formData.append('solicitud_id', solicitudId);
+        
+        fetch('/cliente/eliminar-solicitud', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Mostrar mensaje de éxito
+                alert('Solicitud eliminada correctamente');
+                // Recargar la página para actualizar la lista
+                window.location.reload();
+            } else {
+                alert(data.message || 'Error al eliminar la solicitud');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al eliminar la solicitud');
+        });
     }
 }
-
-function getEstadoBadgeClass($estado) {
-    switch ($estado) {
-        case REQUEST_STATUS_NEW:
-            return 'bg-yellow-100 text-yellow-800';
-        case REQUEST_STATUS_REVIEW:
-            return 'bg-blue-100 text-blue-800';
-        case REQUEST_STATUS_MEETING:
-            return 'bg-green-100 text-green-800';
-        case REQUEST_STATUS_CLOSED:
-            return 'bg-gray-100 text-gray-800';
-        default:
-            return 'bg-gray-100 text-gray-800';
-    }
-}
-
-function getEstadoText($estado) {
-    switch ($estado) {
-        case REQUEST_STATUS_NEW:
-            return 'Nuevo';
-        case REQUEST_STATUS_REVIEW:
-            return 'En Revisión';
-        case REQUEST_STATUS_MEETING:
-            return 'Reunión Agendada';
-        case REQUEST_STATUS_CLOSED:
-            return 'Cerrado';
-        default:
-            return 'Desconocido';
-    }
-}
-
-include APP_PATH . '/views/layouts/main.php';
-?> 
+</script> 
