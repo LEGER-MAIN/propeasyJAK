@@ -1,18 +1,22 @@
 <?php
 /**
- * Configuración de la Base de Datos - EJEMPLO
+ * Configuración de la Base de Datos - Ejemplo
  * PropEasy - Sistema Web de Venta de Bienes Raíces
  * 
- * Copia este archivo como 'database.php' y configura tus parámetros
+ * Copia este archivo a database.php y configura tus credenciales
  */
 
 // Configuración de la base de datos
 define('DB_HOST', 'localhost');        // Host de la base de datos
 define('DB_NAME', 'propeasy_db');      // Nombre de la base de datos
-define('DB_USER', 'tu_usuario');       // Usuario de la base de datos
-define('DB_PASS', 'tu_contraseña');    // Contraseña de la base de datos
+define('DB_USER', 'root');             // Usuario de la base de datos
+define('DB_PASS', '');                 // Contraseña de la base de datos (vacía para Laragon)
 define('DB_CHARSET', 'utf8mb4');       // Charset para soporte completo de caracteres
 
 // Configuración de seguridad
-define('JWT_SECRET', 'cambia_esta_clave_secreta_por_una_segura');  // Clave secreta para JWT
-define('PASSWORD_COST', 12);           // Costo para hashing de contraseñas 
+define('JWT_SECRET', 'propeasy_jwt_secret_key_2025');  // Clave secreta para JWT
+define('PASSWORD_COST', 12);           // Costo para hashing de contraseñas
+
+// Nota: Para Laragon, normalmente el usuario es 'root' sin contraseña
+// Si tienes una contraseña configurada, cámbiala aquí
+?> 

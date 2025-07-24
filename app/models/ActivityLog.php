@@ -551,6 +551,93 @@ class ActivityLog {
     }
     
     /**
+     * Obtener todas las actividades con paginación
+     * 
+     * @param int $limit Límite de actividades por página
+     * @param int $offset Offset para paginación
+     * @return array Lista de actividades paginadas
+     */
+    public function getAllActivities($limit = 50, $offset = 0) {
+        try {
+            $query = "SELECT 
+                        la.*,
+                        u.nombre,
+                        u.apellido,
+                        u.rol,
+                        u.email
+                      FROM {$this->table} la
+                      LEFT JOIN usuarios u ON la.usuario_id = u.id
+                      ORDER BY la.fecha_actividad DESC
+                      LIMIT ? OFFSET ?";
+            
+            $activities = $this->db->select($query, [$limit, $offset]);
+            
+            // Formatear las actividades
+            $formattedActivities = [];
+            foreach ($activities as $activity) {
+                $formattedActivities[] = $this->formatActivityForDashboard($activity);
+            }
+            
+            return $formattedActivities;
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo todas las actividades: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
+     * Obtener actividades de hoy
+     * 
+     * @return int Total de actividades de hoy
+     */
+    public function getActivitiesToday() {
+        try {
+            $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE DATE(fecha_actividad) = CURDATE()";
+            $result = $this->db->selectOne($query);
+            return $result ? (int)$result['total'] : 0;
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo actividades de hoy: " . $e->getMessage());
+            return 0;
+        }
+    }
+    
+    /**
+     * Obtener actividades de esta semana
+     * 
+     * @return int Total de actividades de esta semana
+     */
+    public function getActivitiesThisWeek() {
+        try {
+            $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE YEARWEEK(fecha_actividad) = YEARWEEK(NOW())";
+            $result = $this->db->selectOne($query);
+            return $result ? (int)$result['total'] : 0;
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo actividades de esta semana: " . $e->getMessage());
+            return 0;
+        }
+    }
+    
+    /**
+     * Obtener actividades de este mes
+     * 
+     * @return int Total de actividades de este mes
+     */
+    public function getActivitiesThisMonth() {
+        try {
+            $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE MONTH(fecha_actividad) = MONTH(NOW()) AND YEAR(fecha_actividad) = YEAR(NOW())";
+            $result = $this->db->selectOne($query);
+            return $result ? (int)$result['total'] : 0;
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo actividades de este mes: " . $e->getMessage());
+            return 0;
+        }
+    }
+    
+    /**
      * Obtener total de actividades
      * 
      * @return int Total de actividades
@@ -564,6 +651,22 @@ class ActivityLog {
         } catch (Exception $e) {
             error_log("Error obteniendo total de actividades: " . $e->getMessage());
             return 0;
+        }
+    }
+    
+    /**
+     * Verificar si la tabla existe
+     * 
+     * @return bool True si la tabla existe
+     */
+    public function checkTableExists() {
+        try {
+            $query = "SHOW TABLES LIKE '{$this->table}'";
+            $result = $this->db->selectOne($query);
+            return $result !== null;
+        } catch (Exception $e) {
+            error_log("Error verificando tabla: " . $e->getMessage());
+            return false;
         }
     }
     

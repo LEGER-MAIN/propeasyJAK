@@ -98,6 +98,18 @@
         }
         
         .fade-in { animation: fadeIn 0.3s ease-in; }
+        
+        /* Variables CSS para colores de admin */
+        :root {
+            --admin-primary: #3498db;
+            --admin-success: #27ae60;
+            --admin-warning: #f39c12;
+            --admin-danger: #e74c3c;
+            --admin-info: #17a2b8;
+            --admin-secondary: #6c757d;
+            --admin-light: #f8f9fa;
+            --admin-dark: #343a40;
+        }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
         .slide-in { animation: slideIn 0.3s ease-out; }

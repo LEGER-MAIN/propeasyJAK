@@ -1386,6 +1386,15 @@ class Property {
     }
     
     /**
+     * Obtener propiedades pendientes de revisión creadas hoy
+     */
+    public function getPendingPropertiesToday() {
+        $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE estado_publicacion = 'en_revision' AND DATE(fecha_creacion) = CURDATE()";
+        $result = $this->db->selectOne($query);
+        return $result ? (int)$result['total'] : 0;
+    }
+    
+    /**
      * Obtener ventas del mes actual
      */
     public function getSalesThisMonth() {
@@ -1515,7 +1524,7 @@ class Property {
         $query = "";
         $labels = [];
         $data = [];
-        $dateColumn = 'fecha_venta'; // For sales, use sale date
+        $dateColumn = 'fecha_actualizacion'; // For sales, use update date when status changed to 'vendida'
         $statusColumn = 'estado_publicacion'; // Assuming 'vendida' status for sales
 
         switch ($periodType) {
@@ -1535,15 +1544,13 @@ class Property {
                     $data[] = 0;
                 }
 
-                // Map actual data
+                // Map actual data to correct positions
                 foreach ($results as $row) {
-                    $data[] = (int)$row['total'];
+                    $weekNumber = (int)substr($row['period_key'], -1); // Extract week number
+                    if ($weekNumber >= 1 && $weekNumber <= $limit) {
+                        $data[$limit - $weekNumber] = (int)$row['total'];
+                    }
                 }
-                
-                while (count($data) < $limit) {
-                    $data[] = 0;
-                }
-                $data = array_slice($data, -$limit);
                 
                 return ['labels' => $labels, 'data' => $data];
 
@@ -1571,15 +1578,20 @@ class Property {
                     $data[] = 0;
                 }
 
-                // Map actual data
+                // Map actual data to correct positions
                 foreach ($results as $row) {
-                    $data[] = (int)$row['total'];
+                    $periodKey = $row['period_key'];
+                    $year = (int)substr($periodKey, 0, 4);
+                    $quarter = (int)substr($periodKey, -1);
+                    
+                    // Find the correct position in the data array
+                    for ($i = 0; $i < count($labels); $i++) {
+                        if ($labels[$i] === $periodKey) {
+                            $data[$i] = (int)$row['total'];
+                            break;
+                        }
+                    }
                 }
-                
-                while (count($data) < $limit) {
-                    $data[] = 0;
-                }
-                $data = array_slice($data, -$limit);
                 
                 return ['labels' => $labels, 'data' => $data];
 
@@ -1600,15 +1612,18 @@ class Property {
                     $data[] = 0;
                 }
 
-                // Map actual data
+                // Map actual data to correct positions
                 foreach ($results as $row) {
-                    $data[] = (int)$row['total'];
+                    $year = (int)$row['period_key'];
+                    
+                    // Find the correct position in the data array
+                    for ($i = 0; $i < count($labels); $i++) {
+                        if ((int)$labels[$i] === $year) {
+                            $data[$i] = (int)$row['total'];
+                            break;
+                        }
+                    }
                 }
-                
-                while (count($data) < $limit) {
-                    $data[] = 0;
-                }
-                $data = array_slice($data, -$limit);
                 
                 return ['labels' => $labels, 'data' => $data];
 

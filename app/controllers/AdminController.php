@@ -15,6 +15,7 @@ class AdminController {
     private $reporteModel;
     private $chatModel;
     private $favoriteModel;
+    private $alertManager;
     
     public function __construct() {
         require_once APP_PATH . '/models/User.php';
@@ -32,6 +33,15 @@ class AdminController {
         $this->reporteModel = new ReporteIrregularidad();
         $this->chatModel = new Chat();
         $this->favoriteModel = new Favorite();
+        
+        // Cargar AlertManager de forma opcional
+        try {
+            require_once APP_PATH . '/models/AlertManager.php';
+            $this->alertManager = new AlertManager();
+        } catch (Exception $e) {
+            $this->alertManager = null;
+            error_log("AlertManager no disponible: " . $e->getMessage());
+        }
     }
     
     /**
@@ -106,10 +116,9 @@ class AdminController {
             $stats['propiedades_en_revision'] = $this->propertyModel->getPropertiesByStatus('en_revision');
             $stats['propiedades_rechazadas'] = $this->propertyModel->getPropertiesByStatus('rechazada');
             $stats['propiedades_nuevas_hoy'] = $this->propertyModel->getNewPropertiesToday();
+            $stats['propiedades_pendientes_hoy'] = $this->propertyModel->getPendingPropertiesToday();
             
             // Estadísticas financieras
-            $stats['total_ventas'] = $this->propertyModel->getTotalSales();
-            $stats['ventas_mes_actual'] = $this->propertyModel->getSalesThisMonth();
             $stats['comisiones_generadas'] = $this->calculateTotalCommissions();
             
             // Estadísticas de solicitudes
@@ -136,8 +145,8 @@ class AdminController {
             $stats['propiedades_en_revision'] = 0;
             $stats['propiedades_rechazadas'] = 0;
             $stats['propiedades_nuevas_hoy'] = 0;
-            $stats['total_ventas'] = 0;
-            $stats['ventas_mes_actual'] = 0;
+            $stats['propiedades_pendientes_hoy'] = 0;
+
             $stats['comisiones_generadas'] = 0;
             $stats['total_solicitudes'] = 0;
             $stats['solicitudes_nuevas'] = 0;
@@ -166,6 +175,58 @@ class AdminController {
         $stats['total_favoritos'] = 0;
         
         return $stats;
+    }
+    
+
+    
+    /**
+     * Mostrar todas las actividades del sistema
+     */
+    public function allActivities() {
+        requireRole(ROLE_ADMIN);
+        
+        try {
+            // Cargar el modelo de actividades
+            require_once APP_PATH . '/models/ActivityLog.php';
+            $activityModel = new ActivityLog();
+            
+            // Obtener todas las actividades con paginación
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $limit = 50; // Actividades por página
+            $offset = ($page - 1) * $limit;
+            
+            // Obtener actividades paginadas
+            $activities = $activityModel->getAllActivities($limit, $offset);
+            $totalActivities = $activityModel->getTotalCount();
+            $totalPages = ceil($totalActivities / $limit);
+            
+
+            
+            // Obtener estadísticas de actividades
+            $stats = [
+                'total_activities' => $totalActivities,
+                'activities_today' => $activityModel->getActivitiesToday(),
+                'activities_this_week' => $activityModel->getActivitiesThisWeek(),
+                'activities_this_month' => $activityModel->getActivitiesThisMonth()
+            ];
+            
+            // Configurar variables para el layout del admin
+            $pageTitle = 'Todas las Actividades - Panel Administrativo';
+            $currentPage = 'activities';
+            
+            // Capturar el contenido para pasarlo al layout
+            ob_start();
+            include APP_PATH . '/views/admin/all_activities.php';
+            $content = ob_get_clean();
+            
+            // Incluir el layout del admin
+            include APP_PATH . '/views/layouts/admin.php';
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo todas las actividades: " . $e->getMessage());
+            header('Location: /admin/dashboard');
+            exit;
+        }
     }
     
     /**
@@ -276,22 +337,170 @@ class AdminController {
         $alerts = [];
         
         try {
-            // Alertas de reportes pendientes (temporal)
-            $alerts[] = [
-                'type' => 'info',
-                'title' => 'Sistema en Desarrollo',
-                'message' => 'El panel administrativo está siendo optimizado',
-                'icon' => 'fas fa-info-circle'
-            ];
+            // Alerta de reportes pendientes (más importante - danger)
+            $reportesPendientes = $this->solicitudModel->getSolicitudesByStatus('nuevo');
+            if ($reportesPendientes > 0) {
+                $alertTitle = 'Reportes Nuevos';
+                $showAlert = true;
+                
+                // Verificar si la alerta ha sido eliminada (solo si AlertManager está disponible)
+                if ($this->alertManager !== null) {
+                    try {
+                        $showAlert = !$this->alertManager->alertaEliminada('reportes_nuevos', $alertTitle);
+                    } catch (Exception $e) {
+                        error_log("Error verificando alerta eliminada: " . $e->getMessage());
+                        $showAlert = true; // Mostrar alerta por defecto si hay error
+                    }
+                }
+                
+                if ($showAlert) {
+                    $alerts[] = [
+                        'type' => 'danger',
+                        'title' => $alertTitle,
+                        'message' => "Hay {$reportesPendientes} reportes nuevos sin revisar",
+                        'icon' => 'fas fa-exclamation-triangle',
+                        'priority' => 1,
+                        'alert_key' => 'reportes_nuevos'
+                    ];
+                }
+            }
+            
+            // Alerta de propiedades pendientes de revisión (warning)
+            $propiedadesPendientes = $this->propertyModel->getPropertiesByStatus('en_revision');
+            if ($propiedadesPendientes > 0) {
+                $alertTitle = 'Propiedades Pendientes';
+                $showAlert = true;
+                
+                if ($this->alertManager !== null) {
+                    try {
+                        $showAlert = !$this->alertManager->alertaEliminada('propiedades_pendientes', $alertTitle);
+                    } catch (Exception $e) {
+                        error_log("Error verificando alerta eliminada: " . $e->getMessage());
+                        $showAlert = true;
+                    }
+                }
+                
+                if ($showAlert) {
+                    $alerts[] = [
+                        'type' => 'warning',
+                        'title' => $alertTitle,
+                        'message' => "Tienes {$propiedadesPendientes} propiedades esperando revisión",
+                        'icon' => 'fas fa-clock',
+                        'priority' => 2,
+                        'alert_key' => 'propiedades_pendientes'
+                    ];
+                }
+            }
+            
+            // Alerta de usuarios suspendidos (info)
+            $usuariosSuspendidos = $this->userModel->getUsersByStatusCount('suspendido');
+            if ($usuariosSuspendidos > 0) {
+                $alertTitle = 'Usuarios Suspendidos';
+                $showAlert = true;
+                
+                if ($this->alertManager !== null) {
+                    try {
+                        $showAlert = !$this->alertManager->alertaEliminada('usuarios_suspendidos', $alertTitle);
+                    } catch (Exception $e) {
+                        error_log("Error verificando alerta eliminada: " . $e->getMessage());
+                        $showAlert = true;
+                    }
+                }
+                
+                if ($showAlert) {
+                    $alerts[] = [
+                        'type' => 'info',
+                        'title' => $alertTitle,
+                        'message' => "Hay {$usuariosSuspendidos} usuarios suspendidos en el sistema",
+                        'icon' => 'fas fa-user-slash',
+                        'priority' => 3,
+                        'alert_key' => 'usuarios_suspendidos'
+                    ];
+                }
+            }
+            
+            // Alerta de propiedades rechazadas (secondary - menos importante)
+            $propiedadesRechazadas = $this->propertyModel->getPropertiesByStatus('rechazada');
+            if ($propiedadesRechazadas > 0) {
+                $alertTitle = 'Propiedades Rechazadas';
+                $showAlert = true;
+                
+                if ($this->alertManager !== null) {
+                    try {
+                        $showAlert = !$this->alertManager->alertaEliminada('propiedades_rechazadas', $alertTitle);
+                    } catch (Exception $e) {
+                        error_log("Error verificando alerta eliminada: " . $e->getMessage());
+                        $showAlert = true;
+                    }
+                }
+                
+                if ($showAlert) {
+                    $alerts[] = [
+                        'type' => 'secondary',
+                        'title' => $alertTitle,
+                        'message' => "Hay {$propiedadesRechazadas} propiedades rechazadas",
+                        'icon' => 'fas fa-times-circle',
+                        'priority' => 4,
+                        'alert_key' => 'propiedades_rechazadas'
+                    ];
+                }
+            }
             
         } catch (Exception $e) {
             error_log("Error obteniendo alertas: " . $e->getMessage());
         }
         
+        // Ordenar alertas por prioridad (más importante primero)
+        usort($alerts, function($a, $b) {
+            return $a['priority'] - $b['priority'];
+        });
+        
         return $alerts;
     }
     
         /**
+     * Eliminar una alerta del sistema
+     */
+    public function dismissAlert() {
+        requireRole(ROLE_ADMIN);
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            return;
+        }
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        $alertKey = $input['alert_key'] ?? '';
+        $alertTitle = $input['alert_title'] ?? '';
+        
+        if (empty($alertKey) || empty($alertTitle)) {
+            echo json_encode(['success' => false, 'message' => 'Datos de alerta requeridos']);
+            return;
+        }
+        
+        // Verificar si AlertManager está disponible
+        if ($this->alertManager === null) {
+            echo json_encode(['success' => false, 'message' => 'Sistema de alertas no disponible']);
+            return;
+        }
+        
+        try {
+            $adminId = $_SESSION['user_id'] ?? 0;
+            $success = $this->alertManager->marcarAlertaEliminada($adminId, $alertKey, $alertTitle);
+            
+            if ($success) {
+                echo json_encode(['success' => true, 'message' => 'Alerta eliminada correctamente']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Error al eliminar la alerta']);
+            }
+        } catch (Exception $e) {
+            error_log("Error eliminando alerta: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Error interno del servidor']);
+        }
+    }
+
+    /**
      * Obtener datos para gráficos en tiempo real
      */
     private function getRealTimeChartData() {

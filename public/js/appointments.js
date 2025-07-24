@@ -176,8 +176,6 @@ class AppointmentCalendar {
                 body: `csrf_token=${this.getCSRFToken()}`
             });
 
-            console.log('Response status:', response.status);
-            
             // Si es un redirect (302), recargar la página
             if (response.status === 302 || response.redirected) {
                 window.location.reload();
@@ -190,7 +188,6 @@ class AppointmentCalendar {
             } else {
                 // Intentar leer el texto de la respuesta para debug
                 const text = await response.text();
-                console.log('Error response:', text);
                 alert('Error al aceptar la cita: ' + response.status);
             }
         } catch (error) {
@@ -217,8 +214,6 @@ class AppointmentCalendar {
                 body: `csrf_token=${this.getCSRFToken()}`
             });
 
-            console.log('Response status:', response.status);
-            
             // Si es un redirect (302), recargar la página
             if (response.status === 302 || response.redirected) {
                 window.location.reload();
@@ -231,7 +226,6 @@ class AppointmentCalendar {
             } else {
                 // Intentar leer el texto de la respuesta para debug
                 const text = await response.text();
-                console.log('Error response:', text);
                 alert('Error al rechazar la cita: ' + response.status);
             }
         } catch (error) {
@@ -258,8 +252,6 @@ class AppointmentCalendar {
                 body: `csrf_token=${this.getCSRFToken()}`
             });
 
-            console.log('Response status:', response.status);
-            
             // Si es un redirect (302), recargar la página
             if (response.status === 302 || response.redirected) {
                 window.location.reload();
@@ -272,7 +264,6 @@ class AppointmentCalendar {
             } else {
                 // Intentar leer el texto de la respuesta para debug
                 const text = await response.text();
-                console.log('Error response:', text);
                 alert('Error al cancelar la cita: ' + response.status);
             }
         } catch (error) {
@@ -299,7 +290,7 @@ class AppointmentCalendar {
                 body: `csrf_token=${this.getCSRFToken()}`
             });
 
-            console.log('Response status:', response.status);
+
             
             // Si es un redirect (302), recargar la página
             if (response.status === 302 || response.redirected) {
@@ -313,7 +304,7 @@ class AppointmentCalendar {
             } else {
                 // Intentar leer el texto de la respuesta para debug
                 const text = await response.text();
-                console.log('Error response:', text);
+
                 alert('Error al marcar la cita como completada: ' + response.status);
             }
         } catch (error) {
@@ -328,7 +319,7 @@ class AppointmentCalendar {
     renderCalendar() {
         // Esta función se puede expandir para un calendario más interactivo
         // Por ahora, el calendario se renderiza en el servidor
-        console.log('Calendario renderizado con', this.appointments.length, 'citas');
+
     }
 
     /**

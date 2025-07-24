@@ -393,6 +393,14 @@ class Router {
         // Endpoint AJAX para datos de gráficos
         $this->get('/admin/chart-data', 'AdminController@getChartData');
         
+        // Actividades del sistema
+        $this->get('/admin/activities', 'AdminController@allActivities');
+        
+        // Gestión de alertas del sistema
+        $this->post('/admin/alerts/dismiss', 'AdminController@dismissAlert');
+        
+
+        
         // Rutas de agente
         $this->get('/agente/dashboard', 'AgenteController@showDashboard');
         $this->get('/agente/perfil', 'AgenteController@showPerfil');

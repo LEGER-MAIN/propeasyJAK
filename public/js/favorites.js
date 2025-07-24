@@ -8,7 +8,7 @@
 
 class FavoritesManager {
     constructor() {
-        console.log('Inicializando FavoritesManager...');
+        
         this.init();
     }
     
@@ -16,25 +16,20 @@ class FavoritesManager {
      * Inicializar el sistema de favoritos
      */
     init() {
-        console.log('Inicializando sistema de favoritos...');
         this.bindEvents();
         this.loadFavoriteStates();
-        console.log('Sistema de favoritos inicializado');
     }
     
     /**
      * Vincular eventos a los botones de favoritos
      */
     bindEvents() {
-        console.log('Vinculando eventos de favoritos...');
-        
         // Event listeners para botones de toggle de favoritos
         document.addEventListener('click', (e) => {
             if (e.target.closest('.favorite-toggle')) {
                 e.preventDefault();
                 const button = e.target.closest('.favorite-toggle');
                 const propiedadId = button.dataset.propiedadId;
-                console.log('Botón de favorito clickeado:', propiedadId);
                 this.toggleFavorite(propiedadId, button);
             }
         });
@@ -45,7 +40,6 @@ class FavoritesManager {
                 e.preventDefault();
                 const button = e.target.closest('.add-favorite');
                 const propiedadId = button.dataset.propiedadId;
-                console.log('Botón agregar favorito clickeado:', propiedadId);
                 this.addFavorite(propiedadId, button);
             }
         });
@@ -56,12 +50,9 @@ class FavoritesManager {
                 e.preventDefault();
                 const button = e.target.closest('.remove-favorite');
                 const propiedadId = button.dataset.propiedadId;
-                console.log('Botón eliminar favorito clickeado:', propiedadId);
                 this.removeFavorite(propiedadId, button);
             }
         });
-        
-        console.log('Eventos de favoritos vinculados correctamente');
     }
     
     /**
@@ -113,15 +104,12 @@ class FavoritesManager {
      * Toggle de favorito (agregar/eliminar)
      */
     async toggleFavorite(propiedadId, button) {
-        console.log('Iniciando toggle de favorito para propiedad:', propiedadId);
+
         
         if (!this.isUserAuthenticated()) {
-            console.log('Usuario no autenticado, mostrando prompt de login');
             this.showLoginPrompt();
             return;
         }
-        
-        console.log('Usuario autenticado, procediendo con toggle');
         
         // Mostrar estado de carga
         this.showLoadingState(button);
@@ -130,7 +118,7 @@ class FavoritesManager {
             const formData = new FormData();
             formData.append('propiedad_id', propiedadId);
             
-            console.log('Enviando petición a /favorites/toggle');
+
             
             const response = await fetch('/favorites/toggle', {
                 method: 'POST',
@@ -140,13 +128,9 @@ class FavoritesManager {
                 }
             });
             
-            console.log('Respuesta recibida:', response.status);
-            
             const data = await response.json();
-            console.log('Datos de respuesta:', data);
             
             if (data.success) {
-                console.log('Toggle exitoso, actualizando UI');
                 // Actualizar estado del botón
                 this.updateFavoriteButton(propiedadId, data.is_favorite);
                 
@@ -160,7 +144,6 @@ class FavoritesManager {
                 this.animateHeart(button, data.is_favorite);
                 
             } else {
-                console.log('Toggle fallido:', data.message);
                 this.showNotification(data.message, 'error');
                 this.hideLoadingState(button);
             }
@@ -384,11 +367,6 @@ class FavoritesManager {
     isUserAuthenticated() {
         const hasUserClass = document.body.classList.contains('user-authenticated');
         const hasUserId = document.querySelector('[data-user-id]') !== null;
-        
-        console.log('Verificando autenticación:');
-        console.log('- Clase user-authenticated:', hasUserClass);
-        console.log('- Elemento data-user-id:', hasUserId);
-        console.log('- Resultado:', hasUserClass || hasUserId);
         
         // Verificar si existe un elemento que indique que el usuario está logueado
         return hasUserClass || hasUserId;

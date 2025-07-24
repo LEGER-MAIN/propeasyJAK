@@ -293,23 +293,37 @@ if (!hasRole(ROLE_ADMIN)) {
             <!-- Main Content -->
             <div class="col-md-10 admin-content">
                 <!-- Alertas del Sistema -->
-                <?php if (!empty($alerts)): ?>
-                    <div class="row mb-4">
-                        <?php foreach ($alerts as $alert): ?>
-                            <div class="col-md-6">
-                                <div class="alert-card <?= $alert['type'] ?>">
-                                    <div class="d-flex align-items-center">
-                                        <i class="<?= $alert['icon'] ?> fa-2x me-3"></i>
-                                        <div>
-                                            <h6 class="mb-1"><?= $alert['title'] ?></h6>
-                                            <p class="mb-0"><?= $alert['message'] ?></p>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="mb-3">
+                            <i class="fas fa-bell text-warning"></i> 
+                            Alertas del Sistema
+                        </h5>
+                        
+                        <?php if (!empty($alerts)): ?>
+                            <div class="row">
+                                <?php foreach ($alerts as $alert): ?>
+                                    <div class="col-md-6">
+                                        <div class="alert-card <?= $alert['type'] ?>">
+                                            <div class="d-flex align-items-center">
+                                                <i class="<?= $alert['icon'] ?> fa-2x me-3"></i>
+                                                <div>
+                                                    <h6 class="mb-1"><?= $alert['title'] ?></h6>
+                                                    <p class="mb-0"><?= $alert['message'] ?></p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                <?php endforeach; ?>
                             </div>
-                        <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="text-center text-muted py-3">
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <p class="mb-0">Sistema funcionando correctamente</p>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                <?php endif; ?>
+                </div>
 
                 <!-- Acciones Rápidas -->
                 <div class="quick-actions">
@@ -378,13 +392,13 @@ if (!hasRole(ROLE_ADMIN)) {
                         <div class="stats-card warning">
                             <div class="d-flex align-items-center">
                                 <div class="me-3">
-                                    <i class="fas fa-dollar-sign fa-2x text-warning"></i>
+                                    <i class="fas fa-clock fa-2x text-warning"></i>
                                 </div>
                                 <div>
-                                    <div class="stats-number">$<?= number_format($stats['total_ventas']) ?></div>
-                                    <div class="stats-label">Total Ventas</div>
-                                    <div class="stats-change positive">
-                                        <i class="fas fa-arrow-up"></i> $<?= number_format($stats['ventas_mes_actual']) ?> este mes
+                                    <div class="stats-number"><?= number_format($stats['propiedades_en_revision']) ?></div>
+                                    <div class="stats-label">Pendientes de Revisión</div>
+                                    <div class="stats-change warning">
+                                        <i class="fas fa-exclamation-triangle"></i> <?= $stats['propiedades_pendientes_hoy'] ?> nuevas hoy
                                     </div>
                                 </div>
                             </div>
@@ -494,9 +508,12 @@ if (!hasRole(ROLE_ADMIN)) {
                     <!-- Actividades Recientes -->
                     <div class="col-md-4">
                         <div class="chart-container">
-                            <h5 class="mb-3">
-                                <i class="fas fa-history"></i> Actividades Recientes
-                            </h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-history"></i> Actividades Recientes
+                                </h5>
+                                <a href="/admin/activities" class="btn btn-sm btn-outline-primary">Ver Todas</a>
+                            </div>
                             <div class="activities-list">
                                 <?php if (!empty($recentActivities)): ?>
                                     <?php foreach (array_slice($recentActivities, 0, 8) as $activity): ?>

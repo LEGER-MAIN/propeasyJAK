@@ -48,14 +48,14 @@
     <div class="col-xl-3 col-md-6 mb-3">
         <div class="stats-card warning-gradient">
             <div class="stats-icon">
-                <i class="fas fa-dollar-sign"></i>
+                <i class="fas fa-clock"></i>
             </div>
             <div class="stats-content">
-                <h3>$<?= number_format(is_numeric($stats['total_ventas']) ? $stats['total_ventas'] : 0) ?></h3>
-                <p>Total Ventas</p>
+                <h3><?= number_format(is_numeric($stats['propiedades_en_revision']) ? $stats['propiedades_en_revision'] : 0) ?></h3>
+                <p>Pendientes de Revisión</p>
                 <div class="stats-trend">
-                    <i class="fas fa-arrow-up text-success"></i>
-                    <span>$<?= number_format(is_numeric($stats['ventas_mes_actual']) ? $stats['ventas_mes_actual'] : 0) ?> este mes</span>
+                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                    <span><?= is_numeric($stats['propiedades_pendientes_hoy']) ? $stats['propiedades_pendientes_hoy'] : 0 ?> nuevas hoy</span>
                 </div>
             </div>
         </div>
@@ -170,7 +170,7 @@
                     <i class="fas fa-history text-primary"></i> 
                     Actividades Recientes
                 </h5>
-                <a href="#" class="btn btn-sm btn-outline-primary">Ver Todas</a>
+                <a href="/admin/activities" class="btn btn-sm btn-outline-primary">Ver Todas</a>
             </div>
             <div class="activities-list">
                 <?php if (isset($recentActivities) && is_array($recentActivities) && !empty($recentActivities)): ?>
@@ -208,12 +208,16 @@
             <div class="alerts-list">
                 <?php if (isset($alerts) && is_array($alerts) && !empty($alerts)): ?>
                     <?php foreach ($alerts as $alert): ?>
-                        <div class="alert alert-<?= $alert['type'] ?> alert-dismissible fade show" role="alert">
+                        <div class="alert alert-<?= $alert['type'] ?> alert-dismissible fade show" role="alert" 
+                             data-alert-key="<?= htmlspecialchars($alert['alert_key'] ?? '') ?>" 
+                             data-alert-title="<?= htmlspecialchars($alert['title']) ?>">
                             <i class="<?= $alert['icon'] ?>"></i>
                             <strong><?= htmlspecialchars($alert['title']) ?></strong>
                             <br>
                             <small><?= htmlspecialchars($alert['message']) ?></small>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            <button type="button" class="btn-close dismiss-alert-btn" 
+                                    data-alert-key="<?= htmlspecialchars($alert['alert_key'] ?? '') ?>" 
+                                    data-alert-title="<?= htmlspecialchars($alert['title']) ?>"></button>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -564,6 +568,105 @@
         // Aquí se haría una llamada AJAX para actualizar las estadísticas
         // console.log removed
     }, 30000);
+
+    // Gestión de alertas del sistema
+    document.addEventListener('DOMContentLoaded', function() {
+        // Manejar eliminación de alertas
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('dismiss-alert-btn')) {
+                e.preventDefault();
+                
+                const alertKey = e.target.getAttribute('data-alert-key');
+                const alertTitle = e.target.getAttribute('data-alert-title');
+                const alertElement = e.target.closest('.alert');
+                
+                if (!alertKey || !alertTitle) {
+                    console.error('Datos de alerta faltantes');
+                    return;
+                }
+                
+                // Mostrar indicador de carga
+                e.target.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                e.target.disabled = true;
+                
+                // Enviar petición AJAX para eliminar la alerta
+                fetch('/admin/alerts/dismiss', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        alert_key: alertKey,
+                        alert_title: alertTitle
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Eliminar la alerta del DOM con animación
+                        alertElement.style.transition = 'all 0.3s ease';
+                        alertElement.style.opacity = '0';
+                        alertElement.style.transform = 'translateX(100%)';
+                        
+                        setTimeout(() => {
+                            alertElement.remove();
+                            
+                            // Verificar si no quedan alertas
+                            const alertsList = document.querySelector('.alerts-list');
+                            const remainingAlerts = alertsList.querySelectorAll('.alert');
+                            
+                            if (remainingAlerts.length === 0) {
+                                // Mostrar mensaje de sistema funcionando correctamente
+                                alertsList.innerHTML = `
+                                    <div class="text-center text-muted py-3">
+                                        <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                        <p class="mb-0">Sistema funcionando correctamente</p>
+                                    </div>
+                                `;
+                            }
+                        }, 300);
+                    } else {
+                        // Restaurar botón en caso de error
+                        e.target.innerHTML = '×';
+                        e.target.disabled = false;
+                        
+                        // Mostrar mensaje de error si es específico
+                        if (data.message === 'Sistema de alertas no disponible') {
+                            // Si el sistema no está disponible, solo ocultar la alerta visualmente
+                            alertElement.style.transition = 'all 0.3s ease';
+                            alertElement.style.opacity = '0';
+                            alertElement.style.transform = 'translateX(100%)';
+                            
+                            setTimeout(() => {
+                                alertElement.remove();
+                                
+                                // Verificar si no quedan alertas
+                                const alertsList = document.querySelector('.alerts-list');
+                                const remainingAlerts = alertsList.querySelectorAll('.alert');
+                                
+                                if (remainingAlerts.length === 0) {
+                                    alertsList.innerHTML = `
+                                        <div class="text-center text-muted py-3">
+                                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                            <p class="mb-0">Sistema funcionando correctamente</p>
+                                        </div>
+                                    `;
+                                }
+                            }, 300);
+                        } else {
+                            console.error('Error al eliminar alerta:', data.message);
+                        }
+                    }
+                })
+                .catch(error => {
+                    // Restaurar botón en caso de error
+                    e.target.innerHTML = '×';
+                    e.target.disabled = false;
+                    console.error('Error de red:', error);
+                });
+            }
+        });
+    });
 </script>
 
 <style>

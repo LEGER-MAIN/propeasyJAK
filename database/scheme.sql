@@ -19,6 +19,22 @@
 CREATE DATABASE IF NOT EXISTS `propeasy_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `propeasy_db`;
 
+-- Dumping structure for table propeasy_db.alertas_eliminadas
+CREATE TABLE IF NOT EXISTS `alertas_eliminadas` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `admin_id` int NOT NULL,
+  `tipo_alerta` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `titulo_alerta` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fecha_eliminacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_admin_id` (`admin_id`),
+  KEY `idx_tipo_alerta` (`tipo_alerta`),
+  KEY `idx_fecha_eliminacion` (`fecha_eliminacion`),
+  CONSTRAINT `alertas_eliminadas_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Data exporting was unselected.
+
 -- Dumping structure for function propeasy_db.CalcularEdadCuenta
 DELIMITER //
 CREATE FUNCTION `CalcularEdadCuenta`(p_fecha_registro DATETIME) RETURNS varchar(50) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
@@ -298,7 +314,7 @@ CREATE TABLE IF NOT EXISTS `logs_actividad` (
   KEY `idx_tabla_afectada` (`tabla_afectada`),
   KEY `idx_fecha_actividad` (`fecha_actividad`),
   CONSTRAINT `logs_actividad_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=262 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=264 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 

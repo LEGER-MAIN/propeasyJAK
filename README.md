@@ -4,11 +4,11 @@
 ![PHP Version](https://img.shields.io/badge/PHP-8.0+-green)
 ![MySQL Version](https://img.shields.io/badge/MySQL-8.0+-orange)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Version](https://img.shields.io/badge/Version-v2.7.0-brightgreen)
+![Version](https://img.shields.io/badge/Version-v2.9.0-brightgreen)
 
 ## 📋 Descripción
 
-PropEasy es una plataforma web completa para la gestión y venta de bienes raíces. Permite a agentes inmobiliarios publicar propiedades, gestionar clientes, y facilitar la comunicación entre compradores y vendedores a través de un sistema de chat integrado y herramientas avanzadas de gestión.
+PropEasy es una plataforma web completa para la gestión y venta de bienes raíces. Permite a agentes inmobiliarios publicar propiedades, gestionar clientes, y facilitar la comunicación entre compradores y vendedores a través de un sistema de chat integrado, herramientas avanzadas de gestión y un sistema inteligente de alertas del administrador.
 
 ## ✨ Características Principales
 
@@ -94,13 +94,58 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Acceso desde navbar** principal para clientes
 - **Corrección de consultas** SQL para imágenes de propiedades
 
+### 🔔 Sistema de Alertas del Administrador
+- **Alertas inteligentes** del sistema en tiempo real
+- **Eliminación permanente** de alertas por el administrador
+- **Persistencia de alertas eliminadas** en base de datos
+- **No reaparición** de alertas eliminadas al recargar la página
+- **Restauración automática** después de 24 horas
+- **Animaciones suaves** al eliminar alertas
+- **Manejo robusto de errores** con fallback graceful
+- **Tipos de alertas**: Reportes nuevos, propiedades pendientes, usuarios suspendidos, propiedades rechazadas
+- **Priorización de alertas** por importancia
+- **Interfaz intuitiva** con botones de cierre
+- **Sistema opcional** que no afecta el funcionamiento general
+
+### ℹ️ Página "Acerca de"
+- **Información corporativa** completa de PropEasy
+- **Sección Hero** con descripción principal
+- **Misión y Visión** de la empresa
+- **Valores corporativos** destacados
+- **Historia de la empresa** con timeline
+- **Equipo de trabajo** con perfiles
+- **Información de contacto** profesional
+- **Diseño responsive** y moderno
+- **Integración completa** con el layout principal
+
 ### 📋 Sistema de Reportes
 - **Reportes de irregularidades** con formulario moderno
 - **Carga de archivos adjuntos** con validación
 - **Proceso de revisión** profesional con seguimiento
+
+### 🎯 Panel de Administración
+- **Dashboard completo** con estadísticas en tiempo real
+- **Gestión de usuarios** con cambio de roles y estados
+- **Gestión de propiedades** con validación y aprobación
+- **Sistema de alertas inteligente** con eliminación permanente
+- **Actividades recientes** con paginación y filtros
+- **Todas las actividades** integradas en el sidebar del admin
+- **Estadísticas detalladas** de usuarios, propiedades y solicitudes
+- **Gráficos interactivos** de tendencias del sistema
+- **Gestión de reportes** con resolución y seguimiento
+- **Logs del sistema** con filtros y búsqueda
+- **Backup y restore** de la base de datos
+- **Configuración del sistema** centralizada
+- **Diseño compacto y profesional** para todas las secciones
+- **Navegación intuitiva** con sidebar integrado
+- **Filtros avanzados** para búsqueda de actividades
+- **Paginación optimizada** para grandes volúmenes de datos
 - **Estados de reporte** (pendiente, atendido, descartado)
 - **Información confidencial** garantizada
 - **Diseño mejorado** con colores profesionales
+- **Persistencia de alertas eliminadas** en base de datos
+- **Restauración automática** de alertas después de 24 horas
+- **Manejo robusto de errores** en sistema de alertas
 
 ### 🎨 Interfaz y Diseño
 - **Diseño responsive** optimizado para móviles y desktop
@@ -121,16 +166,41 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Backup automático** de base de datos
 - **Configuración centralizada** y fácil de mantener
 - **Código limpio** sin archivos de debug o pruebas
+- **Sistema de alertas inteligente** con persistencia en base de datos
+- **Manejo robusto de errores** con fallback graceful
+- **Gestión de estado** de alertas eliminadas
 
 ## 🚀 Instalación
 
-### Requisitos del Sistema
+### ⚡ Instalación Automática (Recomendada)
+
+Para una instalación rápida y automática en Laragon:
+
+1. **Copiar el proyecto** a tu directorio de Laragon
+2. **Ejecutar el instalador**:
+   ```bash
+   cd C:\laragon\www\propeasy
+   php install_propeasy.php
+   ```
+
+El script automáticamente:
+- ✅ Verifica requisitos del sistema
+- ✅ Crea estructura de directorios
+- ✅ Configura la base de datos
+- ✅ Instala dependencias
+- ✅ Verifica la instalación
+
+**Ver [INSTALACION_RAPIDA.md](INSTALACION_RAPIDA.md) para instrucciones detalladas.**
+
+### 🔧 Instalación Manual
+
+#### Requisitos del Sistema
 - **PHP**: 8.0 o superior
 - **MySQL**: 8.0 o superior
 - **Servidor Web**: Apache/Nginx
 - **Extensiones PHP**: PDO, MySQL, GD, JSON, mbstring
 
-### Pasos de Instalación
+#### Pasos de Instalación
 
 1. **Clonar el repositorio**
    ```bash
@@ -164,20 +234,23 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 propeasy/
 ├── app/
 │   ├── controllers/     # Controladores MVC
-│   ├── models/         # Modelos de datos
+│   ├── models/         # Modelos de datos (incluye AlertManager)
 │   ├── views/          # Vistas y templates
 │   ├── core/           # Núcleo del sistema
 │   ├── helpers/        # Funciones auxiliares
 │   └── websocket_server.php
 ├── config/             # Archivos de configuración
-├── database/           # Esquemas de base de datos
+├── database/           # Esquemas de base de datos (incluye alertas_eliminadas)
 ├── logs/               # Archivos de log
 ├── public/             # Archivos públicos (document root)
 │   ├── css/           # Estilos CSS
 │   ├── js/            # JavaScript
 │   └── uploads/       # Archivos subidos
 ├── scripts/            # Scripts de mantenimiento
-└── vendor/             # Dependencias de Composer
+├── vendor/             # Dependencias de Composer
+├── install_propeasy.php # Instalador automático
+├── INSTALACION_RAPIDA.md # Guía de instalación rápida
+└── composer.json       # Configuración de dependencias
 ```
 
 ## 🔧 Configuración
@@ -233,6 +306,7 @@ php app/websocket_server.php
 ## 🛠️ Mantenimiento
 
 ### Scripts Disponibles
+- `install_propeasy.php` - **Instalador automático** (principal)
 - `scripts/cleanup_project.php` - Limpieza del proyecto
 - `scripts/seed_activity_logs.php` - Generar logs de actividad
 - `scripts/send_appointment_reminders.php` - Recordatorios de citas
@@ -271,6 +345,41 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 5. Abre un Pull Request
 
 ## 📝 Changelog
+
+### v2.9.0 (2025-01-24)
+- ✅ Sistema de alertas inteligente con eliminación permanente
+- ✅ Persistencia de alertas eliminadas en base de datos
+- ✅ No reaparición de alertas eliminadas al recargar la página
+- ✅ Restauración automática de alertas después de 24 horas
+- ✅ Animaciones suaves al eliminar alertas del dashboard
+- ✅ Manejo robusto de errores con fallback graceful
+- ✅ Tipos de alertas: Reportes nuevos, propiedades pendientes, usuarios suspendidos, propiedades rechazadas
+- ✅ Priorización de alertas por importancia
+- ✅ Interfaz intuitiva con botones de cierre
+- ✅ Sistema opcional que no afecta el funcionamiento general
+- ✅ Corrección del error 500 en dashboard del admin
+- ✅ Modelo AlertManager con métodos completos de gestión
+- ✅ Tabla alertas_eliminadas en base de datos
+- ✅ JavaScript mejorado para manejo de alertas
+- ✅ **Script de instalación automática** para Laragon
+- ✅ **Guía de instalación rápida** con instrucciones detalladas
+- ✅ **Configuración automática** de base de datos y dependencias
+- ✅ **Verificación completa** de requisitos del sistema
+- ✅ README.md actualizado con nuevas funcionalidades
+
+### v2.8.0 (2025-01-24)
+- ✅ Panel de administración completamente renovado
+- ✅ Dashboard con estadísticas en tiempo real y alertas dinámicas
+- ✅ Sección "Todas las Actividades" integrada en sidebar del admin
+- ✅ Diseño compacto y profesional para todas las secciones admin
+- ✅ Sistema de alertas funcional con prioridades y ordenamiento
+- ✅ Eliminación del índice "Total Ventas" y reemplazo con "Propiedades Pendientes"
+- ✅ Filtros avanzados y paginación optimizada para actividades
+- ✅ Navegación intuitiva con sidebar integrado
+- ✅ Limpieza completa de console.log y archivos de debug
+- ✅ Página "Acerca de" con información corporativa completa
+- ✅ Footer actualizado con información de contacto profesional
+- ✅ README.md actualizado con todas las nuevas características
 
 ### v2.7.0 (2025-01-24)
 - ✅ Página "Acerca de" creada y enlazada
