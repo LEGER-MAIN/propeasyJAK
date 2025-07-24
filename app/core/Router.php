@@ -20,6 +20,9 @@ class Router {
             http_response_code(404);
             include APP_PATH . '/views/errors/404.php';
         };
+        
+        // Configurar todas las rutas
+        $this->configureRoutes();
     }
     
     /**
@@ -345,6 +348,7 @@ class Router {
         $this->get('/properties/{id}/edit', 'PropertyController@edit');
         $this->post('/properties/{id}', 'PropertyController@update');
         $this->post('/properties/{id}/delete', 'PropertyController@delete');
+        $this->post('/properties/update-status', 'PropertyController@updateStatus');
         
         // Rutas específicas de agentes para propiedades
         $this->get('/properties/agent/list', 'PropertyController@agentProperties');
@@ -352,7 +356,6 @@ class Router {
         $this->get('/properties/pending-validation/export', 'PropertyController@exportPendingToCSV');
         $this->post('/properties/{id}/validate', 'PropertyController@validate');
         $this->post('/properties/{id}/reject', 'PropertyController@reject');
-        $this->post('/properties/{id}/delete', 'PropertyController@deleteProperty');
         $this->get('/properties/{id}/reject-form', 'PropertyController@rejectForm');
         
         // Rutas simples para pruebas

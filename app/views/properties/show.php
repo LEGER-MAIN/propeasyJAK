@@ -102,7 +102,7 @@ $content = ob_start();
                         <div class="text-sm" style="color: var(--text-secondary);"><?= $property['moneda'] ?></div>
                         
                         <!-- Botón de favorito -->
-                        <?php if (isAuthenticated()): ?>
+                        <?php if (isAuthenticated() && hasRole(ROLE_CLIENTE)): ?>
                         <div class="mt-3">
                             <button class="btn btn-outline-success favorite-toggle px-4 py-2 rounded-md flex items-center" 
                                     data-propiedad-id="<?= $property['id'] ?>"
@@ -264,12 +264,13 @@ $content = ob_start();
                     <div class="rounded-lg shadow-lg p-6" style="background-color: var(--bg-light); border: 1px solid var(--color-gris-claro);">
                         <h3 class="text-lg font-semibold mb-4" style="color: var(--color-azul-marino);">Acciones</h3>
                         <div class="space-y-2">
-                            <a href="/properties/edit/<?= $property['id'] ?>" 
+                            <a href="/properties/<?= $property['id'] ?>/edit" 
                                class="btn btn-primary w-full text-center py-2 px-4 rounded-md">
                                 <i class="fas fa-edit mr-2"></i>Editar Propiedad
                             </a>
-                            <form action="/properties/delete/<?= $property['id'] ?>" method="POST" 
+                            <form action="/properties/<?= $property['id'] ?>/delete" method="POST" 
                                   onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta propiedad?')">
+                                <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
                                 <button type="submit" class="btn btn-danger w-full py-2 px-4 rounded-md">
                                     <i class="fas fa-trash mr-2"></i>Eliminar Propiedad
                                 </button>

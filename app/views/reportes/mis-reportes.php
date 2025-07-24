@@ -95,16 +95,16 @@ function getTipoReporteTexto($tipo) {
                 <?php foreach ($reportes as $reporte): ?>
                     <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group">
                         <!-- Header de la tarjeta -->
-                        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-indigo-700">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <?= getEstadoColor($reporte['estado']) ?>">
                                     <?= ucfirst($reporte['estado']) ?>
                                 </span>
-                                <span class="text-xs text-gray-500">
+                                <span class="text-xs text-white">
                                     <?= date('d/m/Y', strtotime($reporte['fecha_reporte'])) ?>
                                 </span>
                             </div>
-                            <h3 class="text-lg font-semibold text-gray-900 line-clamp-2" title="<?= htmlspecialchars($reporte['titulo']) ?>">
+                            <h3 class="text-lg font-semibold text-white line-clamp-2" title="<?= htmlspecialchars($reporte['titulo']) ?>">
                                 <?= htmlspecialchars($reporte['titulo']) ?>
                             </h3>
                         </div>
@@ -153,22 +153,30 @@ function getTipoReporteTexto($tipo) {
             </div>
             
             <!-- Información adicional -->
-            <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <div class="mt-8 bg-gradient-to-r from-blue-600 to-indigo-700 border border-blue-500 rounded-lg p-6">
                 <div class="flex items-start gap-3">
-                    <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-info-circle text-white text-lg"></i>
+                    </div>
                     <div>
-                        <h6 class="font-medium text-blue-900 mb-2">Información sobre tus reportes</h6>
-                        <ul class="text-sm text-blue-800 space-y-1">
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-clock text-blue-500 mt-1 text-xs"></i>
+                        <h6 class="font-semibold text-white mb-3 text-lg">Información sobre tus reportes</h6>
+                        <ul class="text-sm text-blue-100 space-y-2">
+                            <li class="flex items-start gap-3">
+                                <div class="w-5 h-5 bg-blue-400 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                    <i class="fas fa-clock text-white text-xs"></i>
+                                </div>
                                 <span>Los reportes en estado "Pendiente" están siendo revisados por nuestro equipo</span>
                             </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-check text-green-500 mt-1 text-xs"></i>
+                            <li class="flex items-start gap-3">
+                                <div class="w-5 h-5 bg-green-400 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                    <i class="fas fa-check text-white text-xs"></i>
+                                </div>
                                 <span>Los reportes "Atendidos" han sido procesados y recibirás una respuesta</span>
                             </li>
-                            <li class="flex items-start gap-2">
-                                <i class="fas fa-times text-red-500 mt-1 text-xs"></i>
+                            <li class="flex items-start gap-3">
+                                <div class="w-5 h-5 bg-red-400 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                    <i class="fas fa-times text-white text-xs"></i>
+                                </div>
                                 <span>Los reportes "Descartados" no requieren acción adicional</span>
                             </li>
                         </ul>

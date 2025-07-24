@@ -235,7 +235,7 @@ $content = ob_start();
                         </div>
                         
                         <!-- Botón de favorito -->
-                        <?php if (isAuthenticated()): ?>
+                        <?php if (isAuthenticated() && hasRole(ROLE_CLIENTE)): ?>
                         <div class="absolute top-2 right-2">
                             <button class="favorite-toggle bg-white hover:bg-red-50 text-red-600 hover:text-red-700 border border-red-600 hover:border-red-700 rounded-full p-2 transition-colors duration-200" 
                                     data-propiedad-id="<?= $property['id'] ?>"

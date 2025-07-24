@@ -50,26 +50,46 @@ $roleNames = [
                         <!-- Foto de Perfil -->
                         <div class="flex items-center space-x-6">
                             <div class="flex-shrink-0">
-                                <?php if (!empty($user['foto_perfil'])): ?>
-                                    <img class="h-24 w-24 rounded-full object-cover border-4 border-gray-200" 
-                                         src="<?= htmlspecialchars($user['foto_perfil']) ?>" 
-                                         alt="Foto de perfil">
-                                <?php else: ?>
-                                    <div class="h-24 w-24 rounded-full bg-gray-300 flex items-center justify-center border-4 border-gray-200">
-                                        <i class="fas fa-user text-3xl text-gray-500"></i>
+                                <div id="profile-preview" class="relative">
+                                    <?php if (!empty($user['foto_perfil'])): ?>
+                                        <img id="current-photo" class="h-24 w-24 rounded-full object-cover border-4 border-gray-200 shadow-lg" 
+                                             src="<?= htmlspecialchars($user['foto_perfil']) ?>" 
+                                             alt="Foto de perfil">
+                                    <?php else: ?>
+                                        <div id="default-photo" class="h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-4 border-gray-200 shadow-lg">
+                                            <i class="fas fa-user text-3xl text-white"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <!-- Overlay de carga -->
+                                    <div id="upload-overlay" class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center hidden">
+                                        <i class="fas fa-spinner fa-spin text-white text-xl"></i>
                                     </div>
-                                <?php endif; ?>
+                                </div>
                             </div>
                             <div class="flex-1">
                                 <label for="foto_perfil" class="block text-sm font-medium text-gray-700 mb-2">
                                     Cambiar Foto de Perfil
                                 </label>
-                                <input type="file" 
-                                       id="foto_perfil" 
-                                       name="foto_perfil" 
-                                       accept="image/*"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                                <p class="mt-1 text-sm text-gray-500">Formatos: JPG, PNG, GIF. Máximo 5MB.</p>
+                                <div class="relative">
+                                    <input type="file" 
+                                           id="foto_perfil" 
+                                           name="foto_perfil" 
+                                           accept="image/*"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200">
+                                    <div id="file-info" class="mt-2 text-sm text-gray-500 hidden">
+                                        <span id="file-name" class="font-medium text-green-600"></span>
+                                        <span id="file-size" class="text-gray-400"></span>
+                                    </div>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-500 flex items-center gap-2">
+                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                    Formatos: JPG, PNG, GIF. Máximo 5MB.
+                                </p>
+                                <div id="upload-error" class="mt-2 text-sm text-red-600 hidden">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    <span id="error-message"></span>
+                                </div>
                             </div>
                         </div>
                         
@@ -180,7 +200,7 @@ $roleNames = [
                                        id="especialidades" 
                                        name="especialidades" 
                                        value="<?= htmlspecialchars($user['especialidades'] ?? '') ?>" 
-                                       placeholder="Venta, Alquiler, Casas, Apartamentos"
+                                       placeholder="Venta, Casas, Apartamentos, Terrenos"
                                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                                 <p class="mt-1 text-sm text-gray-500">Separar con comas</p>
                             </div>
@@ -541,52 +561,164 @@ $roleNames = [
 </div>
 
 <script>
-// Validación de contraseña en tiempo real
-document.getElementById('password').addEventListener('input', function() {
-    const password = this.value;
-    const confirmPassword = document.getElementById('confirm_password').value;
-    
-    if (password.length > 0 && password.length < 8) {
-        this.setCustomValidity('La contraseña debe tener al menos 8 caracteres');
-    } else {
-        this.setCustomValidity('');
-    }
-    
-    if (confirmPassword && password !== confirmPassword) {
-        document.getElementById('confirm_password').setCustomValidity('Las contraseñas no coinciden');
-    } else {
-        document.getElementById('confirm_password').setCustomValidity('');
-    }
-});
+document.addEventListener('DOMContentLoaded', function() {
+    const fotoInput = document.getElementById('foto_perfil');
+    const profilePreview = document.getElementById('profile-preview');
+    const currentPhoto = document.getElementById('current-photo');
+    const defaultPhoto = document.getElementById('default-photo');
+    const uploadOverlay = document.getElementById('upload-overlay');
+    const fileInfo = document.getElementById('file-info');
+    const fileName = document.getElementById('file-name');
+    const fileSize = document.getElementById('file-size');
+    const uploadError = document.getElementById('upload-error');
+    const errorMessage = document.getElementById('error-message');
 
-document.getElementById('confirm_password').addEventListener('input', function() {
-    const password = document.getElementById('password').value;
-    const confirmPassword = this.value;
-    
-    if (password && confirmPassword && password !== confirmPassword) {
-        this.setCustomValidity('Las contraseñas no coinciden');
-    } else {
-        this.setCustomValidity('');
+    // Función para mostrar error
+    function showError(message) {
+        errorMessage.textContent = message;
+        uploadError.classList.remove('hidden');
+        setTimeout(() => {
+            uploadError.classList.add('hidden');
+        }, 5000);
     }
-});
 
-// Vista previa de imagen
-document.getElementById('foto_perfil').addEventListener('change', function() {
-    const file = this.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = document.querySelector('.flex-shrink-0 img');
-            if (img) {
-                img.src = e.target.result;
+    // Función para ocultar error
+    function hideError() {
+        uploadError.classList.add('hidden');
+    }
+
+    // Función para mostrar información del archivo
+    function showFileInfo(name, size) {
+        fileName.textContent = name;
+        fileSize.textContent = ` (${size})`;
+        fileInfo.classList.remove('hidden');
+    }
+
+    // Función para ocultar información del archivo
+    function hideFileInfo() {
+        fileInfo.classList.add('hidden');
+    }
+
+    // Función para mostrar overlay de carga
+    function showUploadOverlay() {
+        uploadOverlay.classList.remove('hidden');
+    }
+
+    // Función para ocultar overlay de carga
+    function hideUploadOverlay() {
+        uploadOverlay.classList.add('hidden');
+    }
+
+    // Función para actualizar vista previa
+    function updatePreview(imageUrl) {
+        if (currentPhoto) {
+            currentPhoto.src = imageUrl;
+            currentPhoto.style.display = 'block';
+        } else {
+            // Crear nueva imagen si no existe
+            const newImg = document.createElement('img');
+            newImg.id = 'current-photo';
+            newImg.className = 'h-24 w-24 rounded-full object-cover border-4 border-gray-200 shadow-lg';
+            newImg.src = imageUrl;
+            newImg.alt = 'Foto de perfil';
+            profilePreview.appendChild(newImg);
+        }
+        
+        // Ocultar foto por defecto si existe
+        if (defaultPhoto) {
+            defaultPhoto.style.display = 'none';
+        }
+    }
+
+    // Manejar cambio de archivo
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            
+            if (!file) {
+                hideFileInfo();
+                hideError();
+                return;
+            }
+
+            // Validar tipo de archivo
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                showError('Solo se permiten archivos JPG, PNG y GIF');
+                this.value = '';
+                hideFileInfo();
+                return;
+            }
+
+            // Validar tamaño (5MB)
+            const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+            if (file.size > maxSize) {
+                showError('El archivo es demasiado grande. Máximo 5MB');
+                this.value = '';
+                hideFileInfo();
+                return;
+            }
+
+            // Mostrar información del archivo
+            const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+            showFileInfo(file.name, `${sizeInMB} MB`);
+            hideError();
+
+            // Mostrar overlay de carga
+            showUploadOverlay();
+
+            // Crear vista previa
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                updatePreview(e.target.result);
+                hideUploadOverlay();
+            };
+            reader.onerror = function() {
+                showError('Error al leer el archivo');
+                hideUploadOverlay();
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Validación de contraseña en tiempo real
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+
+    if (passwordInput) {
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
+            
+            if (password.length > 0 && password.length < 8) {
+                this.setCustomValidity('La contraseña debe tener al menos 8 caracteres');
             } else {
-                const div = document.querySelector('.flex-shrink-0 div');
-                if (div) {
-                    div.innerHTML = `<img class="h-24 w-24 rounded-full object-cover border-4 border-gray-200" src="${e.target.result}" alt="Foto de perfil">`;
+                this.setCustomValidity('');
+            }
+            
+            if (confirmPassword && password !== confirmPassword) {
+                if (confirmPasswordInput) {
+                    confirmPasswordInput.setCustomValidity('Las contraseñas no coinciden');
+                }
+            } else {
+                if (confirmPasswordInput) {
+                    confirmPasswordInput.setCustomValidity('');
                 }
             }
-        };
-        reader.readAsDataURL(file);
+        });
+    }
+
+    if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('input', function() {
+            const password = passwordInput ? passwordInput.value : '';
+            const confirmPassword = this.value;
+            
+            if (password && confirmPassword && password !== confirmPassword) {
+                this.setCustomValidity('Las contraseñas no coinciden');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
     }
 });
 </script> 

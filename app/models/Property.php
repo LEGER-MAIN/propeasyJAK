@@ -1754,6 +1754,58 @@ class Property {
     }
 
     /**
+     * Actualizar estado de una propiedad
+     */
+    public function updateStatus($propertyId, $newStatus, $comment = '') {
+        try {
+            // Verificar que la propiedad existe
+            $property = $this->getById($propertyId);
+            if (!$property) {
+                return [
+                    'success' => false,
+                    'message' => 'Propiedad no encontrada.'
+                ];
+            }
+            
+            // Actualizar estado
+            $query = "UPDATE {$this->table} SET estado_publicacion = ?, fecha_actualizacion = ? WHERE id = ?";
+            $params = [$newStatus, date('Y-m-d H:i:s'), $propertyId];
+            
+            if ($this->db->update($query, $params)) {
+                // Registrar el cambio en el log de actividad si hay comentario
+                if (!empty($comment)) {
+                    $this->logActivity(
+                        $_SESSION['user_id'] ?? 0,
+                        'cambio_estado',
+                        'propiedades',
+                        $propertyId,
+                        [
+                            'estado_anterior' => $property['estado_publicacion'],
+                            'estado_nuevo' => $newStatus,
+                            'comentario' => $comment
+                        ]
+                    );
+                }
+                
+                return [
+                    'success' => true,
+                    'message' => 'Estado actualizado correctamente.'
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Error al actualizar el estado.'
+                ];
+            }
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Error interno: ' . $e->getMessage()
+            ];
+        }
+    }
+    
+    /**
      * Obtener propiedades enviadas por un cliente específico
      * 
      * @param int $clienteId ID del cliente

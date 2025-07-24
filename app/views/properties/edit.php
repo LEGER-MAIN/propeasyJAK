@@ -51,6 +51,8 @@ $content = ob_start();
     <!-- Formulario -->
     <div class="bg-white rounded-lg shadow-md p-6">
         <form action="/properties/<?= $property['id'] ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <input type="hidden" name="_method" value="PUT">
+            <input type="hidden" name="csrf_token" value="<?= generateCSRFToken() ?>">
             <!-- Información básica -->
             <div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Información Básica</h3>
@@ -320,7 +322,7 @@ $content = ob_start();
 
             <!-- Botones -->
             <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                <a href="/properties/show/<?= $property['id'] ?>" 
+                <a href="<?= hasRole(ROLE_AGENTE) ? '/properties/agent/list' : '/properties/show/' . $property['id'] ?>" 
                    class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md font-medium transition-colors">
                     Cancelar
                 </a>

@@ -52,6 +52,10 @@
                     </a>
                     
                     <?php if (hasRole(ROLE_AGENTE)): ?>
+                    <a href="/properties/agent/list" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
+                        <i class="fas fa-list"></i>
+                        <span>Mis Propiedades</span>
+                    </a>
                     <a href="/appointments" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Citas</span>
@@ -108,10 +112,12 @@
                                     <span>Mi Perfil</span>
                                 </a>
 
+                                <?php if (hasRole(ROLE_CLIENTE)): ?>
                                 <a href="/favorites" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                     <i class="fas fa-heart"></i>
                                     <span>Mis Favoritos</span>
                                 </a>
+                                <?php endif; ?>
 
                                 <a href="/reportes/mis-reportes" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                     <i class="fas fa-clipboard-list"></i>
@@ -127,26 +133,7 @@
                                     <span>Chat</span>
                                 </a>
                                 
-                                <?php if (hasRole(ROLE_AGENTE)): ?>
-                                    <hr class="my-1">
-                                    <div class="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Panel de Agente</div>
-                                    <a href="/properties/agent/list" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                        <i class="fas fa-list"></i>
-                                        <span>Mis Propiedades</span>
-                                    </a>
-                                    <a href="/properties/pending-validation" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                        <i class="fas fa-clock"></i>
-                                        <span>Pendientes</span>
-                                    </a>
-                                    <a href="/appointments" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                        <i class="fas fa-calendar-alt"></i>
-                                        <span>Mis Citas</span>
-                                    </a>
-                                    <a href="/agente/perfil" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                        <i class="fas fa-user-circle"></i>
-                                        <span>Mi Perfil Público</span>
-                                    </a>
-                                <?php endif; ?>
+
                                 
                                 <?php if (hasRole(ROLE_CLIENTE)): ?>
                                     <hr class="my-1">
@@ -242,6 +229,15 @@
                     <?php if (hasRole(ROLE_CLIENTE)): ?>
                     <a href="/cliente/mis-ventas" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-paper-plane mr-3"></i>Mis Ventas
+                    </a>
+                    <?php endif; ?>
+                    
+                    <?php if (hasRole(ROLE_AGENTE)): ?>
+                    <a href="/properties/agent/list" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                        <i class="fas fa-list mr-3"></i>Mis Propiedades
+                    </a>
+                    <a href="/appointments" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                        <i class="fas fa-calendar-alt mr-3"></i>Citas
                     </a>
                     <?php endif; ?>
                     

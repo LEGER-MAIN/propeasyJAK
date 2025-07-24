@@ -230,9 +230,15 @@ class PropertyController {
             redirect('/login');
         }
         
-        // Verificar método POST
+        // Verificar método POST o PUT
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            redirect('/properties/edit/' . $id);
+            redirect('/properties/' . $id . '/edit');
+        }
+        
+        // Verificar token CSRF
+        if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+            setFlashMessage('error', 'Token de seguridad inválido.');
+            redirect('/properties/' . $id . '/edit');
         }
         
         // Verificar que la propiedad existe
@@ -283,13 +289,18 @@ class PropertyController {
         
         if ($result['success']) {
             setFlashMessage('success', $result['message']);
-            redirect('/properties/show/' . $id);
+            // Redirigir según el rol del usuario
+            if (hasRole(ROLE_AGENTE)) {
+                redirect('/properties/agent/list');
+            } else {
+                redirect('/properties/show/' . $id);
+            }
         } else {
             setFlashMessage('error', $result['message']);
             if (isset($result['errors'])) {
                 setFlashMessage('error', implode(', ', $result['errors']));
             }
-            redirect('/properties/edit/' . $id);
+            redirect('/properties/' . $id . '/edit');
         }
     }
     
@@ -306,6 +317,12 @@ class PropertyController {
         // Verificar método POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             redirect('/properties');
+        }
+        
+        // Verificar token CSRF
+        if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+            setFlashMessage('error', 'Token de seguridad inválido.');
+            redirect('/properties/show/' . $id);
         }
         
         // Verificar que la propiedad existe
@@ -607,16 +624,17 @@ class PropertyController {
         return $processedImages;
     }
     
+
+    
     /**
-     * Eliminar propiedad (POST) - Respuesta JSON
+     * Actualizar estado de propiedad (AJAX)
      */
-    public function deleteProperty($id) {
-        // Establecer cabeceras JSON
+    public function updateStatus() {
         header('Content-Type: application/json');
         
         // Verificar que el usuario esté autenticado y sea agente
-        if (!isAuthenticated() || $_SESSION['user_rol'] !== 'agente') {
-            echo json_encode(['success' => false, 'message' => 'Acceso denegado. Solo los agentes pueden eliminar propiedades.']);
+        if (!isAuthenticated() || !hasRole(ROLE_AGENTE)) {
+            echo json_encode(['success' => false, 'message' => 'Acceso denegado.']);
             exit;
         }
         
@@ -626,26 +644,47 @@ class PropertyController {
             exit;
         }
         
-        $agenteId = $_SESSION['user_id'];
+        // Verificar token CSRF
+        if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+            echo json_encode(['success' => false, 'message' => 'Token de seguridad inválido.']);
+            exit;
+        }
+        
+        $propertyId = $_POST['property_id'] ?? null;
+        $newStatus = $_POST['new_status'] ?? null;
+        $comment = $_POST['comment'] ?? '';
+        
+        if (!$propertyId || !$newStatus) {
+            echo json_encode(['success' => false, 'message' => 'Datos incompletos.']);
+            exit;
+        }
         
         // Verificar que la propiedad existe y está asignada al agente
-        $property = $this->propertyModel->getById($id);
+        $property = $this->propertyModel->getById($propertyId);
         if (!$property) {
             echo json_encode(['success' => false, 'message' => 'Propiedad no encontrada.']);
             exit;
         }
         
-        if ($property['agente_id'] != $agenteId) {
-            echo json_encode(['success' => false, 'message' => 'No tienes permisos para eliminar esta propiedad.']);
+        if ($property['agente_id'] != $_SESSION['user_id']) {
+            echo json_encode(['success' => false, 'message' => 'No tienes permisos para modificar esta propiedad.']);
             exit;
         }
         
-        $result = $this->propertyModel->delete($id);
+        // Validar estado
+        $validStatuses = ['activa', 'vendida', 'en_revision', 'rechazada'];
+        if (!in_array($newStatus, $validStatuses)) {
+            echo json_encode(['success' => false, 'message' => 'Estado no válido.']);
+            exit;
+        }
         
-        if ($result) {
-            echo json_encode(['success' => true, 'message' => 'Propiedad eliminada correctamente.']);
+        // Actualizar estado
+        $result = $this->propertyModel->updateStatus($propertyId, $newStatus, $comment);
+        
+        if ($result['success']) {
+            echo json_encode(['success' => true, 'message' => 'Estado actualizado correctamente.']);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Error al eliminar la propiedad.']);
+            echo json_encode(['success' => false, 'message' => $result['message']]);
         }
         exit;
     }

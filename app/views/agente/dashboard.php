@@ -161,7 +161,7 @@
                                     
                                     <div class="flex-shrink-0">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" style="<?= getEstadoPropiedadBadgeStyle($property['estado_publicacion']) ?>">
-                                            <?= ucfirst($property['estado_publicacion']) ?>
+                                            <?= getEstadoPropiedadDisplayName($property['estado_publicacion']) ?>
                                         </span>
                                     </div>
                                 </div>
@@ -288,7 +288,7 @@ function getEstadoPropiedadBadgeStyle($estado) {
         case 'activa':
             return 'background-color: var(--color-verde-esmeralda); color: white; border: 1px solid var(--color-verde-esmeralda);';
         case 'en_revision':
-            return 'background-color: rgba(233, 196, 106, 0.1); color: var(--color-dorado-suave); border: 1px solid var(--color-dorado-suave);';
+            return 'background-color: #fef3c7; color: #92400e; border: 1px solid #f59e0b; font-weight: 600;';
         case 'rechazada':
         case 'inactiva':
             return 'background-color: var(--color-rojo-error); color: white; border: 1px solid var(--color-rojo-error);';
@@ -308,6 +308,23 @@ function getEstadoSolicitudBadgeStyle($estado) {
             return 'background-color: var(--color-verde-esmeralda); color: white; border: 1px solid var(--color-verde-esmeralda);';
         default:
             return 'background-color: rgba(221, 226, 230, 0.3); color: var(--text-secondary); border: 1px solid var(--color-gris-claro);';
+    }
+}
+
+function getEstadoPropiedadDisplayName($estado) {
+    switch ($estado) {
+        case 'activa':
+            return 'Activa';
+        case 'vendida':
+            return 'Vendida';
+        case 'en_revision':
+            return 'En Revisión';
+        case 'rechazada':
+            return 'Rechazada';
+        case 'inactiva':
+            return 'Inactiva';
+        default:
+            return ucfirst(str_replace('_', ' ', $estado));
     }
 }
 ?> 

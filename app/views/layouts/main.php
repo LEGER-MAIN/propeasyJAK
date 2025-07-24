@@ -217,8 +217,8 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 flex flex-col <?= isAuthenticated() ? 'user-authenticated' : '' ?>" 
-      data-user-type="<?= $_SESSION['user_rol'] ?? '' ?>" style="background-color: var(--bg-primary);">
+<body class="flex flex-col <?= isAuthenticated() ? 'user-authenticated' : '' ?>" 
+      data-user-type="<?= $_SESSION['user_rol'] ?? '' ?>">
     <!-- Header con Navbar del Cliente -->
     <?php include APP_PATH . '/views/components/navbar.php'; ?>
 

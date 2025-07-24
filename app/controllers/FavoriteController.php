@@ -23,9 +23,9 @@ class FavoriteController {
     }
     
     /**
-     * Middleware para verificar autenticación
+     * Middleware para verificar autenticación y rol de cliente
      * 
-     * @return bool True si está autenticado, false en caso contrario
+     * @return bool True si está autenticado y es cliente, false en caso contrario
      */
     private function requireAuth() {
         if (!isset($_SESSION['user_id'])) {
@@ -40,6 +40,21 @@ class FavoriteController {
             }
             return false;
         }
+        
+        // Verificar que sea un cliente
+        if (!hasRole(ROLE_CLIENTE)) {
+            if ($this->isAjaxRequest()) {
+                http_response_code(403);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Solo los clientes pueden usar la funcionalidad de favoritos.'
+                ]);
+            } else {
+                header('Location: /dashboard');
+            }
+            return false;
+        }
+        
         return true;
     }
     

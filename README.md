@@ -4,7 +4,7 @@
 ![PHP Version](https://img.shields.io/badge/PHP-8.0+-green)
 ![MySQL Version](https://img.shields.io/badge/MySQL-8.0+-orange)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Version](https://img.shields.io/badge/Version-v2.5.0-brightgreen)
+![Version](https://img.shields.io/badge/Version-v2.6.0-brightgreen)
 
 ## 📋 Descripción
 
@@ -22,18 +22,23 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Selección manual de agentes** con búsqueda y carga infinita
 - **Botones "Ver Detalles"** con efectos hover mejorados
 - **Carga de imágenes** optimizada con validación mejorada
+- **Edición y eliminación** de propiedades por agentes
+- **Cambio de estados** con comentarios y validación
+- **Enfoque exclusivo en venta** - Sin referencias a alquiler
 
 ### 👥 Gestión de Usuarios
 - **Múltiples roles**: Clientes, Agentes, Administradores
 - **Perfiles públicos** para agentes con estadísticas
 - **Sistema de autenticación** seguro con verificación de email
 - **Recuperación de contraseñas** por email
-- **Fotos de perfil** con gestión unificada
+- **Fotos de perfil** con gestión unificada y vista previa
 - **Gestión de sesiones** mejorada
 - **Corrección de rutas** de fotos de perfil
 - **Variables de sesión** optimizadas
 - **Dashboard personalizado** para clientes con estadísticas
 - **Gestión de propiedades solicitadas** con eliminación segura
+- **Información profesional** con especialidades y experiencia
+- **Carga de fotos** con validación y vista previa en tiempo real
 
 ### 💬 Sistema de Chat Integrado
 - **Chat en tiempo real** entre clientes y agentes
@@ -63,6 +68,7 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Contador de favoritos** en tiempo real
 - **Acceso desde dropdown** del usuario para mejor estética
 - **Navegación móvil** optimizada en sección "Cuenta"
+- **Exclusivo para clientes** - Agentes no pueden usar favoritos
 
 ### 📝 Solicitudes de Compra
 - **Formularios de solicitud** para propiedades
@@ -84,6 +90,15 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Vista de tarjetas** con imágenes y detalles completos
 - **Acceso desde navbar** principal para clientes
 - **Corrección de consultas** SQL para imágenes de propiedades
+
+### 📋 Sistema de Reportes
+- **Reportes de irregularidades** con formulario moderno
+- **Carga de archivos adjuntos** con validación
+- **Proceso de revisión** profesional con seguimiento
+- **Estados de reporte** (pendiente, atendido, descartado)
+- **Información confidencial** garantizada
+- **Diseño mejorado** con colores profesionales
+- **Validación en tiempo real** de formularios
 
 ### 🔍 Búsqueda y Filtros Avanzados
 - **Búsqueda por nombre completo** de agentes con espacios
@@ -113,6 +128,9 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Efectos hover** mejorados en botones
 - **Gradientes dinámicos** con efectos visuales
 - **Botones unificados** con estilos consistentes
+- **Formularios modernos** con validación en tiempo real
+- **Carga de archivos** con vista previa instantánea
+- **Diseño de reportes** mejorado con colores profesionales
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -138,6 +156,7 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Laragon** - Entorno de desarrollo local
 - **PHPMailer** - Envío de emails
 - **Ratchet** - Servidor WebSocket
+- **Scripts de mantenimiento** - Limpieza automática y gestión del proyecto
 
 ## 📦 Instalación
 
@@ -186,6 +205,36 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
    - Copiar y configurar `config/config.php`
    - Ajustar URLs y configuraciones según el entorno
    - Configurar zona horaria y configuraciones de email
+
+7. **Ejecutar script de limpieza (opcional)**
+   ```bash
+   php scripts/cleanup_project.php
+   ```
+
+## 🔧 Mantenimiento del Proyecto
+
+### Scripts de Limpieza
+
+El proyecto incluye scripts de mantenimiento para mantener el código limpio y organizado:
+
+1. **Limpieza automática del proyecto**
+   ```bash
+   php scripts/cleanup_project.php
+   ```
+   - Limpia archivos de logs antiguos
+   - Elimina archivos temporales
+   - Verifica la estructura del proyecto
+   - Crea backups automáticos
+
+2. **Recordatorios de citas**
+   ```bash
+   php scripts/send_appointment_reminders.php
+   ```
+
+3. **Generación de logs de actividad**
+   ```bash
+   php scripts/seed_activity_logs.php
+   ```
 
 ### Configuración del Chat en Tiempo Real (Opcional)
 
@@ -525,6 +574,16 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 **Solución**: Eliminado el botón duplicado, manteniendo solo el de la sección del agente
 **Estado**: ✅ COMPLETAMENTE RESUELTO
 
+### Referencias a Alquiler en el Sistema
+**Problema**: El sistema contenía referencias a alquiler que no se utilizaban
+**Solución**: Eliminadas todas las referencias a alquiler, enfocándose exclusivamente en venta
+**Estado**: ✅ COMPLETAMENTE RESUELTO
+
+### Favoritos Accesibles para Agentes
+**Problema**: Los agentes podían acceder a funcionalidades de favoritos innecesarias
+**Solución**: Sistema de favoritos restringido exclusivamente a clientes
+**Estado**: ✅ COMPLETAMENTE RESUELTO
+
 ## 📞 Soporte
 
 Para soporte técnico o consultas:
@@ -536,6 +595,19 @@ Para soporte técnico o consultas:
 - 🐛 Issues: https://github.com/propeasy/propeasy/issues
 
 ## 🔄 Changelog
+
+### v2.6.0 (2024-12-23)
+- 🗑️ **Eliminación completa de referencias a alquiler del proyecto**
+- 💖 **Sistema de favoritos exclusivo para clientes - Agentes no pueden usar**
+- 📋 **Diseño mejorado de formularios de reportes con colores profesionales**
+- 🖼️ **Carga de fotos de perfil con vista previa en tiempo real**
+- 🎨 **Interfaz de reportes modernizada con mejor UX**
+- 🔧 **Validación mejorada de archivos con feedback visual**
+- 📊 **Estados de reporte con diseño profesional**
+- 🎯 **Formularios con validación en tiempo real y mensajes de error**
+- 🧹 **Script de limpieza automática del proyecto**
+- 📊 **Gestión automática de logs con backups**
+- 🗂️ **Verificación de estructura del proyecto**
 
 ### v2.5.0 (2024-12-23)
 - 🏪 **Sistema "Mis Ventas" para gestión de propiedades enviadas por clientes**
