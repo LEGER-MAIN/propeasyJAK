@@ -415,11 +415,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                                 ${conv.mensajes_no_leidos > 0 ? `<span class="bg-green-500 text-white text-xs rounded-full px-2 py-1">${conv.mensajes_no_leidos}</span>` : ''}
                             </div>
                         </div>
-                        <button class="delete-conversation-btn p-2 text-gray-400 hover:text-red-500 transition-colors" 
-                                onclick="event.stopPropagation(); deleteConversation('${conv.conversacion_id}', '${conv.nombre_otro_usuario}')"
-                                title="Eliminar conversación">
-                            <i class="fas fa-trash text-sm"></i>
-                        </button>
+
                     </div>
                 </div>
             `).join('');
@@ -437,7 +433,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             currentChat = conversations.find(c => c.conversacion_id == conversationId);
             if (!currentChat) {
                 
-                console.log('🔍 Conversaciones disponibles:', conversations.map(c => ({ id: c.conversacion_id, nombre: c.nombre_otro_usuario })));
+
                 return;
             }
             
@@ -910,7 +906,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             const selectedAgentId = urlParams.get('agent');
             const propertyId = urlParams.get('property');
             
-            console.log('🔍 URL Params:', {
+            
                 agent: selectedAgentId,
                 property: propertyId,
                 fullUrl: window.location.href
@@ -931,12 +927,9 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 
                 // También mantener el método de polling como fallback
                 const checkAndSelectAgent = async () => {
-                    console.log('🔄 Verificando si las conversaciones están cargadas (fallback)...');
                     if (conversations && conversations.length > 0) {
-                        console.log('✅ Conversaciones cargadas (fallback), ejecutando selectAgentById...');
                         await selectAgentById(selectedAgentId);
                     } else {
-                        console.log('⏳ Conversaciones aún no cargadas (fallback), esperando...');
                         setTimeout(checkAndSelectAgent, 500); // Verificar cada 500ms
                     }
                 };
@@ -958,7 +951,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             elements.messageInput.addEventListener('keypress', function(e) {
                 
                 if (e.key === 'Enter' && !e.shiftKey) {
-                    console.log('🖱️ Enter presionado (sin Shift)');
+    
                     e.preventDefault();
                     sendMessage();
                 }

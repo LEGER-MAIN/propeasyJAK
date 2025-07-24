@@ -322,6 +322,7 @@ class Router {
     public function configureRoutes() {
         // Rutas públicas
         $this->get('/', 'HomeController@index');
+        $this->get('/about', 'HomeController@about');
         
         // Rutas de autenticación
         $this->get('/login', 'AuthController@showLogin');

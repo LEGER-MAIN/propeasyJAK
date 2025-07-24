@@ -319,7 +319,7 @@ function aceptarCita(citaId) {
             body: 'csrf_token=' + (document.querySelector('input[name="csrf_token"]')?.value || '')
         })
         .then(response => {
-            console.log('Response status:', response.status);
+            // console.log removed
             
             // Si es un redirect (302), recargar la página
             if (response.status === 302 || response.redirected) {
@@ -360,7 +360,7 @@ function rechazarCita(citaId) {
             body: 'csrf_token=' + (document.querySelector('input[name="csrf_token"]')?.value || '')
         })
         .then(response => {
-            console.log('Response status:', response.status);
+            // console.log removed
             
             // Si es un redirect (302), recargar la página
             if (response.status === 302 || response.redirected) {
@@ -401,7 +401,7 @@ function completarCita(citaId) {
             body: 'csrf_token=' + (document.querySelector('input[name="csrf_token"]')?.value || '')
         })
         .then(response => {
-            console.log('Response status:', response.status);
+            // console.log removed
             
             // Si es un redirect (302), recargar la página
             if (response.status === 302 || response.redirected) {
@@ -442,7 +442,7 @@ function cancelarCita(citaId) {
             body: 'csrf_token=' + (document.querySelector('input[name="csrf_token"]')?.value || '')
         })
         .then(response => {
-            console.log('Response status:', response.status);
+            // console.log removed
             
             // Si es un redirect (302), recargar la página
             if (response.status === 302 || response.redirected) {

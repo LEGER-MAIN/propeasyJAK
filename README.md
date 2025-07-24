@@ -4,7 +4,7 @@
 ![PHP Version](https://img.shields.io/badge/PHP-8.0+-green)
 ![MySQL Version](https://img.shields.io/badge/MySQL-8.0+-orange)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
-![Version](https://img.shields.io/badge/Version-v2.6.0-brightgreen)
+![Version](https://img.shields.io/badge/Version-v2.7.0-brightgreen)
 
 ## 📋 Descripción
 
@@ -25,6 +25,7 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Edición y eliminación** de propiedades por agentes
 - **Cambio de estados** con comentarios y validación
 - **Enfoque exclusivo en venta** - Sin referencias a alquiler
+- **Datos completos de propiedades** en solicitudes (tipo, habitaciones, baños, área)
 
 ### 👥 Gestión de Usuarios
 - **Múltiples roles**: Clientes, Agentes, Administradores
@@ -53,6 +54,7 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Preselección automática** de conversaciones existentes
 - **Creación automática** de nuevas conversaciones
 - **Experiencia consistente** en todas las páginas del sistema
+- **Interfaz limpia** sin botones de eliminación de conversaciones
 
 ### 📅 Sistema de Citas
 - **Agendamiento de visitas** a propiedades
@@ -80,6 +82,7 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Paginación incremental** con carga de más propiedades
 - **Fotos de propiedades** y agentes en las tarjetas
 - **Información completa** de propiedades (precio, ubicación, características)
+- **Datos detallados** de propiedades en solicitudes (tipo, habitaciones, baños, área)
 
 ### 🏪 Mis Ventas (Propiedades Enviadas)
 - **Gestión de propiedades** enviadas por clientes para publicación
@@ -98,75 +101,34 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Estados de reporte** (pendiente, atendido, descartado)
 - **Información confidencial** garantizada
 - **Diseño mejorado** con colores profesionales
-- **Validación en tiempo real** de formularios
 
-### 🔍 Búsqueda y Filtros Avanzados
-- **Búsqueda por nombre completo** de agentes con espacios
-- **Filtros por ciudad, sector y experiencia**
-- **Carga infinita** en listados de agentes
-- **Búsqueda en tiempo real** con debounce optimizado
-- **Selección visual** de agentes con tarjetas informativas
-- **Búsqueda combinada** en nombre, apellido, ciudad y sector
-- **Resultados paginados** con navegación numerada
+### 🎨 Interfaz y Diseño
+- **Diseño responsive** optimizado para móviles y desktop
+- **Paleta de colores** profesional (azul marino, verde esmeralda, dorado)
+- **Componentes reutilizables** con estilos consistentes
+- **Animaciones suaves** y transiciones elegantes
+- **Iconografía Font Awesome** para mejor UX
+- **Footer actualizado** con información de contacto profesional
+- **Página "Acerca de"** completa con misión, visión y equipo
+- **Navegación intuitiva** con breadcrumbs y enlaces claros
 
-### 📊 Panel de Administración
-- **Dashboard completo** con estadísticas en tiempo real
-- **Gestión de usuarios** y roles con cambio de estado
-- **Aprobación de propiedades** con comentarios
-- **Sistema de reportes** y logs de actividad
-- **Configuración del sistema** avanzada
-- **Backup y restauración** automática
-- **Gestión de favoritos** del administrador
+### 🔧 Funcionalidades Técnicas
+- **Arquitectura MVC** bien estructurada
+- **Sistema de rutas** flexible y escalable
+- **Base de datos optimizada** con índices apropiados
+- **Validación de datos** en frontend y backend
+- **Sistema de logs** para debugging y monitoreo
+- **Backup automático** de base de datos
+- **Configuración centralizada** y fácil de mantener
+- **Código limpio** sin archivos de debug o pruebas
 
-### 📱 Interfaz de Usuario
-- **Diseño responsive** para todos los dispositivos
-- **Paleta de colores** profesional y moderna
-- **Componentes reutilizables** con Tailwind CSS
-- **Iconografía** con Font Awesome
-- **Animaciones suaves** y transiciones
-- **Mensajes flash** informativos
-- **Efectos hover** mejorados en botones
-- **Gradientes dinámicos** con efectos visuales
-- **Botones unificados** con estilos consistentes
-- **Formularios modernos** con validación en tiempo real
-- **Carga de archivos** con vista previa instantánea
-- **Diseño de reportes** mejorado con colores profesionales
+## 🚀 Instalación
 
-## 🛠️ Tecnologías Utilizadas
-
-### Backend
-- **PHP 8.0+** - Lenguaje principal con características modernas
-- **MySQL 8.0+** - Base de datos relacional optimizada
-- **Arquitectura MVC** - Patrón de diseño escalable
-- **Sistema de rutas** personalizado con parámetros dinámicos
-- **WebSockets** - Chat en tiempo real con Ratchet
-- **Composer** - Gestión de dependencias PHP
-
-### Frontend
-- **HTML5** - Estructura semántica y accesible
-- **CSS3** - Estilos modernos y responsive
-- **JavaScript (ES6+)** - Interactividad y AJAX
-- **Tailwind CSS** - Framework de utilidades CSS
-- **Font Awesome** - Iconografía profesional
-- **Fetch API** - Comunicación asíncrona
-
-### Herramientas y Servicios
-- **Composer** - Gestión de dependencias
-- **Git** - Control de versiones
-- **Laragon** - Entorno de desarrollo local
-- **PHPMailer** - Envío de emails
-- **Ratchet** - Servidor WebSocket
-- **Scripts de mantenimiento** - Limpieza automática y gestión del proyecto
-
-## 📦 Instalación
-
-### Requisitos Previos
-- PHP 8.0 o superior
-- MySQL 8.0 o superior
-- Composer
-- Servidor web (Apache/Nginx)
-- Extensión PHP para WebSockets (opcional)
-- Extensión PHP para GD (manipulación de imágenes)
+### Requisitos del Sistema
+- **PHP**: 8.0 o superior
+- **MySQL**: 8.0 o superior
+- **Servidor Web**: Apache/Nginx
+- **Extensiones PHP**: PDO, MySQL, GD, JSON, mbstring
 
 ### Pasos de Instalación
 
@@ -176,503 +138,159 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
    cd propeasy
    ```
 
-2. **Instalar dependencias**
+2. **Configurar la base de datos**
+   - Crear una base de datos MySQL
+   - Importar el archivo `database/scheme.sql`
+   - Copiar `config/database.example.php` a `config/database.php`
+   - Configurar las credenciales de la base de datos
+
+3. **Configurar el servidor web**
+   - Configurar el document root en la carpeta `public/`
+   - Habilitar mod_rewrite para Apache
+   - Configurar permisos de escritura en `logs/` y `public/uploads/`
+
+4. **Instalar dependencias**
    ```bash
    composer install
    ```
 
-3. **Configurar la base de datos**
-   - Crear una base de datos MySQL
-   - Importar el archivo `database/scheme.sql`
-   - Copiar `config/database.example.php` a `config/database.php`
-   - Configurar las credenciales en `config/database.php`
+5. **Configurar variables de entorno**
+   - Editar `config/config.php` según tus necesidades
+   - Configurar URLs y configuraciones de email
 
-4. **Configurar el servidor web**
-   - Apuntar el document root a la carpeta `public/`
-   - Configurar las reglas de rewrite en `.htaccess`
-   - Asegurar que mod_rewrite esté habilitado
-
-5. **Configurar permisos**
-   ```bash
-   chmod 755 public/uploads/
-   chmod 755 public/uploads/profiles/
-   chmod 755 public/uploads/properties/
-   chmod 755 public/uploads/reportes/
-   chmod 755 logs/
-   ```
-
-6. **Configurar variables de entorno**
-   - Copiar y configurar `config/config.php`
-   - Ajustar URLs y configuraciones según el entorno
-   - Configurar zona horaria y configuraciones de email
-
-7. **Ejecutar script de limpieza (opcional)**
-   ```bash
-   php scripts/cleanup_project.php
-   ```
-
-## 🔧 Mantenimiento del Proyecto
-
-### Scripts de Limpieza
-
-El proyecto incluye scripts de mantenimiento para mantener el código limpio y organizado:
-
-1. **Limpieza automática del proyecto**
-   ```bash
-   php scripts/cleanup_project.php
-   ```
-   - Limpia archivos de logs antiguos
-   - Elimina archivos temporales
-   - Verifica la estructura del proyecto
-   - Crea backups automáticos
-
-2. **Recordatorios de citas**
-   ```bash
-   php scripts/send_appointment_reminders.php
-   ```
-
-3. **Generación de logs de actividad**
-   ```bash
-   php scripts/seed_activity_logs.php
-   ```
-
-### Configuración del Chat en Tiempo Real (Opcional)
-
-Para habilitar el chat en tiempo real:
-
-1. **Instalar dependencias de WebSocket**
-   ```bash
-   composer require cboden/ratchet
-   ```
-
-2. **Iniciar el servidor WebSocket**
-   ```bash
-   php app/websocket_server.php
-   ```
-
-3. **Configurar como servicio** (recomendado para producción)
-
-## 🏗️ Estructura del Proyecto
+## 📁 Estructura del Proyecto
 
 ```
 propeasy/
 ├── app/
-│   ├── controllers/          # Controladores MVC
-│   │   ├── AdminController.php
-│   │   ├── AgenteController.php
-│   │   ├── ApiController.php
-│   │   ├── AuthController.php
-│   │   ├── ChatController.php
-│   │   ├── ClienteController.php
-│   │   ├── PropertyController.php
-│   │   └── ...
-│   ├── models/              # Modelos de datos
-│   │   ├── User.php
-│   │   ├── Property.php
-│   │   ├── Chat.php
-│   │   ├── Appointment.php
-│   │   └── ...
-│   ├── views/               # Vistas y templates
-│   │   ├── admin/           # Vistas de administración
-│   │   ├── agente/          # Vistas de agentes
-│   │   ├── cliente/         # Vistas de clientes
-│   │   ├── auth/            # Vistas de autenticación
-│   │   ├── properties/      # Vistas de propiedades
-│   │   ├── chat/            # Vistas de chat
-│   │   ├── components/      # Componentes reutilizables
-│   │   └── layouts/         # Layouts principales
-│   ├── core/                # Núcleo del sistema
-│   │   ├── Database.php
-│   │   └── Router.php
-│   ├── helpers/             # Funciones auxiliares
-│   │   ├── EmailHelper.php
-│   │   └── PropertyHelper.php
-│   └── websocket_server.php # Servidor WebSocket
-├── config/                  # Configuraciones
-│   ├── config.php
-│   ├── database.php
-│   └── database.example.php
-├── database/                # Esquemas de BD
-│   └── scheme.sql
-├── logs/                    # Archivos de log
-├── public/                  # Documentos públicos
-│   ├── css/                 # Estilos
-│   ├── js/                  # JavaScript
-│   ├── uploads/             # Archivos subidos
-│   │   ├── profiles/        # Fotos de perfil
-│   │   ├── properties/      # Imágenes de propiedades
-│   │   └── reportes/        # Reportes
-│   ├── .htaccess            # Reglas de rewrite
-│   └── index.php            # Punto de entrada
-├── scripts/                 # Scripts de mantenimiento
-│   ├── seed_activity_logs.php
-│   └── send_appointment_reminders.php
-├── vendor/                  # Dependencias de Composer
-├── composer.json            # Configuración de Composer
-└── README.md               # Este archivo
+│   ├── controllers/     # Controladores MVC
+│   ├── models/         # Modelos de datos
+│   ├── views/          # Vistas y templates
+│   ├── core/           # Núcleo del sistema
+│   ├── helpers/        # Funciones auxiliares
+│   └── websocket_server.php
+├── config/             # Archivos de configuración
+├── database/           # Esquemas de base de datos
+├── logs/               # Archivos de log
+├── public/             # Archivos públicos (document root)
+│   ├── css/           # Estilos CSS
+│   ├── js/            # JavaScript
+│   └── uploads/       # Archivos subidos
+├── scripts/            # Scripts de mantenimiento
+└── vendor/             # Dependencias de Composer
 ```
-
-## 🚀 Uso
-
-### Acceso al Sistema
-
-1. **Acceder a la aplicación**: `http://localhost/propeasy`
-2. **Registrarse** como cliente o agente
-3. **Verificar email** (si está habilitado)
-4. **Iniciar sesión** y comenzar a usar
-
-### Roles de Usuario
-
-#### 👤 Cliente
-- **Buscar propiedades** con filtros avanzados
-- **Guardar favoritos** y acceder rápidamente
-- **Contactar agentes** por chat en tiempo real
-- **Solicitar citas** para visitar propiedades
-- **Enviar solicitudes de compra** con detalles
-- **Ver historial** de actividades
-- **Gestionar perfil** personal
-
-#### 🏠 Agente
-- **Publicar propiedades** con múltiples imágenes
-- **Gestionar perfil público** con estadísticas
-- **Responder consultas** de clientes por chat
-- **Gestionar citas** y horarios
-- **Ver estadísticas** de propiedades
-- **Validar propiedades** pendientes
-- **Gestionar solicitudes** de compra
-
-#### 👨‍💼 Administrador
-- **Gestionar usuarios** y roles con cambio de estado
-- **Aprobar/rechazar propiedades** con comentarios
-- **Ver estadísticas** del sistema en tiempo real
-- **Configurar parámetros** del sistema
-- **Gestionar reportes** y logs de actividad
-- **Realizar backups** y restauraciones
-- **Monitorear actividad** del sistema
 
 ## 🔧 Configuración
 
-### Archivos de Configuración
-
-- `config/database.php` - Configuración de base de datos
-- `config/config.php` - Configuración general del sistema
-- `public/.htaccess` - Reglas de rewrite y seguridad
-- `composer.json` - Dependencias PHP
-
-### Variables de Entorno
-
+### Configuración de Base de Datos
+Editar `config/database.php`:
 ```php
-// config/config.php
-define('APP_NAME', 'PropEasy');
-define('APP_URL', 'http://localhost/propeasy');
-define('APP_PATH', __DIR__ . '/../app');
-define('PUBLIC_PATH', __DIR__ . '/../public');
-define('UPLOAD_PATH', PUBLIC_PATH . '/uploads');
-define('UPLOADS_URL', '/uploads');
-
-// Configuraciones de seguridad
-define('SESSION_LIFETIME', 3600);
-define('TOKEN_EXPIRY', 3600);
-define('PASSWORD_RESET_EXPIRY', 1800);
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'propeasy_db');
+define('DB_USER', 'tu_usuario');
+define('DB_PASS', 'tu_contraseña');
 ```
 
-## 📊 Base de Datos
+### Configuración de Email
+Configurar en `config/config.php`:
+```php
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_PORT', 587);
+define('SMTP_USER', 'tu_email@gmail.com');
+define('SMTP_PASS', 'tu_contraseña_app');
+```
 
-### Tablas Principales
+### Configuración de WebSocket
+Para el chat en tiempo real:
+```bash
+php app/websocket_server.php
+```
 
-- `usuarios` - Información de usuarios y perfiles
-- `propiedades` - Catálogo de propiedades inmobiliarias
-- `imagenes_propiedades` - Imágenes de propiedades
-- `mensajes_chat` - Mensajes del sistema de chat
-- `conversaciones_directas` - Conversaciones directas
-- `citas` - Sistema de citas y visitas
-- `favoritos` - Propiedades favoritas de usuarios
-- `solicitudes_compra` - Solicitudes de compra
-- `reportes_irregularidades` - Reportes de problemas
-- `logs_actividad` - Logs de actividad del sistema
+## 👥 Roles de Usuario
 
-### Relaciones y Constraint
+### Cliente
+- Ver propiedades disponibles
+- Enviar solicitudes de compra
+- Gestionar favoritos
+- Agendar citas
+- Comunicarse con agentes via chat
+- Enviar propiedades para publicación
 
-- Claves foráneas para integridad referencial
-- Índices optimizados para búsquedas
-- Triggers para auditoría automática
-- Vistas para consultas complejas
+### Agente
+- Publicar y gestionar propiedades
+- Recibir y gestionar solicitudes
+- Comunicarse con clientes
+- Gestionar citas
+- Ver estadísticas de ventas
+
+### Administrador
+- Gestión completa del sistema
+- Aprobar/rechazar propiedades
+- Gestionar usuarios y roles
+- Ver reportes y estadísticas
+- Configuración del sistema
+
+## 🛠️ Mantenimiento
+
+### Scripts Disponibles
+- `scripts/cleanup_project.php` - Limpieza del proyecto
+- `scripts/seed_activity_logs.php` - Generar logs de actividad
+- `scripts/send_appointment_reminders.php` - Recordatorios de citas
+
+### Backup de Base de Datos
+```bash
+mysqldump -u usuario -p propeasy_db > backup_$(date +%Y%m%d_%H%M%S).sql
+```
 
 ## 🔒 Seguridad
 
-- **Autenticación segura** con hash bcrypt de contraseñas
-- **Validación de entrada** en todos los formularios
-- **Protección CSRF** en formularios críticos
-- **Sanitización de datos** antes de almacenar
-- **Control de acceso** basado en roles (RBAC)
-- **Logs de actividad** para auditoría completa
-- **Validación de archivos** subidos
-- **Headers de seguridad** en respuestas HTTP
-- **Sesiones seguras** con configuración optimizada
-- **Corrección de errores 500** en rutas de chat
-- **Validación de parámetros** en URLs
+- **Validación de datos** en frontend y backend
+- **Protección CSRF** en formularios
+- **Sanitización de inputs** para prevenir XSS
+- **Contraseñas hasheadas** con bcrypt
+- **Sesiones seguras** con regeneración de ID
+- **Control de acceso** basado en roles
 
-## 🧪 Testing
+## 📞 Contacto
 
-Para ejecutar las pruebas del sistema:
+- **Email**: propeasycorp@gmail.com
+- **Teléfono**: +1 809 359 5322
+- **Dirección**: Santo Domingo, República Dominicana
+- **Horarios**: Lun - Vie: 8:00 AM - 6:00 PM
 
-```bash
-# Verificar sintaxis PHP
-php -l app/controllers/
-php -l app/models/
+## 📄 Licencia
 
-# Verificar configuración de base de datos
-php scripts/test_connection.php
-
-# Verificar estructura de directorios
-php scripts/check_structure.php
-```
-
-## 📈 Mantenimiento
-
-### Scripts Disponibles
-
-- `scripts/seed_activity_logs.php` - Generar logs de actividad de prueba
-- `scripts/send_appointment_reminders.php` - Enviar recordatorios de citas
-
-### Logs del Sistema
-
-- `logs/error.log` - Errores del sistema
-- `logs/activity.log` - Actividad de usuarios
-- `logs/chat.log` - Actividad del chat
-- `logs/upload.log` - Logs de subida de archivos
-
-### Tareas de Mantenimiento
-
-- **Limpieza de logs** antiguos
-- **Optimización de base de datos** periódica
-- **Backup automático** de datos
-- **Monitoreo de rendimiento**
-
-## 🚀 Características Avanzadas
-
-### Sistema de Búsqueda
-- **Búsqueda por nombre completo** de agentes con espacios
-- **Filtros combinados** por múltiples criterios
-- **Carga infinita** para mejor rendimiento
-- **Búsqueda en tiempo real** con debounce optimizado
-- **Resultados paginados** optimizados
-- **Búsqueda SQL mejorada** con concatenaciones
-- **Soporte para nombres** con espacios y caracteres especiales
-
-### Gestión de Imágenes
-- **Carga múltiple** de imágenes
-- **Validación de tipos** y tamaños
-- **Optimización automática** de imágenes
-- **Miniaturas generadas** automáticamente
-- **Almacenamiento organizado** por tipo
-
-### Sistema de Notificaciones
-- **Notificaciones en tiempo real** por WebSocket
-- **Emails automáticos** para eventos importantes
-- **Recordatorios de citas** programados
-- **Alertas de sistema** para administradores
-- **Notificaciones de chat** mejoradas
-- **Sistema de tracking** de contactos
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
 ## 🤝 Contribución
 
 1. Fork el proyecto
-2. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
 3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
 4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abrir un Pull Request
+5. Abre un Pull Request
 
-### Guías de Contribución
+## 📝 Changelog
 
-- Seguir las convenciones de código PHP
-- Documentar nuevas funcionalidades
-- Incluir pruebas para nuevas features
-- Mantener compatibilidad con versiones anteriores
+### v2.7.0 (2025-01-24)
+- ✅ Página "Acerca de" creada y enlazada
+- ✅ Número de teléfono formateado profesionalmente (+1 809 359 5322)
+- ✅ Datos completos de propiedades en solicitudes
+- ✅ Eliminación de archivos de debug y console.log
+- ✅ Interfaz de chat limpia sin botones de eliminación
+- ✅ README.md actualizado con información completa
 
-## 📝 Licencia
+### v2.6.0 (2025-01-23)
+- ✅ Sistema de chat mejorado
+- ✅ Gestión de solicitudes optimizada
+- ✅ Interfaz responsive mejorada
+- ✅ Sistema de reportes implementado
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
-## 👨‍💻 Autor
-
-**PropEasy Team**
-- Email: contacto@propeasy.com
-- Sitio web: https://propeasy.com
-- GitHub: https://github.com/propeasy
-
-## 🙏 Agradecimientos
-
-- **Laragon** por el entorno de desarrollo local
-- **Tailwind CSS** por el framework de utilidades CSS
-- **Font Awesome** por la iconografía profesional
-- **Composer** por la gestión de dependencias PHP
-- **Ratchet** por el servidor WebSocket
-- **PHPMailer** por el envío de emails
-
-## 🆕 Mejoras Recientes (v2.4.0)
-
-### Sistema de Chat Unificado y Mejorado
-- **✅ Problema resuelto**: Inconsistencia en botones "Contactar" entre páginas
-- **🔗 Enlaces unificados**: Todos los botones usan `/chat/simple?agent={id}`
-- **🎯 Preselección automática**: Agente seleccionado automáticamente al cargar
-- **🔄 Selección inteligente**: Conversaciones existentes se seleccionan automáticamente
-- **➕ Creación automática**: Nuevas conversaciones se crean y seleccionan automáticamente
-- **📱 Experiencia consistente**: Misma funcionalidad en todas las páginas
-- **🔧 Router mejorado**: Priorización de rutas exactas sobre rutas con parámetros
-- **📊 Logs detallados**: Sistema de debugging completo para rastrear el flujo
-
-### Correcciones Técnicas Implementadas
-- **🔧 Router optimizado**: Método `findRouteWithParams` mejorado para priorizar rutas exactas
-- **📁 Archivos corregidos**: `app/views/agente/listar_agentes.php` con enlaces correctos
-- **🎨 JavaScript mejorado**: Sistema de eventos robusto para preselección de agentes
-- **⚡ Rendimiento optimizado**: Carga asíncrona de conversaciones con eventos personalizados
-- **🛡️ Manejo de errores**: Validación mejorada y logs detallados para debugging
-
-### Características del Sistema de Chat
-- **💬 Chat Simple**: Interfaz moderna con preselección automática
-- **🎯 Preselección de Agente**: Detección automática del agente desde URL
-- **🔄 Carga Inteligente**: Espera a que las conversaciones se carguen antes de preseleccionar
-- **📱 Responsive**: Funciona perfectamente en dispositivos móviles
-- **🔍 Búsqueda Integrada**: Búsqueda de usuarios para nuevas conversaciones
-- **📊 Estadísticas**: Contador de mensajes no leídos y estado online
-
-## 🐛 Problemas Conocidos y Soluciones
-
-### ✅ Chat Unificado Resuelto
-**Problema**: Inconsistencia en botones "Contactar" y "Chat" entre páginas
-**Solución**: Todos los botones ahora usan `/chat/simple?agent={id}` con preselección automática
-**Estado**: ✅ COMPLETAMENTE RESUELTO
-
-### Caché del Navegador
-**Problema**: Cambios no se reflejan inmediatamente
-**Solución**: Usar Ctrl+F5 para limpiar caché o agregar parámetro `&v={timestamp}`
-**Estado**: ✅ SOLUCIONADO
-
-### Fotos de Perfil No Se Muestran
-**Problema**: Rutas inconsistentes en diferentes controladores
-**Solución**: Todas las fotos ahora usan `/uploads/profiles/` unificadamente
-**Estado**: ✅ SOLUCIONADO
-
-### Búsqueda de Agentes con Espacios
-**Problema**: Búsqueda no funciona con nombres como "Angel Leger"
-**Solución**: Búsqueda SQL mejorada con concatenaciones y división de palabras
-**Estado**: ✅ SOLUCIONADO
-
-### Redirección Incorrecta al Chat
-**Problema**: Botones "Contactar" redirigían a `/chat/{id}` en lugar de `/chat/simple?agent={id}`
-**Solución**: Corregidos todos los enlaces para usar la ruta correcta del chat simple
-**Estado**: ✅ COMPLETAMENTE RESUELTO
-
-### Mis Ventas No Mostraba Propiedades
-**Problema**: La página "Mis Ventas" no mostraba las propiedades enviadas por el cliente
-**Solución**: Corregida consulta SQL en `getPropiedadesEnviadasPorCliente` (columna `ruta` vs `imagen_url`)
-**Estado**: ✅ COMPLETAMENTE RESUELTO
-
-### Botón Duplicado de Contacto
-**Problema**: Botón "Contactar" duplicado en página de detalles de propiedad
-**Solución**: Eliminado el botón duplicado, manteniendo solo el de la sección del agente
-**Estado**: ✅ COMPLETAMENTE RESUELTO
-
-### Referencias a Alquiler en el Sistema
-**Problema**: El sistema contenía referencias a alquiler que no se utilizaban
-**Solución**: Eliminadas todas las referencias a alquiler, enfocándose exclusivamente en venta
-**Estado**: ✅ COMPLETAMENTE RESUELTO
-
-### Favoritos Accesibles para Agentes
-**Problema**: Los agentes podían acceder a funcionalidades de favoritos innecesarias
-**Solución**: Sistema de favoritos restringido exclusivamente a clientes
-**Estado**: ✅ COMPLETAMENTE RESUELTO
-
-## 📞 Soporte
-
-Para soporte técnico o consultas:
-
-- 📧 Email: soporte@propeasy.com
-- 📱 WhatsApp: +1 234 567 8900
-- 🌐 Sitio web: https://propeasy.com/soporte
-- 📖 Documentación: https://docs.propeasy.com
-- 🐛 Issues: https://github.com/propeasy/propeasy/issues
-
-## 🔄 Changelog
-
-### v2.6.0 (2024-12-23)
-- 🗑️ **Eliminación completa de referencias a alquiler del proyecto**
-- 💖 **Sistema de favoritos exclusivo para clientes - Agentes no pueden usar**
-- 📋 **Diseño mejorado de formularios de reportes con colores profesionales**
-- 🖼️ **Carga de fotos de perfil con vista previa en tiempo real**
-- 🎨 **Interfaz de reportes modernizada con mejor UX**
-- 🔧 **Validación mejorada de archivos con feedback visual**
-- 📊 **Estados de reporte con diseño profesional**
-- 🎯 **Formularios con validación en tiempo real y mensajes de error**
-- 🧹 **Script de limpieza automática del proyecto**
-- 📊 **Gestión automática de logs con backups**
-- 🗂️ **Verificación de estructura del proyecto**
-
-### v2.5.0 (2024-12-23)
-- 🏪 **Sistema "Mis Ventas" para gestión de propiedades enviadas por clientes**
-- 🎨 **Reorganización de "Favoritos" en dropdown del usuario para mejor estética**
-- 🔧 **Corrección de consulta SQL en modelo Property para imágenes**
-- 🗑️ **Limpieza de archivos de debug y comentarios de desarrollo**
-- 📊 **Estadísticas detalladas de propiedades (total, activas, en revisión)**
-- 🖼️ **Vista de tarjetas con imágenes y detalles completos de propiedades**
-- 🔗 **Layout unificado con el resto de la aplicación**
-- 🎯 **Corrección de botón duplicado en página de detalles de propiedad**
-
-### v2.4.0 (2024-12-23)
-- 🎯 **Sistema de chat completamente unificado**
-- 🔗 **Corrección de enlaces en todas las páginas de agentes**
-- 🔧 **Router optimizado con priorización de rutas exactas**
-- 📊 **Sistema de logs detallados para debugging**
-- ⚡ **Carga asíncrona mejorada con eventos personalizados**
-- 🛡️ **Manejo robusto de errores y validaciones**
-- 📱 **Experiencia consistente en todas las páginas**
-- 🔄 **Preselección automática de conversaciones existentes**
-- ➕ **Creación automática de nuevas conversaciones**
-
-### v2.3.0 (2024-12-23)
-- 💬 Sistema de chat unificado en todas las páginas
-- 🔗 Botones "Contactar" y "Chat" con lógica consistente
-- 🎯 Preselección automática de agentes en chat
-- 🔄 Selección automática de conversaciones existentes
-- 🗑️ Lógica unificada de eliminación de solicitudes
-- 🔒 Estados permitidos para eliminación (nuevo, en revisión, cerrado)
-- 📱 Experiencia consistente en todas las páginas
-- ⚡ Optimizaciones de rendimiento en chat
-
-### v2.2.0 (2024-12-23)
-- 🗑️ Sistema de eliminación de solicitudes de compra
-- 📊 Dashboard del cliente mejorado con estadísticas
-- 🔄 Paginación incremental en propiedades solicitadas
-- 🖼️ Fotos de propiedades y agentes en tarjetas
-- 📋 Estados de solicitudes (nuevo, en revisión, reunión agendada, cerrado)
-- ✅ Confirmación de eliminación con actualización visual
-- 🔒 Eliminación física segura de solicitudes
-- 🎯 Lógica de estados permitidos para eliminación
-
-### v2.1.0 (2024-12-23)
-- 🔧 Corrección de errores 500 en rutas de chat
-- 🎨 Efectos hover mejorados en botones
-- 🔗 Unificación de botones "Contactar" en todas las páginas
-- 🖼️ Corrección de rutas de fotos de perfil
-- 🔍 Búsqueda SQL mejorada para nombres con espacios
-- ⚡ Optimizaciones de rendimiento y caché
-
-### v2.0.0 (2024-12-23)
-- ✨ Sistema de búsqueda mejorado para agentes
-- 🖼️ Gestión unificada de fotos de perfil
-- 🔍 Búsqueda por nombre completo con espacios
-- 📱 Interfaz mejorada para selección de agentes
-- 🐛 Correcciones de bugs en carga de imágenes
-- ⚡ Optimizaciones de rendimiento
-
-### v1.0.0 (2024-12-01)
-- 🎉 Lanzamiento inicial
-- 🏠 Sistema completo de gestión de propiedades
-- 💬 Chat en tiempo real
-- 👥 Gestión de usuarios y roles
-- 📊 Panel de administración
+### v2.5.0 (2025-01-22)
+- ✅ Sistema de citas implementado
+- ✅ Dashboard de agentes mejorado
+- ✅ Sistema de favoritos optimizado
 
 ---
 
-**PropEasy** - Simplificando la venta de bienes raíces desde 2024 🏠✨ 
+**PropEasy** - Conectando sueños inmobiliarios con realidades desde República Dominicana 🇩🇴 

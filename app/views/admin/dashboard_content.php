@@ -514,7 +514,7 @@
                 // Restaurar opacidad
                 chartContainer.style.opacity = '1';
                 
-                console.log('Gráfico actualizado para período:', period);
+                // console.log removed
             })
             .catch(error => {
                 console.error('Error obteniendo datos:', error);
@@ -562,7 +562,7 @@
     // Actualizar datos en tiempo real cada 30 segundos
     setInterval(function() {
         // Aquí se haría una llamada AJAX para actualizar las estadísticas
-        console.log('Actualizando datos...');
+        // console.log removed
     }, 30000);
 </script>
 

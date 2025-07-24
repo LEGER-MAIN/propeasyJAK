@@ -639,7 +639,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
         elements.sendMessage.addEventListener('click', function(e) {
             
             e.preventDefault();
-            console.log('🚀 Llamando a sendMessage()...');
+            
             sendMessage();
         });
         
@@ -647,7 +647,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
         elements.messageInput.addEventListener('keypress', function(e) {
             
             if (e.key === 'Enter' && !e.shiftKey) {
-                console.log('🖱️ Enter presionado (sin Shift)');
+
                 e.preventDefault();
                 sendMessage();
             }

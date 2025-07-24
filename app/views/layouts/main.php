@@ -326,12 +326,6 @@
                                 Acerca de
                             </a>
                         </li>
-                        <li>
-                            <a href="/contact" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center" style="color: var(--text-light);">
-                                <i class="fas fa-envelope mr-2 text-sm" style="color: var(--color-dorado-suave);"></i>
-                                Contacto
-                            </a>
-                        </li>
                     </ul>
                 </div>
                 
@@ -341,11 +335,11 @@
                     <div class="space-y-3">
                         <div class="flex items-center text-gray-300" style="color: var(--text-light);">
                             <i class="fas fa-envelope mr-3 text-primary-400 w-4 text-center" style="color: var(--color-verde-esmeralda);"></i>
-                            <span class="text-sm">info@propeasy.com</span>
+                            <span class="text-sm">propeasycorp@gmail.com</span>
                         </div>
                         <div class="flex items-center text-gray-300" style="color: var(--text-light);">
                             <i class="fas fa-phone mr-3 text-primary-400 w-4 text-center" style="color: var(--color-verde-esmeralda);"></i>
-                            <span class="text-sm">+1 809 555 0123</span>
+                            <span class="text-sm">+1 809 359 5322</span>
                         </div>
                         <div class="flex items-center text-gray-300" style="color: var(--text-light);">
                             <i class="fas fa-map-marker-alt mr-3 text-primary-400 w-4 text-center" style="color: var(--color-verde-esmeralda);"></i>

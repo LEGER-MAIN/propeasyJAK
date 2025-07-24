@@ -234,7 +234,7 @@ function getReportPriority($report) {
     }
 
     function resolveReport(reportId, reportTitle) {
-        console.log('Función resolveReport llamada:', reportId, reportTitle);
+        // console.log removed
         
         // Configurar la modal de resolución
         document.getElementById('resolveReportTitle').textContent = reportTitle;
@@ -246,7 +246,7 @@ function getReportPriority($report) {
     }
 
     function dismissReport(reportId, reportTitle) {
-        console.log('Función dismissReport llamada:', reportId, reportTitle);
+        // console.log removed
         
         // Configurar la modal de descarte
         document.getElementById('dismissReportTitle').textContent = reportTitle;
@@ -258,7 +258,7 @@ function getReportPriority($report) {
     }
 
     function deleteReport(reportId, reportTitle) {
-        console.log('Función deleteReport llamada:', reportId, reportTitle);
+        // console.log removed
         
         // Configurar la modal de eliminación
         document.getElementById('deleteReportTitle').textContent = reportTitle;
@@ -278,7 +278,7 @@ function getReportPriority($report) {
             return;
         }
         
-        console.log('Enviando resolución:', reportId, respuesta);
+        // console.log removed
         const url = `/admin/reports?action=resolve&id=${reportId}&respuesta=${encodeURIComponent(respuesta)}`;
         window.location.href = url;
     }
@@ -292,7 +292,7 @@ function getReportPriority($report) {
             return;
         }
         
-        console.log('Enviando descarte:', reportId, motivo);
+        // console.log removed
         const url = `/admin/reports?action=dismiss&id=${reportId}&motivo=${encodeURIComponent(motivo)}`;
         window.location.href = url;
     }
@@ -300,7 +300,7 @@ function getReportPriority($report) {
     function submitDeleteReport() {
         const reportId = document.getElementById('deleteReportId').value;
         
-        console.log('Enviando eliminación:', reportId);
+        // console.log removed
         const url = `/admin/reports?action=delete&id=${reportId}`;
         window.location.href = url;
     }

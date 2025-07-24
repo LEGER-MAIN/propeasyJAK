@@ -1028,7 +1028,7 @@ class AdminController {
         // Log para debugging
         error_log("AdminController::manageReports() - Método llamado");
         error_log("REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD']);
-        error_log("GET data: " . print_r($_GET, true));
+        // Debug data removed
         
         // Verificar si es una acción GET específica
         $action = $_GET['action'] ?? '';
