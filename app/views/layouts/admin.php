@@ -216,11 +216,20 @@
         
         /* Badges y elementos de estado */
         .role-badge, .status-badge, .type-badge, .priority-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .role-badge:hover, .status-badge:hover, .type-badge:hover, .priority-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         
         .role-badge.role-admin { background: var(--admin-danger); color: white; }
@@ -237,20 +246,68 @@
         .status-badge.status-vendida { background: var(--admin-info); color: white; }
         .status-badge.status-rechazada { background: var(--admin-danger); color: white; }
         
-        .type-badge.type-casa { background: var(--admin-primary); color: white; }
-        .type-badge.type-apartamento { background: var(--admin-info); color: white; }
-        .type-badge.type-terreno { background: var(--admin-success); color: white; }
-        .type-badge.type-comercial { 
-            background: linear-gradient(135deg, #8B4513, #D2691E); 
+        .type-badge.type-casa { 
+            background: linear-gradient(135deg, #1e40af, #3b82f6); 
             color: white; 
-            border: 1px solid #A0522D;
-            box-shadow: 0 2px 4px rgba(139, 69, 19, 0.3);
+            border: 1px solid #1d4ed8;
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.3);
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        .type-badge.type-apartamento { 
+            background: linear-gradient(135deg, #0891b2, #06b6d4); 
+            color: white; 
+            border: 1px solid #0e7490;
+            box-shadow: 0 2px 8px rgba(8, 145, 178, 0.3);
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        .type-badge.type-terreno { 
+            background: linear-gradient(135deg, #059669, #10b981); 
+            color: white; 
+            border: 1px solid #047857;
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        .type-badge.type-comercial { 
+            background: linear-gradient(135deg, #dc2626, #ef4444); 
+            color: white; 
+            border: 1px solid #b91c1c;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
         .type-badge.type-local_comercial { 
-            background: linear-gradient(135deg, #8B4513, #D2691E); 
+            background: linear-gradient(135deg, #dc2626, #ef4444); 
             color: white; 
-            border: 1px solid #A0522D;
-            box-shadow: 0 2px 4px rgba(139, 69, 19, 0.3);
+            border: 1px solid #b91c1c;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Efectos adicionales para etiquetas de tipo de propiedad */
+        .type-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .type-badge:hover::before {
+            left: 100%;
+        }
+        
+        /* Estilos específicos para etiquetas de tipo de propiedad en tablas */
+        .table .type-badge {
+            min-width: 80px;
+            text-align: center;
+            display: inline-block;
         }
         .type-badge.type-irregularidad { background: var(--admin-danger); color: white; }
         .type-badge.type-spam { background: #6c757d; color: white; }
@@ -260,6 +317,34 @@
         .type-badge.type-problema_plataforma { background: var(--admin-info); color: white; }
         .type-badge.type-informacion_falsa { background: var(--admin-danger); color: white; }
         .type-badge.type-otro { background: #6c757d; color: white; }
+        
+        /* Estilos para otros tipos de propiedades */
+        .type-badge.type-oficina { 
+            background: linear-gradient(135deg, #7c3aed, #a855f7); 
+            color: white; 
+            border: 1px solid #6d28d9;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .type-badge.type-bodega { 
+            background: linear-gradient(135deg, #92400e, #f59e0b); 
+            color: white; 
+            border: 1px solid #78350f;
+            box-shadow: 0 2px 8px rgba(146, 64, 14, 0.3);
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .type-badge.type-galpon { 
+            background: linear-gradient(135deg, #78350f, #d97706); 
+            color: white; 
+            border: 1px solid #92400e;
+            box-shadow: 0 2px 8px rgba(120, 53, 15, 0.3);
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
         
         .priority-badge.priority-alta { background: var(--admin-danger); color: white; }
         .priority-badge.priority-media { background: var(--admin-warning); color: white; }
@@ -442,7 +527,7 @@
                     <i class="fas fa-clock me-1"></i>
                     <span id="current-time"></span>
                 </div>
-                <a href="/dashboard" class="btn-header">
+                <a href="/" class="btn-header">
                     <i class="fas fa-home me-1"></i>Volver al Sistema
                 </a>
                 <a href="/logout" class="btn-header btn-primary">
@@ -485,7 +570,7 @@
                         <i class="fas fa-cog"></i> Configuración
                     </a>
                     <hr>
-                    <a class="nav-link" href="/dashboard">
+                    <a class="nav-link" href="/">
                         <i class="fas fa-home"></i> Volver al Sistema
                     </a>
                 </nav>
