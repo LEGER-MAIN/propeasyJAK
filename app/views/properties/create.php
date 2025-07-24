@@ -346,8 +346,9 @@ $content = ob_start();
                         <div class="mt-2 text-sm" style="color: var(--text-primary);">
                             <ul class="list-disc list-inside space-y-1">
                                 <li>Tu propiedad será revisada por un agente antes de ser publicada.</li>
-                                <li>Recibirás un token de validación que debes compartir con el agente.</li>
-                                <li>Una vez validada, tu propiedad aparecerá en el listado público.</li>
+                                <li><strong>Recibirás un token único</strong> que debes compartir con el agente asignado.</li>
+                                <li>El agente utilizará este token para buscar y identificar tu propiedad.</li>
+                                <li>Una vez validada por el agente, tu propiedad aparecerá en el listado público.</li>
                                 <li>Puedes editar o eliminar tu propiedad en cualquier momento.</li>
                             </ul>
                         </div>

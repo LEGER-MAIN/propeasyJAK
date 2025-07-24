@@ -117,6 +117,10 @@
                                     <i class="fas fa-heart"></i>
                                     <span>Mis Favoritos</span>
                                 </a>
+                                <a href="/cliente/mis-ventas" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                    <i class="fas fa-home"></i>
+                                    <span>Mis Ventas</span>
+                                </a>
                                 <?php endif; ?>
 
                                 <a href="/reportes/mis-reportes" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">

@@ -88,52 +88,7 @@ $content = ob_start();
                 </p>
             </div>
 
-            <!-- Presupuesto -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="presupuesto_min" class="block text-sm font-medium text-gray-700 mb-2">
-                        Presupuesto mínimo <span class="text-gray-500">(opcional)</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                            $
-                        </span>
-                        <input 
-                            type="number" 
-                            id="presupuesto_min" 
-                            name="presupuesto_min" 
-                            step="0.01" 
-                            min="0"
-                            max="999999999.99"
-                            class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                            placeholder="0.00"
-                            oninput="validarPresupuesto(this, 'min')"
-                        >
-                    </div>
-                </div>
-                
-                <div>
-                    <label for="presupuesto_max" class="block text-sm font-medium text-gray-700 mb-2">
-                        Presupuesto máximo <span class="text-gray-500">(opcional)</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
-                            $
-                        </span>
-                        <input 
-                            type="number" 
-                            id="presupuesto_max" 
-                            name="presupuesto_max" 
-                            step="0.01" 
-                            min="0"
-                            max="999999999.99"
-                            class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                            placeholder="0.00"
-                            oninput="validarPresupuesto(this, 'max')"
-                        >
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Información del cliente -->
             <div class="bg-gray-50 rounded-lg p-4">
@@ -206,28 +161,4 @@ include APP_PATH . '/views/layouts/main.php';
 
 <script src="/js/solicitudes.js"></script>
 
-<script>
-function validarPresupuesto(input, tipo) {
-    const valor = parseFloat(input.value);
-    const maximo = 999999999.99;
-    
-    if (valor > maximo) {
-        input.value = maximo;
-        alert(`El valor máximo permitido es $${maximo.toLocaleString()}`);
-    }
-    
-    // Validar que presupuesto máximo sea mayor que mínimo
-    const presupuestoMin = parseFloat(document.getElementById('presupuesto_min').value) || 0;
-    const presupuestoMax = parseFloat(document.getElementById('presupuesto_max').value) || 0;
-    
-    if (presupuestoMax > 0 && presupuestoMin > 0 && presupuestoMax < presupuestoMin) {
-        if (tipo === 'max') {
-            document.getElementById('presupuesto_max').value = '';
-            alert('El presupuesto máximo debe ser mayor que el presupuesto mínimo.');
-        } else if (tipo === 'min') {
-            document.getElementById('presupuesto_min').value = '';
-            alert('El presupuesto mínimo debe ser menor que el presupuesto máximo.');
-        }
-    }
-}
-</script> 
+ 

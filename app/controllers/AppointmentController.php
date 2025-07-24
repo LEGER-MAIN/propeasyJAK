@@ -149,13 +149,8 @@ class AppointmentController {
                 }
             }
             
-            // Obtener solicitudes pendientes del agente
-            $solicitudes = $this->solicitudModel->obtenerPorEstado(REQUEST_STATUS_NEW, 50, 0);
-            
-            // Filtrar solo las del agente actual
-            $solicitudes = array_filter($solicitudes, function($solicitud) {
-                return $solicitud['agente_id'] == $_SESSION['user_id'];
-            });
+            // Obtener solicitudes pendientes del agente actual
+            $solicitudes = $this->solicitudModel->getSolicitudesAgente($_SESSION['user_id'], REQUEST_STATUS_NEW, 50, 0);
         } catch (Exception $e) {
             // En caso de error de base de datos, usar arrays vacíos
             error_log("Error en create(): " . $e->getMessage());

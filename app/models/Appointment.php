@@ -282,8 +282,6 @@ class Appointment {
      * @return bool True si se actualizó correctamente
      */
     public function updateStatus($id, $estado) {
-        error_log("updateStatus llamado con id: {$id}, estado: {$estado}");
-        
         $estadosValidos = [
             self::STATUS_PROPOSED,
             self::STATUS_ACCEPTED,
@@ -293,10 +291,7 @@ class Appointment {
             self::STATUS_CHANGE_REQUESTED
         ];
         
-        error_log("Estados válidos: " . implode(', ', $estadosValidos));
-        
         if (!in_array($estado, $estadosValidos)) {
-            error_log("Estado '{$estado}' no es válido");
             return false;
         }
         
@@ -304,11 +299,7 @@ class Appointment {
                   SET estado = ?, fecha_actualizacion = NOW() 
                   WHERE id = ?";
         
-        error_log("Query: {$query}");
-        error_log("Parámetros: " . implode(', ', [$estado, (int)$id]));
-        
         $result = $this->db->update($query, [$estado, (int)$id]);
-        error_log("Resultado de db->update: " . ($result ? 'true' : 'false'));
         
         return $result;
     }

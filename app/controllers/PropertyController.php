@@ -166,12 +166,24 @@ class PropertyController {
             // Mostrar el token y el agente asignado
             if (isset($result['token_validacion']) && isset($result['agente_asignado'])) {
                 $agente = $result['agente_asignado'];
-                $msg = 'Tu token de validación es: <b>' . $result['token_validacion'] . '</b><br>';
+                $msg = '<div style="background: #f0f9ff; border: 1px solid #0ea5e9; padding: 15px; border-radius: 8px; margin: 10px 0;">';
+                $msg .= '<h4 style="color: #0369a1; margin: 0 0 10px 0;"><i class="fas fa-key"></i> Token de Validación</h4>';
+                $msg .= '<p style="margin: 5px 0;"><strong>Tu token único es:</strong></p>';
+                $msg .= '<div style="background: #e0f2fe; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 14px; color: #0c4a6e; border: 1px solid #0284c7;">';
+                $msg .= '<strong>' . $result['token_validacion'] . '</strong>';
+                $msg .= '</div>';
+                $msg .= '<p style="margin: 10px 0 5px 0; color: #0369a1;"><strong>Instrucciones:</strong></p>';
+                $msg .= '<ul style="margin: 5px 0; color: #0369a1;">';
+                $msg .= '<li>Comparte este token con el agente asignado</li>';
+                $msg .= '<li>El agente lo utilizará para buscar e identificar tu propiedad</li>';
+                $msg .= '<li>Una vez validada por el agente, tu propiedad aparecerá en el listado público</li>';
+                $msg .= '</ul>';
                 if ($agente) {
-                    $msg .= 'Agente asignado: <b>' . htmlspecialchars($agente['nombre'] . ' ' . $agente['apellido']) . '</b> (' . htmlspecialchars($agente['email']) . ')';
+                    $msg .= '<p style="margin: 10px 0 0 0; color: #0369a1;"><strong>Agente asignado:</strong> ' . htmlspecialchars($agente['nombre'] . ' ' . $agente['apellido']) . ' (' . htmlspecialchars($agente['email']) . ')</p>';
                 } else {
-                    $msg .= 'No se pudo asignar un agente automáticamente.';
+                    $msg .= '<p style="margin: 10px 0 0 0; color: #dc2626;"><strong>Nota:</strong> No se pudo asignar un agente automáticamente. Contacta al administrador.</p>';
                 }
+                $msg .= '</div>';
                 setFlashMessage('info', $msg);
             }
             
@@ -428,6 +440,8 @@ class PropertyController {
         }
         exit;
     }
+    
+
     
     /**
      * Rechazar propiedad (POST)

@@ -139,36 +139,14 @@ $content = ob_start();
     <!-- Detalles de la solicitud -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-6">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">Detalles de la Solicitud</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <h3 class="text-sm font-medium text-gray-700 mb-2">Mensaje del cliente</h3>
-                <div class="bg-gray-50 rounded-lg p-4">
-                    <?php if ($solicitud['mensaje']): ?>
-                        <p class="text-gray-900"><?= nl2br(htmlspecialchars($solicitud['mensaje'])) ?></p>
-                    <?php else: ?>
-                        <p class="text-gray-500 italic">No se proporcionó mensaje</p>
-                    <?php endif; ?>
-                </div>
-            </div>
-            <div>
-                <h3 class="text-sm font-medium text-gray-700 mb-2">Presupuesto</h3>
-                <div class="space-y-2">
-                    <?php if ($solicitud['presupuesto_min']): ?>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Mínimo:</span>
-                        <span class="font-medium">$<?= number_format($solicitud['presupuesto_min'], 2) ?></span>
-                    </div>
-                    <?php endif; ?>
-                    <?php if ($solicitud['presupuesto_max']): ?>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Máximo:</span>
-                        <span class="font-medium">$<?= number_format($solicitud['presupuesto_max'], 2) ?></span>
-                    </div>
-                    <?php endif; ?>
-                    <?php if (!$solicitud['presupuesto_min'] && !$solicitud['presupuesto_max']): ?>
-                    <p class="text-gray-500 italic">No se especificó presupuesto</p>
-                    <?php endif; ?>
-                </div>
+        <div>
+            <h3 class="text-sm font-medium text-gray-700 mb-2">Mensaje del cliente</h3>
+            <div class="bg-gray-50 rounded-lg p-4">
+                <?php if ($solicitud['mensaje']): ?>
+                    <p class="text-gray-900"><?= nl2br(htmlspecialchars($solicitud['mensaje'])) ?></p>
+                <?php else: ?>
+                    <p class="text-gray-500 italic">No se proporcionó mensaje</p>
+                <?php endif; ?>
             </div>
         </div>
     </div>

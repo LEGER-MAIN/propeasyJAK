@@ -163,14 +163,14 @@ $content = ob_start();
             <?php if (empty($properties)): ?>
                 <!-- Estado vacío con diseño moderno -->
                 <div class="p-12 text-center">
-                    <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                        <i class="fas fa-info-circle text-3xl text-blue-600"></i>
+                    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <i class="fas fa-check-circle text-3xl text-green-600"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-3">
                         <?php if (!empty($search)): ?>
                             No se encontraron propiedades
                         <?php else: ?>
-                            No hay propiedades pendientes
+                            ¡Excelente trabajo!
                         <?php endif; ?>
                     </h3>
                     <p class="text-gray-700 text-lg max-w-md mx-auto font-medium">
@@ -180,6 +180,14 @@ $content = ob_start();
                             No tienes propiedades pendientes de validación en este momento.
                         <?php endif; ?>
                     </p>
+                    <?php if (empty($search)): ?>
+                        <div class="mt-6">
+                            <div class="inline-flex items-center px-4 py-2 bg-green-50 border border-green-200 rounded-lg">
+                                <i class="fas fa-star text-yellow-500 mr-2"></i>
+                                <span class="text-green-800 text-sm font-medium">Todas las propiedades han sido procesadas</span>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
             <?php else: ?>
                 <!-- Tabla con diseño moderno -->
@@ -313,8 +321,13 @@ $content = ob_start();
     <!-- Scripts JavaScript -->
     <script>
 function validateProperty(propertyId, btn) {
+    // Confirmar antes de validar
+    if (!confirm('¿Estás seguro de que deseas validar esta propiedad? Una vez validada, aparecerá en el listado público.')) {
+        return;
+    }
+    
     btn.disabled = true;
-    btn.textContent = 'Procesando...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Procesando...';
     
     fetch(`/properties/${propertyId}/validate`, {
         method: 'POST',
@@ -323,31 +336,36 @@ function validateProperty(propertyId, btn) {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            // Mostrar mensaje de éxito
-            alert(data.message);
-            // Eliminar la fila directamente
-            const row = btn.closest('tr');
-            if (row) {
-                row.remove();
-                updatePropertyCount();
-            }
+            // Mostrar mensaje de éxito con estilo
+            showSuccessMessage(data.message);
+            // Recargar la página después de un breve delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         } else {
-            alert('Error: ' + data.message);
+            showErrorMessage(data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error de conexión');
+        showErrorMessage('Error de conexión');
     })
     .finally(() => {
         btn.disabled = false;
-        btn.textContent = 'Validar';
+        btn.innerHTML = '<i class="fas fa-check mr-1"></i>Validar';
     });
 }
 
+
+
 function rejectProperty(propertyId, btn) {
+    // Confirmar antes de rechazar
+    if (!confirm('¿Estás seguro de que deseas rechazar esta propiedad? Esta acción no se puede deshacer.')) {
+        return;
+    }
+    
     btn.disabled = true;
-    btn.textContent = 'Procesando...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Procesando...';
     
     fetch(`/properties/${propertyId}/reject`, {
         method: 'POST',
@@ -356,26 +374,84 @@ function rejectProperty(propertyId, btn) {
     .then(res => res.json())
     .then(data => {
         if (data.success) {
-            // Mostrar mensaje de éxito
-            alert(data.message);
-            // Eliminar la fila directamente
-            const row = btn.closest('tr');
-            if (row) {
-                row.remove();
-                updatePropertyCount();
-            }
+            // Mostrar mensaje de éxito con estilo
+            showSuccessMessage(data.message);
+            // Recargar la página después de un breve delay
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         } else {
-            alert('Error: ' + data.message);
+            showErrorMessage(data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error de conexión');
+        showErrorMessage('Error de conexión');
     })
     .finally(() => {
         btn.disabled = false;
-        btn.textContent = 'Rechazar';
+        btn.innerHTML = '<i class="fas fa-times mr-1"></i>Rechazar';
     });
+}
+
+function showSuccessMessage(message) {
+    // Crear elemento de mensaje de éxito
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300';
+    messageDiv.style.transform = 'translateX(100%)'; // Inicialmente oculto
+    messageDiv.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    // Animar entrada
+    setTimeout(() => {
+        messageDiv.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remover después de 3 segundos
+    setTimeout(() => {
+        messageDiv.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (document.body.contains(messageDiv)) {
+                document.body.removeChild(messageDiv);
+            }
+        }, 300);
+    }, 3000);
+}
+
+function showErrorMessage(message) {
+    // Crear elemento de mensaje de error
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300';
+    messageDiv.style.transform = 'translateX(100%)'; // Inicialmente oculto
+    messageDiv.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    // Animar entrada
+    setTimeout(() => {
+        messageDiv.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remover después de 5 segundos
+    setTimeout(() => {
+        messageDiv.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (document.body.contains(messageDiv)) {
+                document.body.removeChild(messageDiv);
+            }
+        }, 300);
+    }, 5000);
 }
 
 function updatePropertyCount() {
@@ -394,6 +470,11 @@ function updatePropertyCount() {
         }
     }
 }
+
+// Ejecutar al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    updatePropertyCount();
+});
 
 
 

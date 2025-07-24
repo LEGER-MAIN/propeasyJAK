@@ -434,6 +434,7 @@ class Router {
         $this->get('/properties/pending-validation', 'PropertyController@pendingValidation');
         $this->get('/properties/pending-validation/export', 'PropertyController@exportPendingToCSV');
         $this->post('/properties/{id}/validate', 'PropertyController@validate');
+
         $this->post('/properties/{id}/reject', 'PropertyController@reject');
         $this->get('/properties/{id}/reject-form', 'PropertyController@rejectForm');
         

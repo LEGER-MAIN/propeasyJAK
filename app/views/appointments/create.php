@@ -22,18 +22,23 @@
                     <?php if (!empty($solicitudes)): ?>
                         <?php foreach ($solicitudes as $solicitud): ?>
                             <?php 
-                            $propiedad = $this->propertyModel->getById($solicitud['propiedad_id']);
-                            $cliente = $this->userModel->getById($solicitud['cliente_id']);
-                            $selected = ($solicitud && $solicitud['id'] == $solicitud['id']) ? 'selected' : '';
+                            $selected = ($solicitud && $solicitud['solicitud_id'] == ($solicitud['solicitud_id'] ?? 0)) ? 'selected' : '';
                             ?>
-                            <option value="<?= $solicitud['id'] ?>" <?= $selected ?>>
-                                Solicitud #<?= $solicitud['id'] ?> - 
-                                <?= htmlspecialchars($cliente['nombre'] ?? 'Cliente') ?> - 
-                                <?= htmlspecialchars($propiedad['titulo'] ?? 'Propiedad') ?>
+                            <option value="<?= $solicitud['solicitud_id'] ?>" <?= $selected ?>>
+                                Solicitud #<?= $solicitud['solicitud_id'] ?> - 
+                                <?= htmlspecialchars($solicitud['nombre_cliente'] . ' ' . $solicitud['apellido_cliente']) ?> - 
+                                <?= htmlspecialchars($solicitud['titulo_propiedad']) ?>
                             </option>
                         <?php endforeach; ?>
+                    <?php else: ?>
+                        <option value="" disabled>No hay solicitudes pendientes disponibles</option>
                     <?php endif; ?>
                 </select>
+                <?php if (empty($solicitudes)): ?>
+                    <p class="mt-2 text-sm text-gray-500">
+                        No tienes solicitudes pendientes. Las solicitudes aparecerán aquí cuando los clientes soliciten información sobre tus propiedades.
+                    </p>
+                <?php endif; ?>
             </div>
 
             <!-- Fecha -->

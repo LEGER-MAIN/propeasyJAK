@@ -91,34 +91,6 @@ class SolicitudController {
         $propiedadId = (int)($_POST['propiedad_id'] ?? 0);
         $mensaje = sanitizeInput($_POST['mensaje'] ?? '');
         
-        // Validar presupuestos con límites seguros para decimal(12,2)
-        $presupuestoMin = null;
-        $presupuestoMax = null;
-        
-        if (!empty($_POST['presupuesto_min'])) {
-            $presupuestoMin = (float)$_POST['presupuesto_min'];
-            // Limitar a 999999999.99 (máximo para decimal(12,2))
-            if ($presupuestoMin > 999999999.99) {
-                setFlashMessage('error', 'El presupuesto mínimo es demasiado alto. Máximo permitido: $999,999,999.99');
-                redirect('/properties/show/' . $propiedadId);
-            }
-        }
-        
-        if (!empty($_POST['presupuesto_max'])) {
-            $presupuestoMax = (float)$_POST['presupuesto_max'];
-            // Limitar a 999999999.99 (máximo para decimal(12,2))
-            if ($presupuestoMax > 999999999.99) {
-                setFlashMessage('error', 'El presupuesto máximo es demasiado alto. Máximo permitido: $999,999,999.99');
-                redirect('/properties/show/' . $propiedadId);
-            }
-        }
-        
-        // Validar que presupuesto máximo sea mayor que mínimo
-        if ($presupuestoMin !== null && $presupuestoMax !== null && $presupuestoMax < $presupuestoMin) {
-            setFlashMessage('error', 'El presupuesto máximo debe ser mayor que el presupuesto mínimo.');
-            redirect('/properties/show/' . $propiedadId);
-        }
-        
         // Validar propiedad
         if (!$propiedadId) {
             setFlashMessage('error', 'ID de propiedad inválido.');
@@ -154,9 +126,7 @@ class SolicitudController {
             'nombre_cliente' => $usuario['nombre'] . ' ' . $usuario['apellido'],
             'email_cliente' => $usuario['email'],
             'telefono_cliente' => $usuario['telefono'],
-            'mensaje' => $mensaje,
-            'presupuesto_min' => $presupuestoMin,
-            'presupuesto_max' => $presupuestoMax
+            'mensaje' => $mensaje
         ];
         
         // Crear la solicitud

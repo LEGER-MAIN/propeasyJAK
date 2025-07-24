@@ -1864,4 +1864,45 @@ class Property {
             return [];
         }
     }
+    
+    /**
+     * Obtener propiedades por cliente con tokens y información del agente
+     * 
+     * @param int $clienteId ID del cliente
+     * @return array Lista de propiedades con tokens
+     */
+    public function getPropiedadesPorClienteConTokens($clienteId) {
+        $query = "SELECT p.*, 
+                         u.nombre as nombre_agente,
+                         u.apellido as apellido_agente,
+                         u.foto_perfil as foto_agente,
+                         (SELECT ruta FROM {$this->tableImages} 
+                          WHERE propiedad_id = p.id AND es_principal = 1 
+                          LIMIT 1) as foto_propiedad
+                  FROM {$this->table} p
+                  LEFT JOIN usuarios u ON p.agente_id = u.id
+                  WHERE p.cliente_vendedor_id = ?
+                  ORDER BY p.fecha_creacion DESC";
+        
+        $propiedades = $this->db->select($query, [$clienteId]);
+        
+        // Mapear los nombres de columnas para que coincidan con la vista
+        foreach ($propiedades as &$propiedad) {
+            $propiedad['titulo_propiedad'] = $propiedad['titulo'] ?? 'Sin título';
+            $propiedad['precio_propiedad'] = $propiedad['precio'] ?? 0;
+            $propiedad['ciudad_propiedad'] = $propiedad['ciudad'] ?? 'Sin especificar';
+            $propiedad['sector_propiedad'] = $propiedad['sector'] ?? 'Sin especificar';
+            $propiedad['tipo_propiedad'] = $propiedad['tipo'] ?? 'Sin especificar';
+            $propiedad['area_propiedad'] = $propiedad['metros_cuadrados'] ?? 0;
+            $propiedad['estado'] = $propiedad['estado_publicacion'] ?? 'en_revision';
+            $propiedad['fecha_solicitud'] = $propiedad['fecha_creacion'] ?? date('Y-m-d H:i:s');
+            $propiedad['token_validacion'] = $propiedad['token_validacion'] ?? '';
+            $propiedad['nombre_agente'] = $propiedad['nombre_agente'] ?? '';
+            $propiedad['apellido_agente'] = $propiedad['apellido_agente'] ?? '';
+            $propiedad['foto_agente'] = $propiedad['foto_agente'] ?? '';
+            $propiedad['foto_propiedad'] = $propiedad['foto_propiedad'] ?? '';
+        }
+        
+        return $propiedades;
+    }
 } 
