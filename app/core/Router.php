@@ -334,6 +334,7 @@ class Router {
         $this->post('/cliente/configuracion', 'ClienteController@updateConfiguracion');
         $this->get('/cliente/mis-propiedades-ajax', 'ClienteController@ajaxMisPropiedades');
         $this->post('/cliente/eliminar-solicitud', 'ClienteController@eliminarSolicitud');
+        $this->get('/cliente/mis-ventas', 'ClienteController@misVentas');
         
         // Rutas de propiedades
         $this->get('/properties', 'PropertyController@index');

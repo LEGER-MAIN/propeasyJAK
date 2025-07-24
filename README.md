@@ -4,6 +4,7 @@
 ![PHP Version](https://img.shields.io/badge/PHP-8.0+-green)
 ![MySQL Version](https://img.shields.io/badge/MySQL-8.0+-orange)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
+![Version](https://img.shields.io/badge/Version-v2.5.0-brightgreen)
 
 ## 📋 Descripción
 
@@ -60,6 +61,8 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Lista personalizada** para cada usuario
 - **Acceso rápido** a propiedades de interés
 - **Contador de favoritos** en tiempo real
+- **Acceso desde dropdown** del usuario para mejor estética
+- **Navegación móvil** optimizada en sección "Cuenta"
 
 ### 📝 Solicitudes de Compra
 - **Formularios de solicitud** para propiedades
@@ -71,6 +74,16 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Paginación incremental** con carga de más propiedades
 - **Fotos de propiedades** y agentes en las tarjetas
 - **Información completa** de propiedades (precio, ubicación, características)
+
+### 🏪 Mis Ventas (Propiedades Enviadas)
+- **Gestión de propiedades** enviadas por clientes para publicación
+- **Estados de publicación** (activa, en revisión, rechazada, vendida)
+- **Estadísticas detalladas** (total, activas, en revisión)
+- **Información del agente** asignado a cada propiedad
+- **Layout unificado** con el resto de la aplicación
+- **Vista de tarjetas** con imágenes y detalles completos
+- **Acceso desde navbar** principal para clientes
+- **Corrección de consultas** SQL para imágenes de propiedades
 
 ### 🔍 Búsqueda y Filtros Avanzados
 - **Búsqueda por nombre completo** de agentes con espacios
@@ -502,6 +515,16 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 **Solución**: Corregidos todos los enlaces para usar la ruta correcta del chat simple
 **Estado**: ✅ COMPLETAMENTE RESUELTO
 
+### Mis Ventas No Mostraba Propiedades
+**Problema**: La página "Mis Ventas" no mostraba las propiedades enviadas por el cliente
+**Solución**: Corregida consulta SQL en `getPropiedadesEnviadasPorCliente` (columna `ruta` vs `imagen_url`)
+**Estado**: ✅ COMPLETAMENTE RESUELTO
+
+### Botón Duplicado de Contacto
+**Problema**: Botón "Contactar" duplicado en página de detalles de propiedad
+**Solución**: Eliminado el botón duplicado, manteniendo solo el de la sección del agente
+**Estado**: ✅ COMPLETAMENTE RESUELTO
+
 ## 📞 Soporte
 
 Para soporte técnico o consultas:
@@ -513,6 +536,16 @@ Para soporte técnico o consultas:
 - 🐛 Issues: https://github.com/propeasy/propeasy/issues
 
 ## 🔄 Changelog
+
+### v2.5.0 (2024-12-23)
+- 🏪 **Sistema "Mis Ventas" para gestión de propiedades enviadas por clientes**
+- 🎨 **Reorganización de "Favoritos" en dropdown del usuario para mejor estética**
+- 🔧 **Corrección de consulta SQL en modelo Property para imágenes**
+- 🗑️ **Limpieza de archivos de debug y comentarios de desarrollo**
+- 📊 **Estadísticas detalladas de propiedades (total, activas, en revisión)**
+- 🖼️ **Vista de tarjetas con imágenes y detalles completos de propiedades**
+- 🔗 **Layout unificado con el resto de la aplicación**
+- 🎯 **Corrección de botón duplicado en página de detalles de propiedad**
 
 ### v2.4.0 (2024-12-23)
 - 🎯 **Sistema de chat completamente unificado**

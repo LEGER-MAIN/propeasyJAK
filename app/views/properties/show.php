@@ -224,22 +224,7 @@ $content = ob_start();
                         <?php endif; ?>
                     </div>
                     
-                    <div class="mt-6">
-                        <?php if (isAuthenticated()): ?>
-                            <a href="/chat/simple?agent=<?= $property['agente_id'] ?>&v=<?= time() ?>" 
-                               class="btn btn-primary w-full text-center py-3 px-4 rounded-md flex items-center justify-center"
-                               title="Contactar a <?= htmlspecialchars($property['agente_nombre']) ?> por chat"
-                               onclick="trackContact('chat', '<?= htmlspecialchars($property['agente_nombre']) ?>')">
-                                <i class="fas fa-comments mr-2"></i>Contactar
-                            </a>
-                        <?php else: ?>
-                            <a href="/login?redirect=/properties/show/<?= $property['id'] ?>" 
-                               class="btn btn-primary w-full text-center py-3 px-4 rounded-md flex items-center justify-center"
-                               title="Inicia sesión para contactar al agente">
-                                <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión para Contactar
-                            </a>
-                        <?php endif; ?>
-                    </div>
+
                 </div>
             <?php endif; ?>
 

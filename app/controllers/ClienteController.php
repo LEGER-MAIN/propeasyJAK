@@ -10,11 +10,13 @@
 require_once APP_PATH . '/models/User.php';
 require_once APP_PATH . '/models/Favorite.php';
 require_once APP_PATH . '/models/SolicitudCompra.php';
+require_once APP_PATH . '/models/Property.php';
 
 class ClienteController {
     private $userModel;
     private $favoriteModel;
     private $solicitudModel;
+    private $propertyModel;
     
     /**
      * Constructor del controlador
@@ -23,6 +25,7 @@ class ClienteController {
         $this->userModel = new User();
         $this->favoriteModel = new Favorite();
         $this->solicitudModel = new SolicitudCompra();
+        $this->propertyModel = new Property();
     }
     
     /**
@@ -453,5 +456,55 @@ class ClienteController {
         
         setFlashMessage('success', 'Configuración actualizada exitosamente.');
         redirect('/cliente/configuracion');
+    }
+
+    /**
+     * Mostrar propiedades enviadas por el cliente (Mis Ventas)
+     */
+    public function misVentas() {
+        // Verificar sesión de forma segura
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        if ($_SESSION['user_rol'] !== 'cliente') {
+            header('Location: /dashboard');
+            exit;
+        }
+
+        $user_id = $_SESSION['user_id'];
+        
+        try {
+            // Obtener propiedades enviadas por el cliente
+            $propiedadesEnviadas = $this->propertyModel->getPropiedadesEnviadasPorCliente($user_id);
+            
+            // Preparar datos para la vista
+            $data = [
+                'propiedades' => $propiedadesEnviadas,
+                'total_propiedades' => count($propiedadesEnviadas)
+            ];
+
+            // Configurar variables para el layout
+            $pageTitle = 'Mis Ventas - ' . APP_NAME;
+            
+            // Capturar el contenido de la vista
+            ob_start();
+            include APP_PATH . '/views/cliente/propiedades_enviadas.php';
+            $content = ob_get_clean();
+            
+            // Incluir el layout principal
+            include APP_PATH . '/views/layouts/main.php';
+            
+        } catch (Exception $e) {
+            error_log("Error en misVentas: " . $e->getMessage());
+            // Mostrar página de error
+            http_response_code(500);
+            include APP_PATH . '/views/errors/500.php';
+        }
     }
 } 

@@ -40,47 +40,30 @@ class SolicitudController {
      * @param int $propiedadId ID de la propiedad
      */
     public function show($propiedadId) {
-        // Debug: Verificar si el usuario está autenticado
-        error_log("SolicitudController::show - Usuario autenticado: " . (isAuthenticated() ? 'SÍ' : 'NO'));
-        if (isAuthenticated()) {
-            error_log("SolicitudController::show - User ID: " . $_SESSION['user_id']);
-            error_log("SolicitudController::show - User Rol: " . $_SESSION['user_rol']);
-        }
-        
         // Verificar que el usuario esté autenticado
         requireAuth();
-        
-        // Debug: Verificar propiedad
-        error_log("SolicitudController::show - Propiedad ID: " . $propiedadId);
         
         // Verificar que la propiedad existe y está activa
         $propiedad = $this->propertyModel->getById($propiedadId);
         if (!$propiedad || $propiedad['estado_publicacion'] !== PROPERTY_STATUS_ACTIVE) {
-            error_log("SolicitudController::show - Propiedad no encontrada o inactiva");
             setFlashMessage('error', 'La propiedad no está disponible para solicitudes.');
             redirect('/properties');
         }
         
-        error_log("SolicitudController::show - Propiedad encontrada: " . $propiedad['titulo']);
-        
         // Verificar que el usuario no sea el agente de la propiedad
         if ($propiedad['agente_id'] == $_SESSION['user_id']) {
-            error_log("SolicitudController::show - Usuario es el agente de la propiedad");
             setFlashMessage('error', 'No puedes solicitar compra de tu propia propiedad.');
             redirect('/properties/show/' . $propiedadId);
         }
         
         // Verificar si ya existe una solicitud del usuario para esta propiedad
         if ($this->solicitudModel->existeSolicitud($_SESSION['user_id'], $propiedadId)) {
-            error_log("SolicitudController::show - Ya existe una solicitud");
             setFlashMessage('info', 'Ya has enviado una solicitud para esta propiedad.');
             redirect('/properties/show/' . $propiedadId);
         }
         
         // Obtener información del agente
         $agente = $this->userModel->getById($propiedad['agente_id']);
-        
-        error_log("SolicitudController::show - Cargando vista de creación");
         
         $pageTitle = 'Solicitar Compra - ' . $propiedad['titulo'] . ' - ' . APP_NAME;
         include APP_PATH . '/views/solicitudes/create.php';

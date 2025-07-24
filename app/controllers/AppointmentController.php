@@ -167,7 +167,7 @@ class AppointmentController {
         
         $pageTitle = 'Crear Nueva Cita - ' . APP_NAME;
         
-        // Debug: verificar que las variables estén disponibles
+
         if (empty($solicitudes)) {
             $solicitudes = [];
         }

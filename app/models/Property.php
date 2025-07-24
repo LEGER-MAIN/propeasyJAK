@@ -943,7 +943,7 @@ class Property {
         
         if (!empty($filters['precio_max'])) {
             $whereConditions[] = "precio <= ?";
-            $params[] = floatval($filters['precio_max']);
+            $params[] = floatval($filters['max_price']);
         }
         
         if (!empty($filters['habitaciones'])) {
@@ -1751,5 +1751,65 @@ class Property {
                   WHERE id = ? AND rol = 'agente'";
         
         return $this->db->selectOne($query, [$agenteId]);
+    }
+
+    /**
+     * Obtener propiedades enviadas por un cliente específico
+     * 
+     * @param int $clienteId ID del cliente
+     * @return array Lista de propiedades enviadas
+     */
+    public function getPropiedadesEnviadasPorCliente($clienteId) {
+        $sql = "SELECT 
+                    p.*,
+                    u.nombre as agente_nombre,
+                    u.apellido as agente_apellido,
+                    u.foto_perfil as agente_foto,
+                    u.telefono as agente_telefono,
+                    u.email as agente_email,
+                    (SELECT COUNT(*) FROM imagenes_propiedades WHERE propiedad_id = p.id) as total_imagenes,
+                    (SELECT ruta FROM imagenes_propiedades WHERE propiedad_id = p.id LIMIT 1) as imagen_principal
+                FROM propiedades p
+                LEFT JOIN usuarios u ON p.agente_id = u.id
+                WHERE p.cliente_vendedor_id = ?
+                ORDER BY p.fecha_creacion DESC";
+        
+        try {
+            $propiedades = $this->db->select($sql, [$clienteId]);
+            
+            // Procesar cada propiedad para agregar información adicional
+            foreach ($propiedades as &$propiedad) {
+                // Formatear precio
+                $propiedad['precio_formateado'] = number_format($propiedad['precio'], 0, ',', '.') . ' ' . $propiedad['moneda'];
+                
+                // Obtener todas las imágenes
+                $propiedad['imagenes'] = $this->getImages($propiedad['id']);
+                
+                // Estado de la publicación en español
+                $estados = [
+                    'en_revision' => 'En Revisión',
+                    'activa' => 'Activa',
+                    'vendida' => 'Vendida',
+                    'rechazada' => 'Rechazada',
+                    'inactiva' => 'Inactiva'
+                ];
+                $propiedad['estado_publicacion_texto'] = $estados[$propiedad['estado_publicacion']] ?? 'Desconocido';
+                
+                // Fecha formateada
+                $propiedad['fecha_creacion_formateada'] = date('d/m/Y', strtotime($propiedad['fecha_creacion']));
+                
+                // Información del agente
+                if ($propiedad['agente_nombre']) {
+                    $propiedad['agente_nombre_completo'] = $propiedad['agente_nombre'] . ' ' . $propiedad['agente_apellido'];
+                } else {
+                    $propiedad['agente_nombre_completo'] = 'Sin asignar';
+                }
+            }
+            
+            return $propiedades;
+        } catch (Exception $e) {
+            error_log("Error al obtener propiedades enviadas por cliente: " . $e->getMessage());
+            return [];
+        }
     }
 } 

@@ -21,12 +21,7 @@ $content = ob_start();
                 Explora nuestra amplia selección de propiedades en venta
             </p>
             
-            <!-- Debug: Verificar estadísticas -->
-            <?php if (isset($stats) && is_array($stats)): ?>
-                <!-- Debug: Stats disponibles - Total: <?= $stats['total'] ?? 'N/A' ?>, Activas: <?= $stats['activas'] ?? 'N/A' ?>, Vendidas: <?= $stats['vendidas'] ?? 'N/A' ?>, En Revisión: <?= $stats['en_revision'] ?? 'N/A' ?> -->
-            <?php else: ?>
-                <!-- Debug: Stats no disponibles -->
-            <?php endif; ?>
+            
             
             <!-- Estadísticas rápidas -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">

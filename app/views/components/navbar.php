@@ -39,10 +39,12 @@
                 </a>
                 
                 <?php if (isAuthenticated()): ?>
-                    <a href="/favorites" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
-                        <i class="fas fa-heart"></i>
-                        <span>Favoritos</span>
+                    <?php if (hasRole(ROLE_CLIENTE)): ?>
+                    <a href="/cliente/mis-ventas" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Mis Ventas</span>
                     </a>
+                    <?php endif; ?>
                     
                     <a href="/solicitudes" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
                         <i class="fas fa-handshake"></i>
@@ -101,9 +103,14 @@
                         <!-- Dropdown de Usuario -->
                         <div class="absolute top-full right-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                             <div class="py-2">
-                                                                    <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                     <i class="fas fa-user"></i>
                                     <span>Mi Perfil</span>
+                                </a>
+
+                                <a href="/favorites" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                    <i class="fas fa-heart"></i>
+                                    <span>Mis Favoritos</span>
                                 </a>
 
                                 <a href="/reportes/mis-reportes" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
@@ -146,6 +153,10 @@
                                     <a href="/buscar-agentes" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                         <i class="fas fa-search"></i>
                                         <span>Buscar Agentes</span>
+                                    </a>
+                                    <a href="/cliente/propiedades-enviadas" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                        <i class="fas fa-paper-plane"></i>
+                                        <span>Propiedades Enviadas</span>
                                     </a>
                                     <a href="/appointments" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                         <i class="fas fa-calendar-alt"></i>
@@ -224,12 +235,15 @@
                     <hr class="my-2 border-gray-200">
                     
                     <!-- Enlaces de usuario autenticado -->
-                    <a href="/favorites" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
-                        <i class="fas fa-heart mr-3"></i>Favoritos
-                    </a>
                     <a href="/solicitudes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-handshake mr-3"></i><?= hasRole(ROLE_AGENTE) ? 'Solicitudes' : 'Mis Solicitudes' ?>
                     </a>
+                    
+                    <?php if (hasRole(ROLE_CLIENTE)): ?>
+                    <a href="/cliente/mis-ventas" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                        <i class="fas fa-paper-plane mr-3"></i>Mis Ventas
+                    </a>
+                    <?php endif; ?>
                     
                     <?php if (hasRole(ROLE_CLIENTE)): ?>
                     <a href="/appointments" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
@@ -276,6 +290,10 @@
                     <div class="px-3 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Cuenta</div>
                     <a href="/profile" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-user mr-3"></i>Mi Perfil
+                    </a>
+
+                    <a href="/favorites" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                        <i class="fas fa-heart mr-3"></i>Mis Favoritos
                     </a>
 
                     <a href="/reportes/mis-reportes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
