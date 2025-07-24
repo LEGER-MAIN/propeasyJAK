@@ -314,7 +314,7 @@ CREATE TABLE IF NOT EXISTS `logs_actividad` (
   KEY `idx_tabla_afectada` (`tabla_afectada`),
   KEY `idx_fecha_actividad` (`fecha_actividad`),
   CONSTRAINT `logs_actividad_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=264 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=269 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 

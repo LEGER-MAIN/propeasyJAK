@@ -471,11 +471,7 @@ class ClienteController {
             // Obtener propiedades enviadas por el cliente con tokens
             $propiedades = $this->propertyModel->getPropiedadesPorClienteConTokens($userId);
             
-            // Debug temporal
-            if (isset($_GET['debug'])) {
-                error_log("Debug misVentas - User ID: " . $userId);
-                error_log("Debug misVentas - Propiedades: " . json_encode($propiedades));
-            }
+                    // Información de ventas del usuario
             
             // Si no hay propiedades, inicializar como array vacío
             if (!is_array($propiedades)) {

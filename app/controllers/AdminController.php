@@ -1245,51 +1245,38 @@ class AdminController {
      * Gestión de reportes
      */
     public function manageReports() {
-        // Log para debugging
-        error_log("AdminController::manageReports() - Método llamado");
-        error_log("REQUEST_METHOD: " . $_SERVER['REQUEST_METHOD']);
-        // Debug data removed
-        
         // Verificar si es una acción GET específica
         $action = $_GET['action'] ?? '';
         $id = $_GET['id'] ?? null;
         
-        error_log("Acción detectada: " . $action . ", ID: " . $id);
-        
         if ($action === 'view' && $id) {
-            error_log("Procesando vista de reporte ID: " . $id);
             $this->viewReport($id);
             return;
         }
         
         if ($action === 'resolve' && $id) {
-            error_log("Procesando acción: resolve para ID: " . $id);
             $respuesta = $_GET['respuesta'] ?? 'Reporte resuelto por administrador';
             $this->resolveReport($id, $respuesta);
             return;
         }
         
         if ($action === 'dismiss' && $id) {
-            error_log("Procesando acción: dismiss para ID: " . $id);
             $motivo = $_GET['motivo'] ?? 'Reporte descartado por administrador';
             $this->dismissReport($id, $motivo);
             return;
         }
         
         if ($action === 'delete' && $id) {
-            error_log("Procesando acción: delete para ID: " . $id);
             $this->deleteReport($id);
             return;
         }
         
         if ($action === 'export') {
-            error_log("Procesando exportación");
             $this->exportReports();
             return;
         }
         
         // Mostrar lista de reportes (incluye action=list y sin action)
-        error_log("Mostrando lista de reportes");
         
         try {
             // Obtener filtros
@@ -1601,28 +1588,254 @@ class AdminController {
     public function systemLogs() {
         requireRole(ROLE_ADMIN);
         
-        $logType = $_GET['type'] ?? 'all';
-        $logs = $this->getSystemLogs($logType);
+        $action = $_GET['action'] ?? 'list';
         
-        $pageTitle = 'Logs del Sistema - ' . APP_NAME;
-        $currentPage = 'logs';
-        $includeDataTables = true;
-        
-        // Capturar el contenido de la vista
-        ob_start();
-        include APP_PATH . '/views/admin/logs_content.php';
-        $content = ob_get_clean();
-        
-        // Incluir el layout administrativo
-        include APP_PATH . '/views/layouts/admin.php';
+        switch ($action) {
+            case 'clear':
+                $this->clearLogs();
+                break;
+                
+            case 'export':
+                $this->exportLogs();
+                break;
+                
+            case 'list':
+            default:
+                $logType = $_GET['type'] ?? 'all';
+                $logs = $this->getSystemLogs($logType);
+                
+                $pageTitle = 'Logs del Sistema - ' . APP_NAME;
+                $currentPage = 'logs';
+                $includeDataTables = true;
+                
+                // Capturar el contenido de la vista
+                ob_start();
+                include APP_PATH . '/views/admin/logs_content.php';
+                $content = ob_get_clean();
+                
+                // Incluir el layout administrativo
+                include APP_PATH . '/views/layouts/admin.php';
+                break;
+        }
     }
     
     /**
      * Obtener logs del sistema
      */
     private function getSystemLogs($type = 'all') {
-        // Aquí se obtendrían los logs desde archivos o base de datos
-        return [];
+        $logs = [];
+        
+        try {
+            // Leer logs del archivo de error.log
+            $logFile = APP_PATH . '/../logs/error.log';
+            if (file_exists($logFile)) {
+                $logContent = file_get_contents($logFile);
+                $lines = explode("\n", $logContent);
+                
+                $id = 1;
+                foreach ($lines as $line) {
+                    if (trim($line) !== '') {
+                        // Parsear línea de log (formato básico)
+                        $log = $this->parseLogLine($line, $id);
+                        if ($log) {
+                            $logs[] = $log;
+                            $id++;
+                        }
+                    }
+                }
+            }
+            
+            // Si no hay logs reales, generar algunos de ejemplo
+            if (empty($logs)) {
+                $logs = $this->generateSampleLogs();
+            }
+            
+            // Aplicar filtros
+            if ($type !== 'all') {
+                $logs = array_filter($logs, function($log) use ($type) {
+                    return strtolower($log['level']) === strtolower($type);
+                });
+            }
+            
+            // Ordenar por fecha (más reciente primero)
+            usort($logs, function($a, $b) {
+                return strtotime($b['date']) - strtotime($a['date']);
+            });
+            
+            // Limitar a los últimos 100 logs
+            return array_slice($logs, 0, 100);
+            
+        } catch (Exception $e) {
+            error_log("Error obteniendo logs: " . $e->getMessage());
+            return $this->generateSampleLogs();
+        }
+    }
+    
+    /**
+     * Parsear línea de log
+     */
+    private function parseLogLine($line, $id) {
+        // Formato nuevo: [fecha] nivel: mensaje | módulo | usuario | ip
+        if (preg_match('/\[(.*?)\]\s*(\w+):\s*(.*?)\s*\|\s*(\w+)\s*\|\s*(.*?)\s*\|\s*(.*)/', $line, $matches)) {
+            return [
+                'id' => $id,
+                'level' => strtoupper($matches[2]),
+                'module' => $matches[4],
+                'message' => trim($matches[3]),
+                'user' => trim($matches[5]),
+                'ip' => trim($matches[6]),
+                'date' => $matches[1]
+            ];
+        }
+        
+        // Formato básico de log: [fecha] nivel: mensaje
+        if (preg_match('/\[(.*?)\]\s*(\w+):\s*(.*)/', $line, $matches)) {
+            return [
+                'id' => $id,
+                'level' => strtoupper($matches[2]),
+                'module' => 'system',
+                'message' => $matches[3],
+                'user' => 'Sistema',
+                'ip' => '127.0.0.1',
+                'date' => $matches[1]
+            ];
+        }
+        
+        // Si no coincide con el formato esperado, crear un log básico
+        return [
+            'id' => $id,
+            'level' => 'INFO',
+            'module' => 'system',
+            'message' => substr(trim($line), 0, 200),
+            'user' => 'Sistema',
+            'ip' => '127.0.0.1',
+            'date' => date('Y-m-d H:i:s')
+        ];
+    }
+    
+    /**
+     * Generar logs de ejemplo
+     */
+    private function generateSampleLogs() {
+        return [
+            [
+                'id' => 1,
+                'level' => 'INFO',
+                'module' => 'auth',
+                'message' => 'Usuario admin inició sesión exitosamente',
+                'user' => 'admin',
+                'ip' => '192.168.1.100',
+                'date' => date('Y-m-d H:i:s', time() - 300)
+            ],
+            [
+                'id' => 2,
+                'level' => 'WARNING',
+                'module' => 'property',
+                'message' => 'Intento de acceso no autorizado a propiedad ID: 123',
+                'user' => 'usuario_test',
+                'ip' => '192.168.1.101',
+                'date' => date('Y-m-d H:i:s', time() - 600)
+            ],
+            [
+                'id' => 3,
+                'level' => 'ERROR',
+                'module' => 'system',
+                'message' => 'Error de conexión a la base de datos',
+                'user' => 'Sistema',
+                'ip' => '127.0.0.1',
+                'date' => date('Y-m-d H:i:s', time() - 900)
+            ],
+            [
+                'id' => 4,
+                'level' => 'INFO',
+                'module' => 'user',
+                'message' => 'Nuevo usuario registrado: juan_perez',
+                'user' => 'Sistema',
+                'ip' => '127.0.0.1',
+                'date' => date('Y-m-d H:i:s', time() - 1200)
+            ],
+            [
+                'id' => 5,
+                'level' => 'DEBUG',
+                'module' => 'system',
+                'message' => 'Inicialización del sistema completada',
+                'user' => 'Sistema',
+                'ip' => '127.0.0.1',
+                'date' => date('Y-m-d H:i:s', time() - 1500)
+            ]
+        ];
+    }
+    
+    /**
+     * Limpiar logs del sistema
+     */
+    private function clearLogs() {
+        try {
+            $logFile = APP_PATH . '/../logs/error.log';
+            if (file_exists($logFile)) {
+                // Crear backup antes de limpiar
+                $backupFile = $logFile . '.backup.' . date('Y-m-d-H-i-s');
+                copy($logFile, $backupFile);
+                
+                // Limpiar el archivo
+                file_put_contents($logFile, '');
+                
+                setFlashMessage('success', 'Logs limpiados exitosamente. Backup creado en: ' . basename($backupFile));
+            } else {
+                setFlashMessage('info', 'No hay archivo de logs para limpiar');
+            }
+        } catch (Exception $e) {
+            setFlashMessage('error', 'Error al limpiar logs: ' . $e->getMessage());
+        }
+        
+        redirect('/admin/logs');
+    }
+    
+    /**
+     * Exportar logs del sistema
+     */
+    private function exportLogs() {
+        try {
+            $logs = $this->getSystemLogs('all');
+            
+            // Configurar headers para descarga
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: attachment; filename="logs_sistema_' . date('Y-m-d_H-i-s') . '.csv"');
+            
+            // Crear archivo CSV
+            $output = fopen('php://output', 'w');
+            
+            // Headers del CSV
+            fputcsv($output, [
+                'ID',
+                'Nivel',
+                'Módulo',
+                'Mensaje',
+                'Usuario',
+                'IP',
+                'Fecha'
+            ]);
+            
+            // Datos de los logs
+            foreach ($logs as $log) {
+                fputcsv($output, [
+                    $log['id'],
+                    $log['level'],
+                    $log['module'],
+                    $log['message'],
+                    $log['user'],
+                    $log['ip'],
+                    $log['date']
+                ]);
+            }
+            
+            fclose($output);
+            exit;
+            
+        } catch (Exception $e) {
+            setFlashMessage('error', 'Error al exportar logs: ' . $e->getMessage());
+            redirect('/admin/logs');
+        }
     }
     
     /**

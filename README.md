@@ -1,257 +1,70 @@
 # PropEasy - Sistema Web de Venta de Bienes Raíces
 
-![PropEasy Logo](https://img.shields.io/badge/PropEasy-Real%20Estate%20Platform-blue)
-![PHP Version](https://img.shields.io/badge/PHP-8.0+-green)
-![MySQL Version](https://img.shields.io/badge/MySQL-8.0+-orange)
-![License](https://img.shields.io/badge/License-MIT-yellow)
-![Version](https://img.shields.io/badge/Version-v2.9.0-brightgreen)
+## 📋 Descripción General
 
-## 📋 Descripción
-
-PropEasy es una plataforma web completa para la gestión y venta de bienes raíces. Permite a agentes inmobiliarios publicar propiedades, gestionar clientes, y facilitar la comunicación entre compradores y vendedores a través de un sistema de chat integrado, herramientas avanzadas de gestión y un sistema inteligente de alertas del administrador.
+PropEasy es un sistema web completo para la gestión y venta de bienes raíces, diseñado para conectar propietarios, agentes inmobiliarios y compradores en una plataforma moderna y eficiente.
 
 ## ✨ Características Principales
 
 ### 🏠 Gestión de Propiedades
-- **Publicación de propiedades** con múltiples imágenes y validación
-- **Sistema de validación** para agentes y administradores
-- **Búsqueda avanzada** por tipo, ciudad, precio y características
-- **Galería de imágenes** con miniaturas y carga optimizada
-- **Estados de publicación** (activa, en revisión, vendida, rechazada)
-- **Paginación inteligente** con 9 propiedades por página
-- **Selección manual de agentes** con búsqueda y carga infinita
-- **Botones "Ver Detalles"** con efectos hover mejorados
-- **Carga de imágenes** optimizada con validación mejorada
-- **Edición y eliminación** de propiedades por agentes
-- **Cambio de estados** con comentarios y validación
-- **Enfoque exclusivo en venta** - Sin referencias a alquiler
-- **Datos completos de propiedades** en solicitudes (tipo, habitaciones, baños, área)
+- **Registro de Propiedades**: Formularios completos con validación
+- **Galería de Imágenes**: Múltiples fotos por propiedad
+- **Estados de Propiedades**: En revisión, activa, vendida, rechazada
+- **Filtros Avanzados**: Por precio, ubicación, tipo, características
+- **Sistema de Favoritos**: Para usuarios registrados
+- **Búsqueda Inteligente**: Con autocompletado y sugerencias
 
 ### 👥 Gestión de Usuarios
-- **Múltiples roles**: Clientes, Agentes, Administradores
-- **Perfiles públicos** para agentes con estadísticas
-- **Sistema de autenticación** seguro con verificación de email
-- **Recuperación de contraseñas** por email
-- **Fotos de perfil** con gestión unificada y vista previa
-- **Gestión de sesiones** mejorada
-- **Corrección de rutas** de fotos de perfil
-- **Variables de sesión** optimizadas
-- **Dashboard personalizado** para clientes con estadísticas
-- **Gestión de propiedades solicitadas** con eliminación segura
-- **Información profesional** con especialidades y experiencia
-- **Carga de fotos** con validación y vista previa en tiempo real
+- **Múltiples Roles**: Cliente, Agente, Administrador
+- **Perfiles Completos**: Información personal y profesional
+- **Sistema de Autenticación**: Seguro con validación
+- **Gestión de Permisos**: Control de acceso por rol
+- **Panel de Administración**: Gestión completa de usuarios
 
-### 💬 Sistema de Chat Integrado
-- **Chat en tiempo real** entre clientes y agentes
-- **Conversaciones directas** sin necesidad de solicitudes
-- **Notificaciones** de mensajes no leídos
-- **Historial de conversaciones** persistente
-- **Búsqueda de usuarios** para iniciar chats
-- **WebSockets** para comunicación en tiempo real
-- **Chat simple** con agente preseleccionado
-- **Botones de contacto** unificados en todas las páginas
-- **Redirección automática** al chat con agente seleccionado
-- **Preselección automática** de conversaciones existentes
-- **Creación automática** de nuevas conversaciones
-- **Experiencia consistente** en todas las páginas del sistema
-- **Interfaz limpia** sin botones de eliminación de conversaciones
+### 🤝 Sistema de Solicitudes
+- **Solicitudes de Compra**: Formularios detallados
+- **Estados de Solicitudes**: Nuevo, en revisión, reunión agendada, cerrado
+- **Notificaciones**: Email automáticas
+- **Seguimiento**: Historial completo de solicitudes
+- **Gestión por Agentes**: Asignación y seguimiento
 
 ### 📅 Sistema de Citas
-- **Agendamiento de visitas** a propiedades
-- **Calendario integrado** con vista mensual
-- **Notificaciones automáticas** por email
-- **Estados de cita** (pendiente, aceptada, rechazada, completada)
-- **Gestión de horarios** y disponibilidad
+- **Agendamiento**: Calendario interactivo
+- **Estados de Citas**: Propuesta, aceptada, rechazada, realizada
+- **Notificaciones**: Confirmaciones automáticas
+- **Gestión de Horarios**: Disponibilidad de agentes
+- **Recordatorios**: Email y SMS
 
-### ❤️ Sistema de Favoritos
-- **Guardado de propiedades** favoritas
-- **Lista personalizada** para cada usuario
-- **Acceso rápido** a propiedades de interés
-- **Contador de favoritos** en tiempo real
-- **Acceso desde dropdown** del usuario para mejor estética
-- **Navegación móvil** optimizada en sección "Cuenta"
-- **Exclusivo para clientes** - Agentes no pueden usar favoritos
+### 📊 Panel de Administración
+- **Dashboard Completo**: Estadísticas en tiempo real
+- **Gestión de Usuarios**: Bloqueo, cambio de roles, exportación
+- **Gestión de Propiedades**: Aprobación, rechazo, eliminación
+- **Gestión de Reportes**: Procesamiento de irregularidades
+- **Sistema de Logs**: Monitoreo completo del sistema
+- **Backup & Restore**: Respaldo y restauración
+- **Configuración**: Ajustes del sistema
 
-### 📝 Solicitudes de Compra
-- **Formularios de solicitud** para propiedades
-- **Seguimiento de estado** de solicitudes (nuevo, en revisión, reunión agendada, cerrado)
-- **Comunicación integrada** con agentes
-- **Historial de solicitudes** por cliente
-- **Eliminación de solicitudes** con confirmación y actualización visual
-- **Estados permitidos** para eliminación (nuevo, en revisión, cerrado)
-- **Paginación incremental** con carga de más propiedades
-- **Fotos de propiedades** y agentes en las tarjetas
-- **Información completa** de propiedades (precio, ubicación, características)
-- **Datos detallados** de propiedades en solicitudes (tipo, habitaciones, baños, área)
+## 🛠️ Tecnologías Utilizadas
 
-### 🏪 Mis Ventas (Propiedades Enviadas)
-- **Gestión de propiedades** enviadas por clientes para publicación
-- **Estados de publicación** (activa, en revisión, rechazada, vendida)
-- **Estadísticas detalladas** (total, activas, en revisión)
-- **Información del agente** asignado a cada propiedad
-- **Layout unificado** con el resto de la aplicación
-- **Vista de tarjetas** con imágenes y detalles completos
-- **Acceso desde navbar** principal para clientes
-- **Corrección de consultas** SQL para imágenes de propiedades
+### Backend
+- **PHP 8.0+**: Lenguaje principal
+- **MySQL 8.0+**: Base de datos
+- **MVC Architecture**: Patrón de diseño
+- **Composer**: Gestión de dependencias
+- **PHPMailer**: Envío de emails
 
-### 🔔 Sistema de Alertas del Administrador
-- **Alertas inteligentes** del sistema en tiempo real
-- **Eliminación permanente** de alertas por el administrador
-- **Persistencia de alertas eliminadas** en base de datos
-- **No reaparición** de alertas eliminadas al recargar la página
-- **Restauración automática** después de 24 horas
-- **Animaciones suaves** al eliminar alertas
-- **Manejo robusto de errores** con fallback graceful
-- **Tipos de alertas**: Reportes nuevos, propiedades pendientes, usuarios suspendidos, propiedades rechazadas
-- **Priorización de alertas** por importancia
-- **Interfaz intuitiva** con botones de cierre
-- **Sistema opcional** que no afecta el funcionamiento general
+### Frontend
+- **HTML5 & CSS3**: Estructura y estilos
+- **JavaScript (ES6+)**: Interactividad
+- **Bootstrap 5**: Framework CSS
+- **jQuery**: Manipulación DOM
+- **DataTables**: Tablas interactivas
+- **Chart.js**: Gráficos y estadísticas
 
-### 🔍 Sistema de Búsqueda Avanzado
-- **Búsqueda de usuarios** por nombre, email, username
-- **Filtros por rol** (Administradores, Agentes, Clientes)
-- **Filtros por estado** (Activos, Suspendidos)
-- **Búsqueda en tiempo real** con auto-submit
-- **Búsqueda manual** con botón y tecla Enter
-- **Filtros combinables** para búsquedas precisas
-- **Resaltado de términos** de búsqueda en resultados
-- **Indicadores visuales** de filtros activos
-- **Contador de resultados** dinámico
-- **Exportación inteligente** que respeta filtros aplicados
-- **Limpieza de filtros** con un solo clic
-- **Interfaz responsive** optimizada para todos los dispositivos
-
-### ℹ️ Página "Acerca de"
-- **Información corporativa** completa de PropEasy
-- **Sección Hero** con descripción principal
-- **Misión y Visión** de la empresa
-- **Valores corporativos** destacados
-- **Historia de la empresa** con timeline
-- **Equipo de trabajo** con perfiles
-- **Información de contacto** profesional
-- **Diseño responsive** y moderno
-- **Integración completa** con el layout principal
-
-### 📋 Sistema de Reportes
-- **Reportes de irregularidades** con formulario moderno
-- **Carga de archivos adjuntos** con validación
-- **Proceso de revisión** profesional con seguimiento
-
-### 🎯 Panel de Administración
-- **Dashboard completo** con estadísticas en tiempo real
-- **Gestión de usuarios** con búsqueda y filtros avanzados
-- **Sistema de búsqueda inteligente** por nombre, email, rol y estado
-- **Filtros combinables** para encontrar usuarios específicos rápidamente
-- **Búsqueda en tiempo real** con auto-completado
-- **Resaltado de términos** de búsqueda en resultados
-- **Exportación inteligente** que respeta filtros aplicados
-- **Indicadores visuales** de filtros activos
-- **Contador de resultados** dinámico
-- **Gestión de propiedades** con validación y aprobación
-- **Sistema de alertas inteligente** con eliminación permanente
-- **Actividades recientes** con paginación y filtros
-- **Todas las actividades** integradas en el sidebar del admin
-- **Estadísticas detalladas** de usuarios, propiedades y solicitudes
-- **Gráficos interactivos** de tendencias del sistema
-- **Gestión de reportes** con resolución y seguimiento
-- **Logs del sistema** con filtros y búsqueda
-- **Backup y restore** de la base de datos
-- **Configuración del sistema** centralizada
-- **Diseño compacto y profesional** para todas las secciones
-- **Navegación intuitiva** con sidebar integrado
-- **Filtros avanzados** para búsqueda de actividades
-- **Paginación optimizada** para grandes volúmenes de datos
-- **Estados de reporte** (pendiente, atendido, descartado)
-- **Información confidencial** garantizada
-- **Diseño mejorado** con colores profesionales
-- **Persistencia de alertas eliminadas** en base de datos
-- **Restauración automática** de alertas después de 24 horas
-- **Manejo robusto de errores** en sistema de alertas
-
-### 🎨 Interfaz y Diseño
-- **Diseño responsive** optimizado para móviles y desktop
-- **Paleta de colores** profesional (azul marino, verde esmeralda, dorado)
-- **Componentes reutilizables** con estilos consistentes
-- **Animaciones suaves** y transiciones elegantes
-- **Iconografía Font Awesome** para mejor UX
-- **Footer actualizado** con información de contacto profesional
-- **Página "Acerca de"** completa con misión, visión y equipo
-- **Navegación intuitiva** con breadcrumbs y enlaces claros
-
-### 🔧 Funcionalidades Técnicas
-- **Arquitectura MVC** bien estructurada
-- **Sistema de rutas** flexible y escalable
-- **Base de datos optimizada** con índices apropiados
-- **Validación de datos** en frontend y backend
-- **Sistema de logs** para debugging y monitoreo
-- **Backup automático** de base de datos
-- **Configuración centralizada** y fácil de mantener
-- **Código limpio** sin archivos de debug o pruebas
-- **Sistema de alertas inteligente** con persistencia en base de datos
-- **Manejo robusto de errores** con fallback graceful
-- **Gestión de estado** de alertas eliminadas
-- **Sistema de búsqueda optimizado** con consultas SQL eficientes
-- **Búsqueda en tiempo real** con JavaScript y AJAX
-- **Filtros dinámicos** con combinación de criterios
-- **Exportación de datos** con respeto a filtros aplicados
-
-## 🚀 Instalación
-
-### ⚡ Instalación Automática (Recomendada)
-
-Para una instalación rápida y automática en Laragon:
-
-1. **Copiar el proyecto** a tu directorio de Laragon
-2. **Ejecutar el instalador**:
-   ```bash
-   cd C:\laragon\www\propeasy
-   php install_propeasy.php
-   ```
-
-El script automáticamente:
-- ✅ Verifica requisitos del sistema
-- ✅ Crea estructura de directorios
-- ✅ Configura la base de datos
-- ✅ Instala dependencias
-- ✅ Verifica la instalación
-
-**Ver [INSTALACION_RAPIDA.md](INSTALACION_RAPIDA.md) para instrucciones detalladas.**
-
-### 🔧 Instalación Manual
-
-#### Requisitos del Sistema
-- **PHP**: 8.0 o superior
-- **MySQL**: 8.0 o superior
-- **Servidor Web**: Apache/Nginx
-- **Extensiones PHP**: PDO, MySQL, GD, JSON, mbstring
-
-#### Pasos de Instalación
-
-1. **Clonar el repositorio**
-   ```bash
-   git clone https://github.com/tu-usuario/propeasy.git
-   cd propeasy
-   ```
-
-2. **Configurar la base de datos**
-   - Crear una base de datos MySQL
-   - Importar el archivo `database/scheme.sql`
-   - Copiar `config/database.example.php` a `config/database.php`
-   - Configurar las credenciales de la base de datos
-
-3. **Configurar el servidor web**
-   - Configurar el document root en la carpeta `public/`
-   - Habilitar mod_rewrite para Apache
-   - Configurar permisos de escritura en `logs/` y `public/uploads/`
-
-4. **Instalar dependencias**
-   ```bash
-   composer install
-   ```
-
-5. **Configurar variables de entorno**
-   - Editar `config/config.php` según tus necesidades
-   - Configurar URLs y configuraciones de email
+### Herramientas de Desarrollo
+- **Git**: Control de versiones
+- **Composer**: Gestión de dependencias
+- **Laragon**: Entorno de desarrollo local
 
 ## 📁 Estructura del Proyecto
 
@@ -259,183 +72,289 @@ El script automáticamente:
 propeasy/
 ├── app/
 │   ├── controllers/     # Controladores MVC
-│   ├── models/         # Modelos de datos (incluye AlertManager)
+│   ├── models/         # Modelos de datos
 │   ├── views/          # Vistas y templates
-│   ├── core/           # Núcleo del sistema
-│   ├── helpers/        # Funciones auxiliares
-│   └── websocket_server.php
-├── config/             # Archivos de configuración
-├── database/           # Esquemas de base de datos (incluye alertas_eliminadas)
-├── logs/               # Archivos de log
-├── public/             # Archivos públicos (document root)
-│   ├── css/           # Estilos CSS
-│   ├── js/            # JavaScript
-│   └── uploads/       # Archivos subidos
-├── scripts/            # Scripts de mantenimiento
+│   ├── core/           # Clases principales
+│   └── helpers/        # Funciones auxiliares
+├── config/             # Configuración del sistema
+├── database/           # Scripts de base de datos
+├── logs/               # Archivos de logs
+├── public/             # Archivos públicos
+├── scripts/            # Scripts de utilidad
+├── sessions/           # Archivos de sesión
 ├── vendor/             # Dependencias de Composer
-├── install_propeasy.php # Instalador automático
-├── INSTALACION_RAPIDA.md # Guía de instalación rápida
-└── composer.json       # Configuración de dependencias
+├── .htaccess           # Configuración Apache
+├── composer.json       # Dependencias PHP
+└── README.md           # Documentación
 ```
 
-## 🔧 Configuración
+## 🚀 Instalación
+
+### Requisitos Previos
+- PHP 8.0 o superior
+- MySQL 8.0 o superior
+- Apache/Nginx
+- Composer
+- Extensión PHP: mysqli, mbstring, json, session
+
+### Instalación Rápida
+
+1. **Clonar el repositorio**
+   ```bash
+   git clone https://github.com/tu-usuario/propeasy.git
+   cd propeasy
+   ```
+
+2. **Instalar dependencias**
+   ```bash
+   composer install
+   ```
+
+3. **Configurar base de datos**
+   - Crear base de datos MySQL
+   - Importar `database/propeasy.sql`
+   - Configurar `config/config.php`
+
+4. **Configurar servidor web**
+   - Apuntar document root a `/public`
+   - Configurar URL rewriting
+
+5. **Configurar permisos**
+   ```bash
+   chmod 755 logs/
+   chmod 755 sessions/
+   chmod 755 public/uploads/
+   ```
+
+### Instalación Automática
+Ejecutar el script de instalación:
+```bash
+php install_propeasy.php
+```
+
+## ⚙️ Configuración
 
 ### Configuración de Base de Datos
-Editar `config/database.php`:
+Editar `config/config.php`:
 ```php
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'propeasy_db');
+define('DB_NAME', 'propeasy');
 define('DB_USER', 'tu_usuario');
-define('DB_PASS', 'tu_contraseña');
+define('DB_PASS', 'tu_password');
 ```
 
 ### Configuración de Email
-Configurar en `config/config.php`:
 ```php
 define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_PORT', 587);
 define('SMTP_USER', 'tu_email@gmail.com');
-define('SMTP_PASS', 'tu_contraseña_app');
+define('SMTP_PASS', 'tu_password');
 ```
 
-### Configuración de WebSocket
-Para el chat en tiempo real:
-```bash
-php app/websocket_server.php
-```
+### Configuración de Roles
+- **ROLE_CLIENTE**: Usuarios que buscan propiedades
+- **ROLE_AGENTE**: Agentes inmobiliarios
+- **ROLE_ADMIN**: Administradores del sistema
 
-## 👥 Roles de Usuario
+## 📊 Funcionalidades del Panel de Administración
 
-### Cliente
-- Ver propiedades disponibles
-- Enviar solicitudes de compra
-- Gestionar favoritos
-- Agendar citas
-- Comunicarse con agentes via chat
-- Enviar propiedades para publicación
+### Dashboard
+- **Estadísticas en Tiempo Real**: Usuarios, propiedades, solicitudes
+- **Gráficos Interactivos**: Ventas, visitas, actividad
+- **Alertas del Sistema**: Notificaciones importantes
+- **Actividad Reciente**: Últimas acciones del sistema
 
-### Agente
-- Publicar y gestionar propiedades
-- Recibir y gestionar solicitudes
-- Comunicarse con clientes
-- Gestionar citas
-- Ver estadísticas de ventas
+### Gestión de Usuarios
+- **Lista Completa**: Todos los usuarios registrados
+- **Búsqueda Avanzada**: Por nombre, email, rol, estado
+- **Filtros**: Por rol (cliente, agente, admin) y estado (activo, suspendido)
+- **Acciones**: Bloquear/desbloquear, cambiar rol, eliminar
+- **Exportación**: CSV con filtros aplicados
 
-### Administrador
-- Gestión completa del sistema
-- Aprobar/rechazar propiedades
-- Gestionar usuarios y roles
-- Ver reportes y estadísticas
-- Configuración del sistema
+### Gestión de Propiedades
+- **Lista de Propiedades**: Todas las propiedades del sistema
+- **Estados**: En revisión, activa, vendida, rechazada
+- **Acciones**: Aprobar, rechazar, eliminar
+- **Filtros**: Por tipo, estado, precio, ubicación
+- **Exportación**: CSV con datos completos
 
-## 🛠️ Mantenimiento
+### Gestión de Reportes
+- **Reportes de Irregularidad**: Procesamiento de denuncias
+- **Estados**: Pendiente, atendido, descartado
+- **Acciones**: Resolver, descartar, eliminar
+- **Estadísticas**: Total, pendientes, resueltos, descartados
 
-### Scripts Disponibles
-- `install_propeasy.php` - **Instalador automático** (principal)
-- `scripts/cleanup_project.php` - Limpieza del proyecto
-- `scripts/seed_activity_logs.php` - Generar logs de actividad
-- `scripts/send_appointment_reminders.php` - Recordatorios de citas
+### Sistema de Logs
+- **Logs del Sistema**: Monitoreo completo de eventos
+- **Filtros Avanzados**: Por nivel, módulo, fecha
+- **Niveles**: INFO, WARNING, ERROR, DEBUG
+- **Módulos**: AUTH, PROPERTY, USER, SYSTEM
+- **Funciones**: Limpiar logs, exportar, ver detalles
+- **Modal de Detalles**: Información completa de cada log
 
-### Backup de Base de Datos
-```bash
-mysqldump -u usuario -p propeasy_db > backup_$(date +%Y%m%d_%H%M%S).sql
-```
+### Backup & Restore
+- **Respaldo Automático**: Base de datos y archivos
+- **Restauración**: Recuperación de datos
+- **Gestión de Backups**: Lista y eliminación
+- **Configuración**: Frecuencia y retención
 
-## 🔒 Seguridad
+### Configuración del Sistema
+- **Ajustes Generales**: Configuración del sistema
+- **Email**: Configuración SMTP
+- **Seguridad**: Configuración de sesiones
+- **Mantenimiento**: Modo mantenimiento
 
-- **Validación de datos** en frontend y backend
-- **Protección CSRF** en formularios
-- **Sanitización de inputs** para prevenir XSS
-- **Contraseñas hasheadas** con bcrypt
-- **Sesiones seguras** con regeneración de ID
-- **Control de acceso** basado en roles
+## 🔐 Seguridad
 
-## 📞 Contacto
+### Autenticación
+- **Sesiones Seguras**: Configuración de cookies
+- **Validación de Roles**: Control de acceso
+- **Protección CSRF**: Tokens de seguridad
+- **Sanitización**: Limpieza de datos de entrada
 
-- **Email**: propeasycorp@gmail.com
-- **Teléfono**: +1 809 359 5322
-- **Dirección**: Santo Domingo, República Dominicana
-- **Horarios**: Lun - Vie: 8:00 AM - 6:00 PM
+### Base de Datos
+- **Prepared Statements**: Prevención de SQL Injection
+- **Encriptación**: Contraseñas hasheadas
+- **Backup Regular**: Respaldo automático
+- **Logs de Acceso**: Registro de actividades
+
+## 📧 Sistema de Notificaciones
+
+### Email Automático
+- **Confirmación de Registro**: Nuevos usuarios
+- **Solicitudes de Compra**: Notificación a agentes
+- **Citas Agendadas**: Confirmación a usuarios
+- **Cambios de Estado**: Propiedades y solicitudes
+- **Reportes**: Notificación de irregularidades
+
+### Plantillas Personalizables
+- **HTML Responsive**: Diseño moderno
+- **Variables Dinámicas**: Datos personalizados
+- **Múltiples Idiomas**: Soporte multiidioma
+- **Configuración SMTP**: Servidores de email
+
+## 📱 Responsive Design
+
+### Diseño Adaptativo
+- **Mobile First**: Optimizado para móviles
+- **Tablet Friendly**: Interfaz para tablets
+- **Desktop Optimized**: Experiencia completa
+- **Touch Friendly**: Interacciones táctiles
+
+### Componentes Responsive
+- **Navegación**: Menú hamburguesa en móvil
+- **Tablas**: Scroll horizontal en móvil
+- **Formularios**: Campos optimizados
+- **Modales**: Ventanas adaptativas
+
+## 🚀 Optimización
+
+### Rendimiento
+- **Caché de Consultas**: Optimización de base de datos
+- **Compresión de Imágenes**: Reducción de tamaño
+- **Minificación CSS/JS**: Archivos optimizados
+- **CDN**: Librerías externas
+
+### SEO
+- **URLs Amigables**: Estructura limpia
+- **Meta Tags**: Información para buscadores
+- **Sitemap**: Mapa del sitio
+- **Open Graph**: Compartir en redes sociales
+
+## 🐛 Debugging y Logs
+
+### Sistema de Logs
+- **Clase Logger**: Sistema profesional de logging
+- **Niveles de Log**: INFO, WARNING, ERROR, DEBUG
+- **Módulos**: AUTH, PROPERTY, USER, SYSTEM
+- **Formato Estándar**: `[timestamp] LEVEL: message | module | user | ip`
+- **Gestión**: Limpiar, exportar, filtrar
+
+### Debugging
+- **Modo Desarrollo**: Errores detallados
+- **Logs de Error**: Registro de problemas
+- **Validación**: Verificación de datos
+- **Testing**: Scripts de prueba
+
+## 📈 Estadísticas y Reportes
+
+### Dashboard Analytics
+- **Usuarios Activos**: Estadísticas en tiempo real
+- **Propiedades**: Total, activas, vendidas
+- **Solicitudes**: Nuevas, en proceso, completadas
+- **Citas**: Programadas, realizadas, canceladas
+
+### Reportes Exportables
+- **CSV**: Datos tabulares
+- **Filtros Aplicados**: Exportación personalizada
+- **Múltiples Formatos**: Diferentes tipos de reporte
+- **Programación**: Reportes automáticos
+
+## 🔄 Mantenimiento
+
+### Tareas Automáticas
+- **Limpieza de Logs**: Eliminación de logs antiguos
+- **Backup Automático**: Respaldo programado
+- **Optimización DB**: Mantenimiento de base de datos
+- **Cache**: Limpieza de caché
+
+### Monitoreo
+- **Logs del Sistema**: Monitoreo continuo
+- **Alertas**: Notificaciones de problemas
+- **Métricas**: Rendimiento del sistema
+- **Uptime**: Disponibilidad del servicio
+
+## 🤝 Contribución
+
+### Guías de Contribución
+1. Fork el proyecto
+2. Crear rama feature (`git checkout -b feature/AmazingFeature`)
+3. Commit cambios (`git commit -m 'Add AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abrir Pull Request
+
+### Estándares de Código
+- **PSR-12**: Estándares PHP
+- **Comentarios**: Documentación clara
+- **Nombres**: Variables y funciones descriptivas
+- **Estructura**: Organización lógica
 
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
-## 🤝 Contribución
+## 📞 Soporte
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+### Contacto
+- **Email**: soporte@propeasy.com
+- **Teléfono**: +1 809 359 5322
+- **Documentación**: [docs.propeasy.com](https://docs.propeasy.com)
 
-## 📝 Changelog
+### Recursos
+- **Documentación**: Guías completas
+- **API**: Documentación de API
+- **FAQ**: Preguntas frecuentes
+- **Tutoriales**: Videos y guías
 
-### v2.9.0 (2025-01-24)
-- ✅ **Sistema de búsqueda avanzado** para gestión de usuarios
-- ✅ **Búsqueda en tiempo real** con auto-submit y filtros combinables
-- ✅ **Filtros por rol y estado** para encontrar usuarios específicos
-- ✅ **Resaltado de términos** de búsqueda en resultados
-- ✅ **Indicadores visuales** de filtros activos y contador de resultados
-- ✅ **Exportación inteligente** que respeta filtros aplicados
-- ✅ **Interfaz responsive** optimizada para todos los dispositivos
-- ✅ **Limpieza de filtros** con un solo clic
-- ✅ **Nuevo método** `searchUsersForAdmin()` en modelo User
-- ✅ **Controlador actualizado** para manejar parámetros de búsqueda
-- ✅ **Vista mejorada** con formulario funcional y JavaScript optimizado
-- ✅ Sistema de alertas inteligente con eliminación permanente
-- ✅ Persistencia de alertas eliminadas en base de datos
-- ✅ No reaparición de alertas eliminadas al recargar la página
-- ✅ Restauración automática de alertas después de 24 horas
-- ✅ Animaciones suaves al eliminar alertas del dashboard
-- ✅ Manejo robusto de errores con fallback graceful
-- ✅ Tipos de alertas: Reportes nuevos, propiedades pendientes, usuarios suspendidos, propiedades rechazadas
-- ✅ Priorización de alertas por importancia
-- ✅ Interfaz intuitiva con botones de cierre
-- ✅ Sistema opcional que no afecta el funcionamiento general
-- ✅ Corrección del error 500 en dashboard del admin
-- ✅ Modelo AlertManager con métodos completos de gestión
-- ✅ Tabla alertas_eliminadas en base de datos
-- ✅ JavaScript mejorado para manejo de alertas
-- ✅ **Script de instalación automática** para Laragon
-- ✅ **Guía de instalación rápida** con instrucciones detalladas
-- ✅ **Configuración automática** de base de datos y dependencias
-- ✅ **Verificación completa** de requisitos del sistema
-- ✅ README.md actualizado con nuevas funcionalidades
+## 🎯 Roadmap
 
-### v2.8.0 (2025-01-24)
-- ✅ Panel de administración completamente renovado
-- ✅ Dashboard con estadísticas en tiempo real y alertas dinámicas
-- ✅ Sección "Todas las Actividades" integrada en sidebar del admin
-- ✅ Diseño compacto y profesional para todas las secciones admin
-- ✅ Sistema de alertas funcional con prioridades y ordenamiento
-- ✅ Eliminación del índice "Total Ventas" y reemplazo con "Propiedades Pendientes"
-- ✅ Filtros avanzados y paginación optimizada para actividades
-- ✅ Navegación intuitiva con sidebar integrado
-- ✅ Limpieza completa de console.log y archivos de debug
-- ✅ Página "Acerca de" con información corporativa completa
-- ✅ Footer actualizado con información de contacto profesional
-- ✅ README.md actualizado con todas las nuevas características
+### Próximas Funcionalidades
+- [ ] **App Móvil**: Aplicación nativa
+- [ ] **Chat en Tiempo Real**: Comunicación instantánea
+- [ ] **Pagos Online**: Integración de pagos
+- [ ] **IA para Recomendaciones**: Machine Learning
+- [ ] **API REST**: Servicios web
+- [ ] **Multiidioma**: Soporte completo
+- [ ] **Analytics Avanzado**: Métricas detalladas
+- [ ] **Integración CRM**: Gestión de clientes
 
-### v2.7.0 (2025-01-24)
-- ✅ Página "Acerca de" creada y enlazada
-- ✅ Número de teléfono formateado profesionalmente (+1 809 359 5322)
-- ✅ Datos completos de propiedades en solicitudes
-- ✅ Eliminación de archivos de debug y console.log
-- ✅ Interfaz de chat limpia sin botones de eliminación
-- ✅ README.md actualizado con información completa
-
-### v2.6.0 (2025-01-23)
-- ✅ Sistema de chat mejorado
-- ✅ Gestión de solicitudes optimizada
-- ✅ Interfaz responsive mejorada
-- ✅ Sistema de reportes implementado
-
-### v2.5.0 (2025-01-22)
-- ✅ Sistema de citas implementado
-- ✅ Dashboard de agentes mejorado
-- ✅ Sistema de favoritos optimizado
+### Mejoras Técnicas
+- [ ] **Microservicios**: Arquitectura escalable
+- [ ] **Docker**: Contenedores
+- [ ] **CI/CD**: Integración continua
+- [ ] **Testing**: Cobertura completa
+- [ ] **Performance**: Optimización avanzada
 
 ---
 
-**PropEasy** - Conectando sueños inmobiliarios con realidades desde República Dominicana 🇩🇴 
+**PropEasy** - Transformando la forma de vender bienes raíces 🏠✨ 
