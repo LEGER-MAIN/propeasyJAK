@@ -58,7 +58,11 @@ class PropertyController {
      * Mostrar detalle de una propiedad
      */
     public function show($id) {
+        error_log("PropertyController::show - ID recibido: " . $id);
+        
         $property = $this->propertyModel->getById($id);
+        
+        error_log("PropertyController::show - Propiedad encontrada: " . ($property ? 'SÍ' : 'NO'));
         
         if (!$property) {
             setFlashMessage('error', 'La propiedad solicitada no existe o ha sido eliminada.');

@@ -109,6 +109,14 @@
             --admin-secondary: #6c757d;
             --admin-light: #f8f9fa;
             --admin-dark: #343a40;
+            
+            /* Variables CSS adicionales para Mis Ventas */
+            --color-azul-marino-hover: #152a47;
+            --color-verde: #2A9D8F;
+            --color-verde-esmeralda: #10b981;
+            --color-dorado-suave: #E9C46A;
+            --text-secondary: #6b7280;
+            --text-light: #f9fafb;
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         

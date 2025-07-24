@@ -23,61 +23,61 @@
             
             <!-- Navegación Desktop -->
             <nav class="hidden lg:flex items-center space-x-6">
-                <a href="/" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
+                <a href="/" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 <?= $_SERVER['REQUEST_URI'] === '/' ? 'bg-blue-100 text-blue-700' : '' ?>" style="color: var(--text-primary); <?= $_SERVER['REQUEST_URI'] === '/' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                     <i class="fas fa-home"></i>
                     <span>Inicio</span>
                 </a>
                 
-                <a href="/properties" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
+                <a href="/properties" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 <?= $_SERVER['REQUEST_URI'] === '/properties' ? 'bg-blue-100 text-blue-700' : '' ?>" style="color: var(--text-primary); <?= $_SERVER['REQUEST_URI'] === '/properties' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                     <i class="fas fa-building"></i>
                     <span>Propiedades</span>
                 </a>
                 
-                <a href="/agentes" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
+                <a href="/agentes" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 <?= $_SERVER['REQUEST_URI'] === '/agentes' ? 'bg-blue-100 text-blue-700' : '' ?>" style="color: var(--text-primary); <?= $_SERVER['REQUEST_URI'] === '/agentes' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                     <i class="fas fa-users"></i>
                     <span>Agentes</span>
                 </a>
                 
                 <?php if (isAuthenticated()): ?>
                     <?php if (hasRole(ROLE_CLIENTE)): ?>
-                    <a href="/cliente/mis-ventas" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
+                    <a href="/cliente/mis-ventas" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 <?= $_SERVER['REQUEST_URI'] === '/cliente/mis-ventas' ? 'bg-blue-100 text-blue-700' : '' ?>" style="color: var(--text-primary); <?= $_SERVER['REQUEST_URI'] === '/cliente/mis-ventas' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-paper-plane"></i>
                         <span>Mis Ventas</span>
                     </a>
                     <?php endif; ?>
                     
                     <?php if (!hasRole(ROLE_ADMIN)): ?>
-                    <a href="/solicitudes" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
+                    <a href="/solicitudes" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 <?= $_SERVER['REQUEST_URI'] === '/solicitudes' ? 'bg-blue-100 text-blue-700' : '' ?>" style="color: var(--text-primary); <?= $_SERVER['REQUEST_URI'] === '/solicitudes' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-handshake"></i>
                         <span><?= hasRole(ROLE_AGENTE) ? 'Solicitudes' : 'Mis Solicitudes' ?></span>
                     </a>
                     <?php endif; ?>
                     
                     <?php if (hasRole(ROLE_AGENTE)): ?>
-                    <a href="/properties/agent/list" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
+                    <a href="/properties/agent/list" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 <?= $_SERVER['REQUEST_URI'] === '/properties/agent/list' ? 'bg-blue-100 text-blue-700' : '' ?>" style="color: var(--text-primary); <?= $_SERVER['REQUEST_URI'] === '/properties/agent/list' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-list"></i>
                         <span>Mis Propiedades</span>
                     </a>
-                    <a href="/appointments" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
+                    <a href="/appointments" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 <?= $_SERVER['REQUEST_URI'] === '/appointments' ? 'bg-blue-100 text-blue-700' : '' ?>" style="color: var(--text-primary); <?= $_SERVER['REQUEST_URI'] === '/appointments' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Citas</span>
                     </a>
                     <?php endif; ?>
                     
                     <?php if (hasRole(ROLE_CLIENTE)): ?>
-                    <a href="/appointments" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
+                    <a href="/appointments" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 <?= $_SERVER['REQUEST_URI'] === '/appointments' ? 'bg-blue-100 text-blue-700' : '' ?>" style="color: var(--text-primary); <?= $_SERVER['REQUEST_URI'] === '/appointments' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Mis Citas</span>
                     </a>
                     <?php endif; ?>
                     
-                    <a href="<?= hasRole(ROLE_AGENTE) ? '/agente/dashboard' : (hasRole(ROLE_CLIENTE) ? '/cliente/dashboard' : '/dashboard') ?>" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2" style="color: var(--text-primary);">
+                    <a href="<?= hasRole(ROLE_AGENTE) ? '/agente/dashboard' : (hasRole(ROLE_CLIENTE) ? '/cliente/dashboard' : '/dashboard') ?>" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 <?= in_array($_SERVER['REQUEST_URI'], ['/agente/dashboard', '/cliente/dashboard', '/dashboard']) ? 'bg-blue-100 text-blue-700' : '' ?>" style="color: var(--text-primary); <?= in_array($_SERVER['REQUEST_URI'], ['/agente/dashboard', '/cliente/dashboard', '/dashboard']) ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
                     
                     <!-- Chat Icon -->
-                    <a href="/chat" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 relative" style="color: var(--text-primary);">
+                    <a href="/chat" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 relative <?= $_SERVER['REQUEST_URI'] === '/chat' ? 'bg-blue-100 text-blue-700' : '' ?>" style="color: var(--text-primary); <?= $_SERVER['REQUEST_URI'] === '/chat' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-comments"></i>
                         <span>Chat</span>
                         <span id="chat-notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
@@ -127,7 +127,7 @@
                                     <i class="fas fa-heart"></i>
                                     <span>Mis Favoritos</span>
                                 </a>
-                                <a href="/cliente/mis-ventas" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                <a href="/cliente/mis-ventas" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 <?= $_SERVER['REQUEST_URI'] === '/cliente/mis-ventas' ? 'bg-blue-50 text-blue-700' : '' ?>" style="<?= $_SERVER['REQUEST_URI'] === '/cliente/mis-ventas' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                                     <i class="fas fa-home"></i>
                                     <span>Mis Ventas</span>
                                 </a>
@@ -205,13 +205,13 @@
         <div id="mobile-menu" class="lg:hidden hidden">
             <div class="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200">
                 <!-- Enlaces principales -->
-                <a href="/" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                <a href="/" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium <?= $_SERVER['REQUEST_URI'] === '/' ? 'bg-blue-50 text-blue-700' : '' ?>" style="<?= $_SERVER['REQUEST_URI'] === '/' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                     <i class="fas fa-home mr-3"></i>Inicio
                 </a>
-                <a href="/properties" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                <a href="/properties" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium <?= $_SERVER['REQUEST_URI'] === '/properties' ? 'bg-blue-50 text-blue-700' : '' ?>" style="<?= $_SERVER['REQUEST_URI'] === '/properties' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                     <i class="fas fa-building mr-3"></i>Propiedades
                 </a>
-                <a href="/agentes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                <a href="/agentes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium <?= $_SERVER['REQUEST_URI'] === '/agentes' ? 'bg-blue-50 text-blue-700' : '' ?>" style="<?= $_SERVER['REQUEST_URI'] === '/agentes' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                     <i class="fas fa-users mr-3"></i>Agentes
                 </a>
                 
@@ -220,38 +220,38 @@
                     
                     <!-- Enlaces de usuario autenticado -->
                     <?php if (!hasRole(ROLE_ADMIN)): ?>
-                    <a href="/solicitudes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                    <a href="/solicitudes" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium <?= $_SERVER['REQUEST_URI'] === '/solicitudes' ? 'bg-blue-50 text-blue-700' : '' ?>" style="<?= $_SERVER['REQUEST_URI'] === '/solicitudes' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-handshake mr-3"></i><?= hasRole(ROLE_AGENTE) ? 'Solicitudes' : 'Mis Solicitudes' ?>
                     </a>
                     <?php endif; ?>
                     
                     <?php if (hasRole(ROLE_CLIENTE)): ?>
-                    <a href="/cliente/mis-ventas" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                    <a href="/cliente/mis-ventas" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium <?= $_SERVER['REQUEST_URI'] === '/cliente/mis-ventas' ? 'bg-blue-50 text-blue-700' : '' ?>" style="<?= $_SERVER['REQUEST_URI'] === '/cliente/mis-ventas' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-paper-plane mr-3"></i>Mis Ventas
                     </a>
                     <?php endif; ?>
                     
                     <?php if (hasRole(ROLE_AGENTE)): ?>
-                    <a href="/properties/agent/list" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                    <a href="/properties/agent/list" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium <?= $_SERVER['REQUEST_URI'] === '/properties/agent/list' ? 'bg-blue-50 text-blue-700' : '' ?>" style="<?= $_SERVER['REQUEST_URI'] === '/properties/agent/list' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-list mr-3"></i>Mis Propiedades
                     </a>
-                    <a href="/appointments" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                    <a href="/appointments" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium <?= $_SERVER['REQUEST_URI'] === '/appointments' ? 'bg-blue-50 text-blue-700' : '' ?>" style="<?= $_SERVER['REQUEST_URI'] === '/appointments' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-calendar-alt mr-3"></i>Citas
                     </a>
                     <?php endif; ?>
                     
                     <?php if (hasRole(ROLE_CLIENTE)): ?>
-                    <a href="/appointments" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                    <a href="/appointments" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium <?= $_SERVER['REQUEST_URI'] === '/appointments' ? 'bg-blue-50 text-blue-700' : '' ?>" style="<?= $_SERVER['REQUEST_URI'] === '/appointments' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-calendar-alt mr-3"></i>Mis Citas
                     </a>
                     <?php endif; ?>
                     
-                    <a href="<?= hasRole(ROLE_AGENTE) ? '/agente/dashboard' : (hasRole(ROLE_CLIENTE) ? '/cliente/dashboard' : '/dashboard') ?>" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
+                    <a href="<?= hasRole(ROLE_AGENTE) ? '/agente/dashboard' : (hasRole(ROLE_CLIENTE) ? '/cliente/dashboard' : '/dashboard') ?>" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium <?= in_array($_SERVER['REQUEST_URI'], ['/agente/dashboard', '/cliente/dashboard', '/dashboard']) ? 'bg-blue-50 text-blue-700' : '' ?>" style="<?= in_array($_SERVER['REQUEST_URI'], ['/agente/dashboard', '/cliente/dashboard', '/dashboard']) ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
                     </a>
                     
                     <!-- Chat en menú mobile -->
-                    <a href="/chat" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium relative">
+                    <a href="/chat" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium relative <?= $_SERVER['REQUEST_URI'] === '/chat' ? 'bg-blue-50 text-blue-700' : '' ?>" style="<?= $_SERVER['REQUEST_URI'] === '/chat' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-comments mr-3"></i>Chat
                         <span id="chat-notification-badge-mobile" class="absolute top-2 right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
                     </a>

@@ -5,115 +5,183 @@
  * 
  * Esta vista muestra las propiedades que el cliente ha enviado para publicación
  */
+
+// Verificar que las variables estén definidas
+$data = $data ?? [];
+$propiedades = $data['propiedades'] ?? [];
+$total_propiedades = $data['total_propiedades'] ?? 0;
 ?>
 
-<div class="bg-gray-50 py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
-        <div class="mb-8">
+
+
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white" style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="text-center">
-                <h1 class="text-3xl font-bold text-gray-900">Mis Ventas</h1>
-                <p class="mt-2 text-gray-600">Gestiona las propiedades que has enviado para publicación</p>
+                <h1 class="text-4xl font-bold mb-4" style="color: white !important;">Mis <span style="color: var(--color-dorado-suave);">Ventas</span></h1>
+                <p class="text-xl text-primary-100 mb-8" style="color: var(--text-light);">
+                    Gestiona las propiedades que has enviado para publicación
+                </p>
+                
+                <!-- Estadísticas rápidas -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold" style="color: white !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 800;"><?= $total_propiedades ?></div>
+                        <div class="text-primary-200" style="color: var(--text-light) !important; font-weight: 600;">Total</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold" style="color: white !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 800;">
+                            <?= count(array_filter($propiedades, function($p) { return ($p['estado_publicacion'] ?? $p['estado']) === 'activa'; })) ?>
+                        </div>
+                        <div class="text-primary-200" style="color: var(--text-light) !important; font-weight: 600;">Activas</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold" style="color: white !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 800;">
+                            <?= count(array_filter($propiedades, function($p) { return ($p['estado_publicacion'] ?? $p['estado']) === 'en_revision'; })) ?>
+                        </div>
+                        <div class="text-primary-200" style="color: var(--text-light) !important; font-weight: 600;">En Revisión</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold" style="color: white !important; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-weight: 800;">
+                            <?= count(array_filter($propiedades, function($p) { return ($p['estado_publicacion'] ?? $p['estado']) === 'vendida'; })) ?>
+                        </div>
+                        <div class="text-primary-200" style="color: var(--text-light) !important; font-weight: 600;">Vendidas</div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
 
+    <!-- Contenido Principal -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Mensajes Flash -->
         <?php include APP_PATH . '/views/components/flash-messages.php'; ?>
 
-        <!-- Estadísticas -->
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-blue-600 mb-2"><?= $data['total_propiedades'] ?></div>
-                    <div class="text-gray-600">Total de Propiedades</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-green-600 mb-2">
-                        <?= count(array_filter($data['propiedades'], function($p) { return $p['estado_publicacion'] === 'activa'; })) ?>
-                    </div>
-                    <div class="text-gray-600">Propiedades Activas</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-3xl font-bold text-yellow-600 mb-2">
-                        <?= count(array_filter($data['propiedades'], function($p) { return $p['estado_publicacion'] === 'en_revision'; })) ?>
-                    </div>
-                    <div class="text-gray-600">En Revisión</div>
-                </div>
+        <!-- Header de la sección -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2" style="color: var(--color-azul-marino);">
+                    Propiedades Enviadas
+                </h2>
+                <p class="text-gray-600" style="color: var(--text-secondary);">
+                    <?= $total_propiedades ?> propiedad<?= $total_propiedades != 1 ? 'es' : '' ?> enviada<?= $total_propiedades != 1 ? 's' : '' ?> para publicación
+                </p>
+            </div>
+            
+            <!-- Botón para enviar nueva propiedad -->
+            <div class="mt-4 md:mt-0">
+                <a href="/properties/create" 
+                   class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+                   style="background-color: var(--color-azul-marino);">
+                    <i class="fas fa-plus mr-2"></i>
+                    Enviar Nueva Propiedad
+                </a>
             </div>
         </div>
 
         <!-- Lista de Propiedades -->
-        <?php if (!empty($data['propiedades'])): ?>
+        <?php if (!empty($propiedades)): ?>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <?php foreach ($data['propiedades'] as $propiedad): ?>
-                    <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+                <?php foreach ($propiedades as $propiedad): ?>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                         <!-- Imagen de la propiedad -->
                         <div class="relative h-48 bg-gray-200">
-                            <?php if (!empty($propiedad['imagen_principal'])): ?>
-                                <img src="<?= htmlspecialchars($propiedad['imagen_principal']) ?>" 
-                                     alt="<?= htmlspecialchars($propiedad['titulo']) ?>" 
+                            <?php if (!empty($propiedad['foto_propiedad']) || !empty($propiedad['imagen_principal'])): ?>
+                                <img src="<?= htmlspecialchars($propiedad['foto_propiedad'] ?? $propiedad['imagen_principal']) ?>" 
+                                     alt="<?= htmlspecialchars($propiedad['titulo_propiedad'] ?? $propiedad['titulo'] ?? 'Propiedad') ?>" 
                                      class="w-full h-full object-cover">
                             <?php else: ?>
-                                <div class="flex items-center justify-center h-full">
+                                <div class="w-full h-full flex items-center justify-center">
                                     <i class="fas fa-home text-4xl text-gray-400"></i>
                                 </div>
                             <?php endif; ?>
                             
+                            <!-- Badge de tipo -->
+                            <div class="absolute top-2 left-2">
+                                <span class="bg-primary-600 text-white px-2 py-1 rounded text-xs font-medium" style="background-color: var(--color-azul-marino);">
+                                    <?= ucfirst($propiedad['tipo'] ?? 'Propiedad') ?>
+                                </span>
+                            </div>
+                            
                             <!-- Badge de estado -->
-                            <div class="absolute top-4 right-4">
+                            <div class="absolute top-2 right-2">
                                 <?php
                                 $estadoColors = [
-                                    'en_revision' => 'bg-yellow-100 text-yellow-800',
-                                    'activa' => 'bg-green-100 text-green-800',
-                                    'vendida' => 'bg-blue-100 text-blue-800',
-                                    'rechazada' => 'bg-red-100 text-red-800',
-                                    'inactiva' => 'bg-gray-100 text-gray-800'
+                                    'en_revision' => 'bg-yellow-500',
+                                    'activa' => 'bg-green-500',
+                                    'vendida' => 'bg-blue-500',
+                                    'rechazada' => 'bg-red-500',
+                                    'inactiva' => 'bg-gray-500'
                                 ];
-                                $estadoColor = $estadoColors[$propiedad['estado_publicacion']] ?? 'bg-gray-100 text-gray-800';
+                                $estado = $propiedad['estado'] ?? $propiedad['estado_publicacion'] ?? 'en_revision';
+                                $estadoColor = $estadoColors[$estado] ?? 'bg-gray-500';
+                                
+                                $estadoTextos = [
+                                    'en_revision' => 'En Revisión',
+                                    'activa' => 'Activa',
+                                    'vendida' => 'Vendida',
+                                    'rechazada' => 'Rechazada',
+                                    'inactiva' => 'Inactiva'
+                                ];
+                                $estadoTexto = $estadoTextos[$estado] ?? 'Desconocido';
                                 ?>
-                                <span class="px-3 py-1 rounded-full text-sm font-medium <?= $estadoColor ?>">
-                                    <?= $propiedad['estado_publicacion_texto'] ?>
+                                <span class="<?= $estadoColor ?> text-white px-2 py-1 rounded text-xs font-medium">
+                                    <?= $estadoTexto ?>
+                                </span>
+                            </div>
+                            
+                            <!-- Precio -->
+                            <div class="absolute bottom-2 right-2">
+                                <span class="bg-white text-primary-600 px-3 py-1 rounded-lg text-sm font-bold shadow-md" style="color: var(--color-azul-marino);">
+                                    $<?= number_format($propiedad['precio_propiedad'] ?? $propiedad['precio'] ?? 0, 0, ',', '.') ?>
                                 </span>
                             </div>
                         </div>
                         
-                        <!-- Contenido de la propiedad -->
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-2">
-                                <?= htmlspecialchars($propiedad['titulo']) ?>
+                        <!-- Información de la propiedad -->
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                                <a href="/properties/<?= $propiedad['id'] ?>" class="hover:text-primary-600 transition-colors" style="color: var(--text-primary);">
+                                    <?= htmlspecialchars($propiedad['titulo_propiedad'] ?? $propiedad['titulo'] ?? 'Sin título') ?>
+                                </a>
                             </h3>
                             
-                            <p class="text-gray-600 mb-3">
+                            <!-- Ubicación -->
+                            <div class="flex items-center text-gray-500 text-sm mb-3">
                                 <i class="fas fa-map-marker-alt mr-2"></i>
-                                <?= htmlspecialchars($propiedad['ciudad']) ?>, <?= htmlspecialchars($propiedad['sector']) ?>
-                            </p>
-                            
-                            <div class="text-2xl font-bold text-blue-600 mb-3">
-                                <?= $propiedad['precio_formateado'] ?>
+                                <span><?= htmlspecialchars($propiedad['ciudad_propiedad'] ?? $propiedad['ciudad'] ?? 'Sin especificar') ?>, <?= htmlspecialchars($propiedad['sector_propiedad'] ?? $propiedad['sector'] ?? 'Sin especificar') ?></span>
                             </div>
                             
                             <!-- Características -->
-                            <div class="grid grid-cols-3 gap-4 mb-4 text-sm text-gray-600">
-                                <div>
-                                    <i class="fas fa-ruler-combined mr-1"></i>
-                                    <?= $propiedad['metros_cuadrados'] ?> m²
-                                </div>
-                                <div>
-                                    <i class="fas fa-bed mr-1"></i>
-                                    <?= $propiedad['habitaciones'] ?> hab.
-                                </div>
-                                <div>
-                                    <i class="fas fa-bath mr-1"></i>
-                                    <?= $propiedad['banos'] ?> baños
+                            <div class="flex items-center justify-between text-sm text-gray-600 mb-4">
+                                <div class="flex space-x-4">
+                                    <?php if (($propiedad['habitaciones'] ?? 0) > 0): ?>
+                                        <span class="flex items-center">
+                                            <i class="fas fa-bed mr-1"></i>
+                                            <?= $propiedad['habitaciones'] ?> hab.
+                                        </span>
+                                    <?php endif; ?>
+                                    
+                                    <?php if (($propiedad['banos'] ?? 0) > 0): ?>
+                                        <span class="flex items-center">
+                                            <i class="fas fa-bath mr-1"></i>
+                                            <?= $propiedad['banos'] ?> baños
+                                        </span>
+                                    <?php endif; ?>
+                                    
+                                    <span class="flex items-center">
+                                        <i class="fas fa-ruler-combined mr-1"></i>
+                                        <?= number_format($propiedad['area_propiedad'] ?? $propiedad['metros_cuadrados'] ?? 0, 0) ?> m²
+                                    </span>
                                 </div>
                             </div>
                             
                             <!-- Información del agente -->
-                            <div class="border-t pt-4 mb-4">
+                            <div class="flex items-center justify-between pt-3 border-t border-gray-200">
                                 <div class="flex items-center">
-                                    <?php if (!empty($propiedad['agente_foto'])): ?>
-                                        <img src="<?= htmlspecialchars($propiedad['agente_foto']) ?>" 
-                                             alt="<?= htmlspecialchars($propiedad['agente_nombre_completo']) ?>" 
+                                    <?php if (!empty($propiedad['foto_agente']) || !empty($propiedad['agente_foto'])): ?>
+                                        <img src="<?= htmlspecialchars($propiedad['foto_agente'] ?? $propiedad['agente_foto']) ?>" 
+                                             alt="<?= htmlspecialchars(($propiedad['nombre_agente'] ?? '') . ' ' . ($propiedad['apellido_agente'] ?? '')) ?>" 
                                              class="w-8 h-8 rounded-full mr-3">
                                     <?php else: ?>
                                         <div class="w-8 h-8 bg-gray-300 rounded-full mr-3 flex items-center justify-center">
@@ -122,30 +190,37 @@
                                     <?php endif; ?>
                                     
                                     <div>
-                                        <div class="font-medium text-gray-800">
-                                            <?= htmlspecialchars($propiedad['agente_nombre_completo']) ?>
+                                        <div class="font-medium text-gray-800 text-sm">
+                                            <?= htmlspecialchars(($propiedad['nombre_agente'] ?? '') . ' ' . ($propiedad['apellido_agente'] ?? 'Sin asignar')) ?>
                                         </div>
-                                        <div class="text-sm text-gray-600">
-                                            Enviada el <?= $propiedad['fecha_creacion_formateada'] ?>
+                                        <div class="text-xs text-gray-500">
+                                            Enviada el <?= date('d/m/Y', strtotime($propiedad['fecha_solicitud'] ?? $propiedad['fecha_creacion'] ?? date('Y-m-d H:i:s'))) ?>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
                             <!-- Botones de acción -->
-                            <div class="flex space-x-2">
-                                <a href="/properties/show/<?= $propiedad['id'] ?>" 
-                                   class="flex-1 bg-primary-600 hover:bg-primary-700 text-white text-center py-2 px-4 rounded-md transition-colors">
+                            <div class="flex space-x-2 mt-4">
+                                <a href="/properties/<?= $propiedad['id'] ?>" 
+                                   class="flex-1 bg-primary-600 hover:bg-primary-700 text-white text-center py-2 px-4 rounded-md transition-colors font-medium"
+                                   style="background-color: var(--color-azul-marino);">
                                     <i class="fas fa-eye mr-2"></i>Ver
                                 </a>
                                 
-                                <?php if ($propiedad['estado_publicacion'] === 'en_revision'): ?>
-                                    <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md transition-colors">
+                                <?php 
+                                $estado = $propiedad['estado'] ?? $propiedad['estado_publicacion'] ?? 'en_revision';
+                                if ($estado === 'en_revision'): ?>
+                                    <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md transition-colors font-medium">
                                         <i class="fas fa-clock mr-1"></i>Pendiente
                                     </button>
-                                <?php elseif ($propiedad['estado_publicacion'] === 'activa'): ?>
-                                    <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition-colors">
+                                <?php elseif ($estado === 'activa'): ?>
+                                    <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition-colors font-medium">
                                         <i class="fas fa-check mr-1"></i>Activa
+                                    </button>
+                                <?php elseif ($estado === 'vendida'): ?>
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors font-medium">
+                                        <i class="fas fa-trophy mr-1"></i>Vendida
                                     </button>
                                 <?php endif; ?>
                             </div>
@@ -161,10 +236,11 @@
                 </div>
                 <h3 class="text-2xl font-semibold text-gray-600 mb-4">No tienes propiedades enviadas</h3>
                 <p class="text-gray-500 mb-8">Cuando envíes propiedades para publicación, aparecerán aquí.</p>
-                <a href="/properties/create" class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                <a href="/properties/create" 
+                   class="inline-flex items-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
+                   style="background-color: var(--color-azul-marino);">
                     <i class="fas fa-plus mr-2"></i>Enviar Nueva Propiedad
                 </a>
             </div>
         <?php endif; ?>
-    </div>
-</div> 
+    </div> 

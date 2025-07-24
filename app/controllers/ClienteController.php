@@ -462,60 +462,48 @@ class ClienteController {
      * Mostrar propiedades enviadas por el cliente (Mis Ventas)
      */
     public function misVentas() {
+        // Verificar sesión de forma segura
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: /login');
+            exit;
+        }
+
+        if ($_SESSION['user_rol'] !== 'cliente') {
+            header('Location: /dashboard');
+            exit;
+        }
+
+        $user_id = $_SESSION['user_id'];
+
         try {
-            requireAuth();
-            requireRole(ROLE_CLIENTE);
-            
-            $userId = $_SESSION['user_id'];
-            
-            // Obtener propiedades enviadas por el cliente con tokens
-            $propiedades = $this->propertyModel->getPropiedadesPorClienteConTokens($userId);
-            
-                    // Información de ventas del usuario
-            
-            // Si no hay propiedades, inicializar como array vacío
-            if (!is_array($propiedades)) {
-                error_log("Error: getPropiedadesPorClienteConTokens no devolvió un array");
-                $propiedades = [];
-            }
-            
-            // Calcular estadísticas
-            $stats = [
-                'total' => count($propiedades),
-                'activas' => 0,
-                'en_revision' => 0,
-                'rechazadas' => 0,
-                'vendidas' => 0
+            // Obtener propiedades enviadas por el cliente
+            $propiedadesEnviadas = $this->propertyModel->getPropiedadesEnviadasPorCliente($user_id);
+
+            // Preparar datos para la vista
+            $data = [
+                'propiedades' => $propiedadesEnviadas,
+                'total_propiedades' => count($propiedadesEnviadas)
             ];
-            
-            foreach ($propiedades as $propiedad) {
-                $estado = $propiedad['estado_publicacion'] ?? 'en_revision';
-                switch ($estado) {
-                    case 'activa':
-                        $stats['activas']++;
-                        break;
-                    case 'en_revision':
-                        $stats['en_revision']++;
-                        break;
-                    case 'rechazada':
-                        $stats['rechazadas']++;
-                        break;
-                    case 'vendida':
-                        $stats['vendidas']++;
-                        break;
-                }
-            }
-            
+
+            // Configurar variables para el layout
             $pageTitle = 'Mis Ventas - ' . APP_NAME;
-            include APP_PATH . '/views/cliente/mis-ventas.php';
-            
+
+            // Capturar el contenido de la vista
+            ob_start();
+            include APP_PATH . '/views/cliente/propiedades_enviadas.php';
+            $content = ob_get_clean();
+
+            // Incluir el layout principal
+            include APP_PATH . '/views/layouts/main.php';
+
         } catch (Exception $e) {
-            // Log del error
             error_log("Error en misVentas: " . $e->getMessage());
-            
-            // Mostrar página de error amigable
+            // Mostrar página de error
             http_response_code(500);
-            $pageTitle = 'Error - ' . APP_NAME;
             include APP_PATH . '/views/errors/500.php';
         }
     }
