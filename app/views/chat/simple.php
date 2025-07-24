@@ -206,6 +206,10 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
         console.log('user_apellido:', '<?= $user_apellido ?? 'null' ?>');
         console.log('user_rol:', '<?= $user_role ?? 'null' ?>');
         console.log('user_email:', '<?= $user_email ?? 'null' ?>');
+        
+        console.log('🔍 Variables de URL:');
+        console.log('selectedAgentId:', '<?= $selectedAgentId ?? 'null' ?>');
+        console.log('propertyId:', '<?= $propertyId ?? 'null' ?>');
 
         // Variables globales
         let currentChat = null;
@@ -330,6 +334,8 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
 
         // AGREGAR MENSAJE A LA INTERFAZ
         function addMessageToUI(content, isOwn = false, timestamp = null) {
+            console.log('💬 Agregando mensaje a la UI:', { content, isOwn, timestamp });
+            
             const messageDiv = document.createElement('div');
             messageDiv.className = `mb-4 ${isOwn ? 'flex justify-end' : 'flex justify-start'}`;
             
@@ -344,12 +350,15 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             
             elements.messagesContainer.appendChild(messageDiv);
             elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
+            
+            console.log('✅ Mensaje agregado a la UI');
         }
 
         // CARGAR CONVERSACIONES
         async function loadConversations() {
             try {
                 console.log('📥 Cargando conversaciones...');
+                console.log('🔗 URL de la petición:', '/chat/direct-conversations');
                 
                 const response = await fetch('/chat/direct-conversations', {
                     headers: {
@@ -358,6 +367,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 });
                 
                 console.log('📥 Response status:', response.status);
+                console.log('📥 Response headers:', response.headers);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -369,20 +379,32 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 if (data.success) {
                     conversations = data.conversations;
                     console.log('✅ Conversaciones cargadas:', conversations);
+                    console.log('📊 Número de conversaciones:', conversations.length);
                     renderConversations();
+                    
+                    // Disparar evento personalizado para notificar que las conversaciones están listas
+                    const event = new CustomEvent('conversationsLoaded', { 
+                        detail: { conversations: conversations } 
+                    });
+                    document.dispatchEvent(event);
+                    console.log('📢 Evento conversationsLoaded disparado');
                 } else {
                     console.error('❌ Error en respuesta:', data.error);
                     showError('Error cargando conversaciones: ' + data.error);
                 }
             } catch (error) {
                 console.error('❌ Error cargando conversaciones:', error);
+                console.error('❌ Error stack:', error.stack);
                 showError('Error cargando conversaciones: ' + error.message);
             }
         }
 
         // RENDERIZAR CONVERSACIONES
         function renderConversations() {
+            console.log('🎨 Renderizando conversaciones:', conversations);
+            
             if (conversations.length === 0) {
+                console.log('📭 No hay conversaciones para renderizar');
                 elements.conversationsList.innerHTML = `
                     <div class="p-4 text-center text-gray-500">
                         <i class="fas fa-comments text-4xl mb-2"></i>
@@ -393,9 +415,10 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 return;
             }
             
+            console.log('📝 Renderizando', conversations.length, 'conversaciones');
             elements.conversationsList.innerHTML = conversations.map(conv => `
                 <div class="conversation-item p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${conv.conversacion_id === currentChat?.conversacion_id ? 'bg-green-50 border-green-200' : ''}" 
-                     data-conversation-id="${conv.conversacion_id}" data-user-id="${conv.cliente_id === <?= $_SESSION['user_id'] ?? 0 ?> ? conv.agente_id : conv.cliente_id}">
+                     data-conversation-id="${conv.conversacion_id}" data-user-id="${conv.cliente_id === <?= $user_id ?? 0 ?> ? conv.agente_id : conv.cliente_id}">
                     <div class="flex items-center space-x-3">
                         <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
                             <i class="fas fa-user text-white"></i>
@@ -412,6 +435,8 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 </div>
             `).join('');
             
+            console.log('✅ Conversaciones renderizadas');
+            
             // Agregar event listeners
             document.querySelectorAll('.conversation-item').forEach(item => {
                 item.addEventListener('click', function() {
@@ -424,26 +449,43 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
 
         // SELECCIONAR CONVERSACIÓN
         function selectConversation(conversationId, userId) {
+            console.log('🎯 Seleccionando conversación:', conversationId, 'Usuario:', userId);
+            console.log('📊 Conversaciones disponibles:', conversations);
+            
             currentChat = conversations.find(c => c.conversacion_id == conversationId);
-            if (!currentChat) return;
+            if (!currentChat) {
+                console.log('❌ No se encontró la conversación con ID:', conversationId);
+                console.log('🔍 Conversaciones disponibles:', conversations.map(c => ({ id: c.conversacion_id, nombre: c.nombre_otro_usuario })));
+                return;
+            }
             
             currentChat.user_id = userId;
-        currentChat.current_user_id = <?= $user_id ?? 0 ?>;
+            currentChat.current_user_id = <?= $user_id ?? 0 ?>;
             
             console.log('✅ Seleccionando conversación:', conversationId, 'Usuario:', userId);
+            console.log('📝 Datos de la conversación:', currentChat);
             
             // Actualizar UI
             document.querySelectorAll('.conversation-item').forEach(item => {
                 item.classList.remove('bg-green-50', 'border-green-200');
             });
-            document.querySelector(`[data-conversation-id="${conversationId}"]`).classList.add('bg-green-50', 'border-green-200');
+            
+            const conversationElement = document.querySelector(`[data-conversation-id="${conversationId}"]`);
+            if (conversationElement) {
+                conversationElement.classList.add('bg-green-50', 'border-green-200');
+                console.log('✅ Elemento de conversación resaltado en la UI');
+            } else {
+                console.log('❌ No se encontró el elemento de conversación en la UI');
+            }
             
             // Actualizar header
             elements.chatTitle.textContent = `${currentChat.nombre_otro_usuario} ${currentChat.apellido_otro_usuario}`;
             elements.chatSubtitle.textContent = 'En línea';
+            console.log('✅ Header actualizado:', elements.chatTitle.textContent);
             
             // Mostrar área de mensajes
             elements.messageInputContainer.classList.remove('hidden');
+            console.log('✅ Área de mensajes mostrada');
             
             // Cargar mensajes
             loadMessages(conversationId);
@@ -453,6 +495,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
         async function loadMessages(conversationId) {
             try {
                 console.log('📥 Cargando mensajes para conversación:', conversationId);
+                console.log('🔗 URL de la petición:', `/chat/direct/${conversationId}/messages`);
                 
                 const response = await fetch(`/chat/direct/${conversationId}/messages`, {
                     headers: {
@@ -484,9 +527,12 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
 
         // RENDERIZAR MENSAJES
         function renderMessages(messages) {
+            console.log('🎨 Renderizando mensajes:', messages);
+            
             elements.messagesContainer.innerHTML = '';
             
             if (messages.length === 0) {
+                console.log('📭 No hay mensajes para renderizar');
                 elements.messagesContainer.innerHTML = `
                     <div class="text-center text-gray-500 py-8">
                         <i class="fas fa-comment-dots text-4xl mb-2"></i>
@@ -497,6 +543,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 return;
             }
             
+            console.log('📝 Renderizando', messages.length, 'mensajes');
             messages.forEach(msg => {
                 const isOwnMessage = msg.remitente_id == <?= $user_id ?? 0 ?>;
                 const messageContent = msg.mensaje || 'Mensaje sin contenido';
@@ -504,6 +551,8 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 
                 addMessageToUI(messageContent, isOwnMessage, timestamp);
             });
+            
+            console.log('✅ Mensajes renderizados');
         }
 
         // BUSCAR USUARIOS
@@ -590,6 +639,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
         async function createConversation(userId, userName) {
             try {
                 console.log('🚀 Creando conversación con usuario:', userId);
+                console.log('📊 Estado actual de conversations antes de crear:', conversations);
                 
                 const response = await fetch('/chat/create-direct-conversation', {
                     method: 'POST',
@@ -601,6 +651,8 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                         user_id: userId
                     })
                 });
+                
+                console.log('📥 Response status:', response.status);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -614,12 +666,16 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                     elements.searchModal.classList.add('hidden');
                     
                     // Recargar conversaciones y seleccionar la nueva
+                    console.log('🔄 Recargando conversaciones...');
                     await loadConversations();
+                    console.log('📊 Conversaciones después de recargar:', conversations);
                     
                     // Buscar la conversación recién creada y seleccionarla
                     const newConversation = conversations.find(conv => 
                         conv.agente_id == userId || conv.cliente_id == userId
                     );
+                    
+                    console.log('🔍 Nueva conversación encontrada:', newConversation);
                     
                     if (newConversation) {
                         console.log('✅ Seleccionando conversación recién creada:', newConversation);
@@ -646,6 +702,8 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                         
                         // Cargar mensajes
                         loadMessages(newConversation.conversacion_id);
+                    } else {
+                        console.error('❌ No se encontró la conversación recién creada');
                     }
                 } else {
                     console.error('❌ Error:', data.error);
@@ -661,11 +719,13 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
         async function selectAgentById(agentId) {
             try {
                 console.log('🎯 Seleccionando agente por ID:', agentId);
+                console.log('📊 Estado actual de conversations:', conversations);
                 
                 // Esperar a que las conversaciones se carguen si no están disponibles
                 if (!conversations || conversations.length === 0) {
                     console.log('⏳ Esperando a que se carguen las conversaciones...');
                     await loadConversations();
+                    console.log('📊 Conversaciones cargadas:', conversations);
                 }
                 
                 // Buscar conversación existente con este agente
@@ -673,31 +733,13 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                     conv.agente_id == agentId || conv.cliente_id == agentId
                 );
                 
+                console.log('🔍 Conversación existente encontrada:', existingConversation);
+                
                 if (existingConversation) {
                     console.log('✅ Conversación existente encontrada:', existingConversation);
-                    // Seleccionar la conversación directamente
-                    currentChat = existingConversation;
-                    currentChat.user_id = existingConversation.agente_id || existingConversation.cliente_id;
-                    currentChat.current_user_id = <?= $user_id ?? 0 ?>;
-                    
-                    // Actualizar UI
-                    document.querySelectorAll('.conversation-item').forEach(item => {
-                        item.classList.remove('bg-green-50', 'border-green-200');
-                    });
-                    const conversationElement = document.querySelector(`[data-conversation-id="${existingConversation.conversacion_id}"]`);
-                    if (conversationElement) {
-                        conversationElement.classList.add('bg-green-50', 'border-green-200');
-                    }
-                    
-                    // Actualizar header
-                    elements.chatTitle.textContent = `${existingConversation.nombre_otro_usuario} ${existingConversation.apellido_otro_usuario}`;
-                    elements.chatSubtitle.textContent = 'En línea';
-                    
-                    // Mostrar área de mensajes
-                    elements.messageInputContainer.classList.remove('hidden');
-                    
-                    // Cargar mensajes
-                    loadMessages(existingConversation.conversacion_id);
+                    // Seleccionar la conversación directamente usando selectConversation
+                    const userId = existingConversation.agente_id == agentId ? existingConversation.agente_id : existingConversation.cliente_id;
+                    selectConversation(existingConversation.conversacion_id, userId);
                     return;
                 }
                 
@@ -875,12 +917,41 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             const selectedAgentId = urlParams.get('agent');
             const propertyId = urlParams.get('property');
             
+            console.log('🔍 URL Params:', {
+                agent: selectedAgentId,
+                property: propertyId,
+                fullUrl: window.location.href
+            });
+            
             if (selectedAgentId) {
                 console.log('🎯 Agente preseleccionado:', selectedAgentId);
-                // Buscar el agente y crear conversación automáticamente
-                setTimeout(() => {
-                    selectAgentById(selectedAgentId);
-                }, 2000); // Esperar a que se carguen las conversaciones
+                
+                // Escuchar el evento de conversaciones cargadas
+                const handleConversationsLoaded = async (event) => {
+                    console.log('📢 Evento conversationsLoaded recibido, ejecutando selectAgentById...');
+                    await selectAgentById(selectedAgentId);
+                    // Remover el listener después de usarlo
+                    document.removeEventListener('conversationsLoaded', handleConversationsLoaded);
+                };
+                
+                document.addEventListener('conversationsLoaded', handleConversationsLoaded);
+                
+                // También mantener el método de polling como fallback
+                const checkAndSelectAgent = async () => {
+                    console.log('🔄 Verificando si las conversaciones están cargadas (fallback)...');
+                    if (conversations && conversations.length > 0) {
+                        console.log('✅ Conversaciones cargadas (fallback), ejecutando selectAgentById...');
+                        await selectAgentById(selectedAgentId);
+                    } else {
+                        console.log('⏳ Conversaciones aún no cargadas (fallback), esperando...');
+                        setTimeout(checkAndSelectAgent, 500); // Verificar cada 500ms
+                    }
+                };
+                
+                // Iniciar el proceso de verificación como fallback
+                setTimeout(checkAndSelectAgent, 2000); // Empezar después de 2 segundos como fallback
+            } else {
+                console.log('❌ No se encontró parámetro agent en la URL');
             }
             
             // BOTÓN ENVIAR
@@ -934,6 +1005,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             console.log('🚀 Event listeners configurados');
             
             // Cargar conversaciones iniciales
+            console.log('🔄 Cargando conversaciones iniciales...');
             loadConversations();
             
             // Inicializar WebSocket

@@ -208,13 +208,13 @@ $pageTitle = $title;
                         </div>
                         <?php if (!empty($favorito['agente_id'])): ?>
                         <a href="/chat/simple?agent=<?= $favorito['agente_id'] ?>&v=<?= time() ?>" 
-                           class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:transform hover:scale-105"
-                           style="background: linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%);"
-                           onmouseover="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda-hover) 0%, var(--color-verde-esmeralda) 100%)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(42, 157, 143, 0.3)'"
-                           onmouseout="this.style.background='linear-gradient(135deg, var(--color-verde-esmeralda) 0%, var(--color-verde-esmeralda-hover) 100%)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'"
-                           title="Contactar al agente por chat">
-                            <i class="fas fa-comments text-sm" style="color: white;"></i>
-                        </a>
+                           class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white transition-all duration-200"
+                           style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%);"
+                           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(29, 53, 87, 0.3)'"
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <i class="fas fa-comments mr-2"></i>
+                                Chat
+                            </a>
                         <?php endif; ?>
                     </div>
                     <?php endif; ?>

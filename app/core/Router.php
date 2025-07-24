@@ -128,14 +128,31 @@ class Router {
             return false;
         }
         
+        // Primero buscar rutas exactas (sin parámetros)
         foreach ($this->routes[$method] as $route => $callback) {
-            $pattern = $this->convertRouteToRegex($route);
-            if (preg_match($pattern, $path, $matches)) {
-                array_shift($matches); // Remover el match completo
-                return [
-                    'callback' => $callback,
-                    'params' => $matches
-                ];
+            if (strpos($route, '{') === false) {
+                // Es una ruta exacta
+                if ($route === $path) {
+                    return [
+                        'callback' => $callback,
+                        'params' => []
+                    ];
+                }
+            }
+        }
+        
+        // Luego buscar rutas con parámetros
+        foreach ($this->routes[$method] as $route => $callback) {
+            if (strpos($route, '{') !== false) {
+                // Es una ruta con parámetros
+                $pattern = $this->convertRouteToRegex($route);
+                if (preg_match($pattern, $path, $matches)) {
+                    array_shift($matches); // Remover el match completo
+                    return [
+                        'callback' => $callback,
+                        'params' => $matches
+                    ];
+                }
             }
         }
         
@@ -208,6 +225,13 @@ class Router {
         
         // Ejecutar el método
         call_user_func_array([$controller, $methodName], $params);
+    }
+    
+    /**
+     * Obtener todas las rutas (para debugging)
+     */
+    public function getRoutes() {
+        return $this->routes;
     }
     
     /**
@@ -347,15 +371,10 @@ class Router {
         
         // Rutas de chat
         $this->get('/chat', 'ChatController@index');
-        $this->get('/chat/{id}', 'ChatController@showDirectChat');
-        $this->post('/chat/{id}/messages', 'ChatController@sendMessage');
-        $this->get('/chat/{id}/messages', 'ChatController@getMessages');
-        $this->get('/chat/unread-messages', 'ChatController@getUnreadMessages');
-        $this->post('/chat/{id}/mark-read', 'ChatController@markAsRead');
-        $this->get('/chat/stats', 'ChatController@getStats');
-        $this->get('/chat/search', 'ChatController@search');
-        $this->get('/chat/search-users', 'ChatController@searchUsers');
-        $this->get('/chat/iniciar/{clienteId}', 'ChatController@iniciarConNuevoCliente');
+        
+        // Chat simple desde cero (DEBE IR ANTES que /chat/{id})
+        $this->get('/chat-simple', 'ChatController@simple');
+        $this->get('/chat/simple', 'ChatController@simple');
         
         // Rutas del chat integrado (API)
         $this->get('/chat/conversations', 'ChatController@conversations');
@@ -370,9 +389,18 @@ class Router {
         $this->post('/chat/create-direct-conversation', 'ChatController@createDirectConversation');
         $this->get('/chat/users-for-direct-chat', 'ChatController@usersForDirectChat');
         
-        // Chat simple desde cero
-        $this->get('/chat-simple', 'ChatController@simple');
-        $this->get('/chat/simple', 'ChatController@simple');
+        // Rutas específicas del chat (DEBEN IR ANTES que /chat/{id})
+        $this->get('/chat/unread-messages', 'ChatController@getUnreadMessages');
+        $this->get('/chat/stats', 'ChatController@getStats');
+        $this->get('/chat/search', 'ChatController@search');
+        $this->get('/chat/search-users', 'ChatController@searchUsers');
+        $this->get('/chat/iniciar/{clienteId}', 'ChatController@iniciarConNuevoCliente');
+        
+        // Rutas de chat con parámetros (DEBEN IR AL FINAL)
+        $this->get('/chat/{id}', 'ChatController@showDirectChat');
+        $this->post('/chat/{id}/messages', 'ChatController@sendMessage');
+        $this->get('/chat/{id}/messages', 'ChatController@getMessages');
+        $this->post('/chat/{id}/mark-read', 'ChatController@markAsRead');
         
         // Rutas de favoritos
         $this->get('/favorites', 'FavoriteController@index');

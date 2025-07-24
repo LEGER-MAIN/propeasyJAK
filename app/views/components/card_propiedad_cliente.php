@@ -125,8 +125,12 @@ $propiedad = $propiedad ?? [];
                 <i class="fas fa-eye mr-1"></i>Ver Propiedad
             </a>
             <a href="/chat/simple?agent=<?= $propiedad['agente_id'] ?>&v=<?= time() ?>" 
-               class="flex-1 text-center px-3 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 transition-colors">
-                <i class="fas fa-comments mr-1"></i>Contactar
+               class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white transition-all duration-200"
+               style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%);"
+               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(29, 53, 87, 0.3)'"
+               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                <i class="fas fa-comments mr-2"></i>
+                Chat
             </a>
         </div>
         

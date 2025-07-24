@@ -208,14 +208,11 @@ $content = ob_start();
                     
                     <div class="space-y-3">
                         <?php if (!empty($property['agente_telefono'])): ?>
-                            <a href="/chat/simple?agent=<?= $property['agente_id'] ?>&property=<?= $property['id'] ?>&v=<?= time() ?>" 
-                               class="flex items-center transition-all duration-200 hover:transform hover:scale-105"
-                               style="color: var(--text-secondary);"
-                               onmouseover="this.style.color='var(--color-verde-esmeralda)'"
-                               onmouseout="this.style.color='var(--text-secondary)'"
-                               title="Contactar al agente por chat">
-                                <i class="fas fa-comments mr-3" style="color: var(--color-verde-esmeralda);"></i>
-                                <span>Contactar por chat</span>
+                            <a href="/chat/simple?agent=<?= $property['agente_id'] ?>&v=<?= time() ?>" 
+                               class="btn btn-primary w-full text-center py-3 px-4 rounded-md flex items-center justify-center"
+                               title="Contactar a <?= htmlspecialchars($property['agente_nombre']) ?> por chat"
+                               onclick="trackContact('chat', '<?= htmlspecialchars($property['agente_nombre']) ?>')">
+                                <i class="fas fa-comments mr-2"></i>Contactar
                             </a>
                         <?php endif; ?>
                         
@@ -229,7 +226,7 @@ $content = ob_start();
                     
                     <div class="mt-6">
                         <?php if (isAuthenticated()): ?>
-                            <a href="/chat/simple?agent=<?= $property['agente_id'] ?>&property=<?= $property['id'] ?>" 
+                            <a href="/chat/simple?agent=<?= $property['agente_id'] ?>&v=<?= time() ?>" 
                                class="btn btn-primary w-full text-center py-3 px-4 rounded-md flex items-center justify-center"
                                title="Contactar a <?= htmlspecialchars($property['agente_nombre']) ?> por chat"
                                onclick="trackContact('chat', '<?= htmlspecialchars($property['agente_nombre']) ?>')">

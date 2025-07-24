@@ -969,7 +969,10 @@ class ChatController {
      * API para obtener conversaciones directas
      */
     public function directConversations() {
+        error_log("🔍 directConversations() llamado");
+        
         if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            error_log("❌ Método no permitido: " . $_SERVER['REQUEST_METHOD']);
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
             return;
@@ -981,6 +984,7 @@ class ChatController {
         }
 
         if (!isset($_SESSION['user_id'])) {
+            error_log("❌ Usuario no autenticado");
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado']);
             return;
@@ -988,8 +992,13 @@ class ChatController {
 
         $user_id = $_SESSION['user_id'];
         $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        
+        error_log("🔍 Usuario ID: $user_id, Rol: $user_role");
 
         $conversaciones = $this->chatModel->getConversacionesDirectas($user_id, $user_role);
+        
+        error_log("📊 Conversaciones encontradas: " . count($conversaciones));
+        error_log("📊 Conversaciones: " . json_encode($conversaciones));
         
         header('Content-Type: application/json');
         echo json_encode([
@@ -1041,7 +1050,10 @@ class ChatController {
      * API para crear conversación directa
      */
     public function createDirectConversation() {
+        error_log("🔍 createDirectConversation() llamado");
+        
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            error_log("❌ Método no permitido: " . $_SERVER['REQUEST_METHOD']);
             http_response_code(405);
             echo json_encode(['error' => 'Método no permitido']);
             return;
@@ -1053,6 +1065,7 @@ class ChatController {
         }
 
         if (!isset($_SESSION['user_id'])) {
+            error_log("❌ Usuario no autenticado");
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado']);
             return;
@@ -1062,27 +1075,36 @@ class ChatController {
         $input = json_decode(file_get_contents('php://input'), true);
         $user_id = $input['user_id'] ?? null;
 
+        error_log("🔍 Datos recibidos: " . json_encode($input));
+        error_log("🔍 User ID a crear conversación: $user_id");
+
         if (!$user_id) {
+            error_log("❌ ID de usuario requerido");
             http_response_code(400);
             echo json_encode(['error' => 'ID de usuario requerido']);
             return;
         }
 
         $current_user_id = $_SESSION['user_id'];
+        error_log("🔍 Usuario actual: $current_user_id, Usuario objetivo: $user_id");
 
         // Crear conversación directa
         $result = $this->chatModel->crearObtenerConversacionDirecta($current_user_id, $user_id);
+        
+        error_log("🔍 Resultado de crear conversación: " . ($result ? $result : 'false'));
         
         header('Content-Type: application/json');
         if ($result) {
             // Obtener información de la conversación creada
             $conversacion = $this->chatModel->getConversacionDirecta($result, $current_user_id);
+            error_log("🔍 Conversación creada: " . json_encode($conversacion));
             echo json_encode([
                 'success' => true,
                 'conversation' => $conversacion,
                 'message' => 'Conversación creada correctamente'
             ]);
         } else {
+            error_log("❌ Error al crear conversación");
             http_response_code(500);
             echo json_encode(['error' => 'Error al crear conversación']);
         }

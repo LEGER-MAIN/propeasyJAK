@@ -524,7 +524,7 @@ $roleNames = [
                                     </a>
                                     <a href="/chat/simple?agent=<?= $solicitud['agente_id'] ?>&v=<?= time() ?>" 
                                        class="flex-1 text-center px-3 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 transition-colors">
-                                        <i class="fas fa-comments mr-1"></i>Contactar
+                                        <i class="fas fa-comments mr-1"></i>Chat
                                     </a>
                                 </div>
                             </div>

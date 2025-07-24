@@ -717,7 +717,7 @@ $ciudad = $ciudad ?? '';
                             Ver Perfil Completo
                         </a>
                         
-                        <a href="/chat/<?= $agente['id'] ?>" class="btn-contactar-agente">
+                        <a href="/chat/simple?agent=<?= $agente['id'] ?>&v=<?= time() ?>" class="btn-contactar-agente">
                             <i class="fas fa-comments"></i>
                             Contactar
                         </a>
@@ -800,5 +800,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-</script> 
 </script> 

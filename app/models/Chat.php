@@ -352,46 +352,64 @@ class Chat {
     /**
      * Crear o recuperar una conversación directa entre dos usuarios
      * Sin necesidad de solicitud de compra
-     * @param int $user1_id
-     * @param int $user2_id
+     * @param int $user1_id ID del primer usuario
+     * @param int $user2_id ID del segundo usuario
      * @return int|false ID de la conversación o false en error
      */
     public function crearObtenerConversacionDirecta($user1_id, $user2_id) {
+        error_log("🔍 crearObtenerConversacionDirecta() llamado - User1: $user1_id, User2: $user2_id");
+        
         try {
             // Obtener roles de los usuarios
             $sqlRol = "SELECT id, rol FROM usuarios WHERE id IN (?, ?)";
             $usuarios = $this->db->select($sqlRol, [$user1_id, $user2_id]);
-            if (count($usuarios) != 2) return false;
+            error_log("🔍 Usuarios encontrados: " . json_encode($usuarios));
+            
+            if (count($usuarios) != 2) {
+                error_log("❌ No se encontraron ambos usuarios");
+                return false;
+            }
             
             $roles = array_column($usuarios, 'rol', 'id');
-            if (!isset($roles[$user1_id]) || !isset($roles[$user2_id])) return false;
+            if (!isset($roles[$user1_id]) || !isset($roles[$user2_id])) {
+                error_log("❌ No se pudieron obtener los roles");
+                return false;
+            }
             
             $rol1 = $roles[$user1_id];
             $rol2 = $roles[$user2_id];
+            error_log("🔍 Roles - User1: $rol1, User2: $rol2");
             
             // Solo permitir cliente-agente o agente-cliente
-            if ($rol1 == $rol2) return false;
+            if ($rol1 == $rol2) {
+                error_log("❌ Ambos usuarios tienen el mismo rol: $rol1");
+                return false;
+            }
             
             // Determinar quién es cliente y quién es agente
             $cliente_id = $rol1 === 'cliente' ? $user1_id : $user2_id;
             $agente_id = $rol1 === 'agente' ? $user1_id : $user2_id;
+            error_log("🔍 Cliente ID: $cliente_id, Agente ID: $agente_id");
             
             // Buscar si ya existe una conversación directa entre estos usuarios
             $sql = "SELECT id FROM conversaciones_directas WHERE cliente_id = ? AND agente_id = ? LIMIT 1";
             $row = $this->db->selectOne($sql, [$cliente_id, $agente_id]);
+            error_log("🔍 Conversación existente: " . json_encode($row));
             
             if ($row && isset($row['id'])) {
+                error_log("✅ Conversación existente encontrada: " . $row['id']);
                 return $row['id'];
             }
             
             // Crear nueva conversación directa
             $sql = "INSERT INTO conversaciones_directas (cliente_id, agente_id, fecha_creacion) VALUES (?, ?, NOW())";
             $id = $this->db->insert($sql, [$cliente_id, $agente_id]);
+            error_log("🔍 Nueva conversación creada con ID: " . ($id ? $id : 'false'));
             
             return $id ? $id : false;
             
         } catch (Exception $e) {
-            error_log("Error en crearObtenerConversacionDirecta: " . $e->getMessage());
+            error_log("❌ Error en crearObtenerConversacionDirecta: " . $e->getMessage());
             return false;
         }
     }
@@ -400,9 +418,11 @@ class Chat {
      * Obtener conversaciones directas de un usuario
      * @param int $usuarioId ID del usuario
      * @param string $rol Rol del usuario
-     * @return array Array de conversaciones directas
+     * @return array Array de conversaciones
      */
     public function getConversacionesDirectas($usuarioId, $rol) {
+        error_log("🔍 getConversacionesDirectas() llamado - Usuario: $usuarioId, Rol: $rol");
+        
         $sql = "SELECT 
                     cd.id as conversacion_id,
                     cd.cliente_id,
@@ -439,7 +459,14 @@ class Chat {
                 WHERE (cd.cliente_id = ? OR cd.agente_id = ?)
                 ORDER BY fecha_ultimo_mensaje DESC";
         
-        return $this->db->select($sql, [$usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId]);
+        $params = [$usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId];
+        error_log("🔍 SQL: $sql");
+        error_log("🔍 Params: " . json_encode($params));
+        
+        $result = $this->db->select($sql, $params);
+        error_log("📊 Resultado: " . json_encode($result));
+        
+        return $result;
     }
     
     /**

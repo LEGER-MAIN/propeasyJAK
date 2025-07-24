@@ -44,6 +44,9 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Chat simple** con agente preseleccionado
 - **Botones de contacto** unificados en todas las páginas
 - **Redirección automática** al chat con agente seleccionado
+- **Preselección automática** de conversaciones existentes
+- **Creación automática** de nuevas conversaciones
+- **Experiencia consistente** en todas las páginas del sistema
 
 ### 📅 Sistema de Citas
 - **Agendamiento de visitas** a propiedades
@@ -445,52 +448,59 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 - **Ratchet** por el servidor WebSocket
 - **PHPMailer** por el envío de emails
 
-## 🆕 Mejoras Recientes (v2.3.0)
+## 🆕 Mejoras Recientes (v2.4.0)
 
-### Sistema de Chat Unificado
-- **Botones de contacto unificados**: Todos los botones "Contactar" y "Chat" usan la misma lógica
-- **Redirección automática**: Chat simple con agente preseleccionado automáticamente
-- **Preselección de conversaciones**: Selección automática de conversaciones existentes
-- **Creación automática**: Nuevas conversaciones se crean y seleccionan automáticamente
-- **Consistencia**: Misma experiencia en todas las páginas (agentes, solicitudes, propiedades)
+### Sistema de Chat Unificado y Mejorado
+- **✅ Problema resuelto**: Inconsistencia en botones "Contactar" entre páginas
+- **🔗 Enlaces unificados**: Todos los botones usan `/chat/simple?agent={id}`
+- **🎯 Preselección automática**: Agente seleccionado automáticamente al cargar
+- **🔄 Selección inteligente**: Conversaciones existentes se seleccionan automáticamente
+- **➕ Creación automática**: Nuevas conversaciones se crean y seleccionan automáticamente
+- **📱 Experiencia consistente**: Misma funcionalidad en todas las páginas
+- **🔧 Router mejorado**: Priorización de rutas exactas sobre rutas con parámetros
+- **📊 Logs detallados**: Sistema de debugging completo para rastrear el flujo
 
-### Sistema de Eliminación de Solicitudes
-- **Lógica unificada**: Misma funcionalidad en dashboard y página de solicitudes
-- **Estados permitidos**: Solo se pueden eliminar solicitudes en estados apropiados
-- **Seguridad mejorada**: Validación de permisos, CSRF y registro de actividades
-- **Eliminación física**: Mejor rendimiento y limpieza de base de datos
-- **Confirmación visual**: Mensajes de éxito/error con actualización automática
+### Correcciones Técnicas Implementadas
+- **🔧 Router optimizado**: Método `findRouteWithParams` mejorado para priorizar rutas exactas
+- **📁 Archivos corregidos**: `app/views/agente/listar_agentes.php` con enlaces correctos
+- **🎨 JavaScript mejorado**: Sistema de eventos robusto para preselección de agentes
+- **⚡ Rendimiento optimizado**: Carga asíncrona de conversaciones con eventos personalizados
+- **🛡️ Manejo de errores**: Validación mejorada y logs detallados para debugging
 
-### Dashboard del Cliente
-- **Estadísticas en tiempo real**: Favoritos, solicitudes y citas
-- **Propiedades solicitadas**: Vista completa con fotos y datos
-- **Eliminación de solicitudes**: Botones con confirmación
-- **Paginación incremental**: Carga de más propiedades
-- **Información completa**: Precio, ubicación, características y agente
-
-### Optimizaciones Técnicas
-- **Alias de campos**: Estructura de datos optimizada
-- **Manejo de errores**: Mejor experiencia de usuario
-- **Código limpio**: Eliminación de archivos de debug
-- **Lógica simplificada**: Reducción de complejidad en funciones de chat
+### Características del Sistema de Chat
+- **💬 Chat Simple**: Interfaz moderna con preselección automática
+- **🎯 Preselección de Agente**: Detección automática del agente desde URL
+- **🔄 Carga Inteligente**: Espera a que las conversaciones se carguen antes de preseleccionar
+- **📱 Responsive**: Funciona perfectamente en dispositivos móviles
+- **🔍 Búsqueda Integrada**: Búsqueda de usuarios para nuevas conversaciones
+- **📊 Estadísticas**: Contador de mensajes no leídos y estado online
 
 ## 🐛 Problemas Conocidos y Soluciones
 
 ### ✅ Chat Unificado Resuelto
 **Problema**: Inconsistencia en botones "Contactar" y "Chat" entre páginas
 **Solución**: Todos los botones ahora usan `/chat/simple?agent={id}` con preselección automática
+**Estado**: ✅ COMPLETAMENTE RESUELTO
 
 ### Caché del Navegador
 **Problema**: Cambios no se reflejan inmediatamente
 **Solución**: Usar Ctrl+F5 para limpiar caché o agregar parámetro `&v={timestamp}`
+**Estado**: ✅ SOLUCIONADO
 
 ### Fotos de Perfil No Se Muestran
 **Problema**: Rutas inconsistentes en diferentes controladores
 **Solución**: Todas las fotos ahora usan `/uploads/profiles/` unificadamente
+**Estado**: ✅ SOLUCIONADO
 
 ### Búsqueda de Agentes con Espacios
 **Problema**: Búsqueda no funciona con nombres como "Angel Leger"
 **Solución**: Búsqueda SQL mejorada con concatenaciones y división de palabras
+**Estado**: ✅ SOLUCIONADO
+
+### Redirección Incorrecta al Chat
+**Problema**: Botones "Contactar" redirigían a `/chat/{id}` en lugar de `/chat/simple?agent={id}`
+**Solución**: Corregidos todos los enlaces para usar la ruta correcta del chat simple
+**Estado**: ✅ COMPLETAMENTE RESUELTO
 
 ## 📞 Soporte
 
@@ -503,6 +513,17 @@ Para soporte técnico o consultas:
 - 🐛 Issues: https://github.com/propeasy/propeasy/issues
 
 ## 🔄 Changelog
+
+### v2.4.0 (2024-12-23)
+- 🎯 **Sistema de chat completamente unificado**
+- 🔗 **Corrección de enlaces en todas las páginas de agentes**
+- 🔧 **Router optimizado con priorización de rutas exactas**
+- 📊 **Sistema de logs detallados para debugging**
+- ⚡ **Carga asíncrona mejorada con eventos personalizados**
+- 🛡️ **Manejo robusto de errores y validaciones**
+- 📱 **Experiencia consistente en todas las páginas**
+- 🔄 **Preselección automática de conversaciones existentes**
+- ➕ **Creación automática de nuevas conversaciones**
 
 ### v2.3.0 (2024-12-23)
 - 💬 Sistema de chat unificado en todas las páginas
