@@ -469,4 +469,28 @@ footer {
 
 .focus\:border-primary-500:focus {
     border-color: var(--color-azul-marino) !important;
-} 
+}
+
+/* Estilos para filtros de propiedades */
+.filtro-estado {
+    transition: all 0.3s ease;
+}
+
+.filtro-estado:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.filtro-estado.active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.propiedad-card {
+    transition: all 0.3s ease;
+}
+
+.propiedad-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}

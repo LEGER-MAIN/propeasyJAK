@@ -79,11 +79,76 @@ $total_propiedades = $data['total_propiedades'] ?? 0;
             </div>
         </div>
 
+        <!-- Filtros por Estado -->
+        <div class="mb-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div class="mb-4 sm:mb-0">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2" style="color: var(--color-azul-marino);">
+                        Filtrar por Estado
+                    </h3>
+                    <p class="text-sm text-gray-600" style="color: var(--text-secondary);">
+                        Selecciona un estado para filtrar las propiedades
+                    </p>
+                </div>
+                
+                <div class="flex flex-wrap gap-2">
+                    <!-- Filtro: Todos -->
+                    <button onclick="filtrarPropiedades('todos')" 
+                            class="filtro-estado px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border-2 active" 
+                            data-estado="todos"
+                            style="border-color: var(--color-azul-marino); color: var(--color-azul-marino); background-color: var(--color-azul-marino-light);">
+                        <i class="fas fa-list mr-2"></i>Todos
+                        <span class="ml-2 bg-white text-blue-600 px-2 py-1 rounded-full text-xs font-bold"><?= $total_propiedades ?></span>
+                    </button>
+                    
+                    <!-- Filtro: Activas -->
+                    <button onclick="filtrarPropiedades('activa')" 
+                            class="filtro-estado px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border-2" 
+                            data-estado="activa"
+                            style="border-color: var(--color-verde); color: var(--color-verde);">
+                        <i class="fas fa-check-circle mr-2"></i>Activas
+                        <span class="ml-2 bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-bold"><?= count(array_filter($propiedades, function($p) { return ($p['estado_publicacion'] ?? $p['estado']) === 'activa'; })) ?></span>
+                    </button>
+                    
+                    <!-- Filtro: En Revisión -->
+                    <button onclick="filtrarPropiedades('en_revision')" 
+                            class="filtro-estado px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border-2" 
+                            data-estado="en_revision"
+                            style="border-color: #f59e0b; color: #f59e0b;">
+                        <i class="fas fa-clock mr-2"></i>En Revisión
+                        <span class="ml-2 bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full text-xs font-bold"><?= count(array_filter($propiedades, function($p) { return ($p['estado_publicacion'] ?? $p['estado']) === 'en_revision'; })) ?></span>
+                    </button>
+                    
+                    <!-- Filtro: Vendidas -->
+                    <button onclick="filtrarPropiedades('vendida')" 
+                            class="filtro-estado px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border-2" 
+                            data-estado="vendida"
+                            style="border-color: #3b82f6; color: #3b82f6;">
+                        <i class="fas fa-trophy mr-2"></i>Vendidas
+                        <span class="ml-2 bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-bold"><?= count(array_filter($propiedades, function($p) { return ($p['estado_publicacion'] ?? $p['estado']) === 'vendida'; })) ?></span>
+                    </button>
+                    
+                    <!-- Filtro: Rechazadas -->
+                    <button onclick="filtrarPropiedades('rechazada')" 
+                            class="filtro-estado px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 border-2" 
+                            data-estado="rechazada"
+                            style="border-color: #ef4444; color: #ef4444;">
+                        <i class="fas fa-times-circle mr-2"></i>Rechazadas
+                        <span class="ml-2 bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs font-bold"><?= count(array_filter($propiedades, function($p) { return ($p['estado_publicacion'] ?? $p['estado']) === 'rechazada'; })) ?></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Lista de Propiedades -->
-        <?php if (!empty($propiedades)): ?>
+        <div id="propiedades-container">
+            <?php if (!empty($propiedades)): ?>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <?php foreach ($propiedades as $propiedad): ?>
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <?php
+                    $estado = $propiedad['estado'] ?? $propiedad['estado_publicacion'] ?? 'en_revision';
+                    ?>
+                    <div class="propiedad-card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300" data-estado="<?= $estado ?>">
                         <!-- Imagen de la propiedad -->
                         <div class="relative h-48 bg-gray-200">
                             <?php if (!empty($propiedad['foto_propiedad']) || !empty($propiedad['imagen_principal'])): ?>
@@ -243,4 +308,77 @@ $total_propiedades = $data['total_propiedades'] ?? 0;
                 </a>
             </div>
         <?php endif; ?>
-    </div> 
+    </div>
+
+    <!-- JavaScript para los filtros -->
+    <script>
+        function filtrarPropiedades(estado) {
+            // Obtener todos los botones de filtro
+            const botonesFiltro = document.querySelectorAll('.filtro-estado');
+            const propiedades = document.querySelectorAll('.propiedad-card');
+            
+            // Remover clase active de todos los botones
+            botonesFiltro.forEach(boton => {
+                boton.classList.remove('active');
+                boton.style.backgroundColor = '';
+                boton.style.color = boton.style.borderColor;
+            });
+            
+            // Agregar clase active al botón seleccionado
+            const botonActivo = document.querySelector(`[data-estado="${estado}"]`);
+            if (botonActivo) {
+                botonActivo.classList.add('active');
+                botonActivo.style.backgroundColor = 'var(--color-azul-marino-light)';
+                botonActivo.style.color = 'var(--color-azul-marino)';
+            }
+            
+            // Filtrar las propiedades
+            propiedades.forEach(propiedad => {
+                if (estado === 'todos') {
+                    propiedad.style.display = 'block';
+                    propiedad.style.opacity = '1';
+                    propiedad.style.transform = 'scale(1)';
+                } else {
+                    const estadoPropiedad = propiedad.getAttribute('data-estado');
+                    if (estadoPropiedad === estado) {
+                        propiedad.style.display = 'block';
+                        propiedad.style.opacity = '1';
+                        propiedad.style.transform = 'scale(1)';
+                    } else {
+                        propiedad.style.display = 'none';
+                        propiedad.style.opacity = '0';
+                        propiedad.style.transform = 'scale(0.95)';
+                    }
+                }
+            });
+            
+            // Actualizar contador de propiedades mostradas
+            actualizarContadorPropiedades(estado);
+        }
+        
+        function actualizarContadorPropiedades(estado) {
+            const propiedadesVisibles = document.querySelectorAll('.propiedad-card[style*="display: block"], .propiedad-card:not([style*="display: none"])');
+            const contador = propiedadesVisibles.length;
+            
+            // Actualizar el texto del contador en el header
+            const headerTexto = document.querySelector('.text-gray-600');
+            if (headerTexto) {
+                if (estado === 'todos') {
+                    headerTexto.textContent = `${contador} propiedad${contador != 1 ? 'es' : ''} enviada${contador != 1 ? 's' : ''} para publicación`;
+                } else {
+                    const estadoTexto = {
+                        'activa': 'Activas',
+                        'en_revision': 'En Revisión',
+                        'vendida': 'Vendidas',
+                        'rechazada': 'Rechazadas'
+                    };
+                    headerTexto.textContent = `${contador} propiedad${contador != 1 ? 'es' : ''} ${estadoTexto[estado] || estado}`;
+                }
+            }
+        }
+        
+        // Inicializar con el filtro "Todos" activo
+        document.addEventListener('DOMContentLoaded', function() {
+            filtrarPropiedades('todos');
+        });
+    </script>
