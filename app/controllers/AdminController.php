@@ -1304,10 +1304,18 @@ class AdminController {
             $reports = $this->reporteModel->obtenerTodos($filtros);
             
             // Obtener estadísticas
-            $totalReportes = $this->reporteModel->getTotalReportes();
-            $pendientes = $this->reporteModel->getReportesByStatus('pendiente');
-            $resueltos = $this->reporteModel->getReportesByStatus('atendido');
-            $descartados = $this->reporteModel->getReportesByStatus('descartado');
+            $stats = [
+                'totalReportes' => (int)$this->reporteModel->getTotalReportes(),
+                'pendientes' => (int)$this->reporteModel->getReportesByStatus('pendiente'),
+                'resueltos' => (int)$this->reporteModel->getReportesByStatus('atendido'),
+                'descartados' => (int)$this->reporteModel->getReportesByStatus('descartado')
+            ];
+            
+            // Variables individuales para compatibilidad
+            $totalReportes = $stats['totalReportes'];
+            $pendientes = $stats['pendientes'];
+            $resueltos = $stats['resueltos'];
+            $descartados = $stats['descartados'];
             
             // Obtener opciones para filtros
             $tiposReporte = $this->reporteModel->obtenerTiposReporte();

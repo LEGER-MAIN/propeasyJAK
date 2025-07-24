@@ -32,23 +32,25 @@ function getReportPriority($report) {
 }
 ?>
 
+
+
 <!-- Resumen de Estadísticas -->
 <div class="stats-summary">
     <div class="row text-center">
         <div class="col-md-3">
-            <h3><?= number_format($totalReports ?? 0) ?></h3>
+            <h3><?= number_format(isset($totalReportes) ? $totalReportes : 0) ?></h3>
             <p class="mb-0">Total Reportes</p>
         </div>
         <div class="col-md-3">
-            <h3><?= number_format($pendingReports ?? 0) ?></h3>
+            <h3><?= number_format(isset($pendientes) ? $pendientes : 0) ?></h3>
             <p class="mb-0">Pendientes</p>
         </div>
         <div class="col-md-3">
-            <h3><?= number_format($resolvedReports ?? 0) ?></h3>
+            <h3><?= number_format(isset($resueltos) ? $resueltos : 0) ?></h3>
             <p class="mb-0">Resueltos</p>
         </div>
         <div class="col-md-3">
-            <h3><?= number_format($dismissedReports ?? 0) ?></h3>
+            <h3><?= number_format(isset($descartados) ? $descartados : 0) ?></h3>
             <p class="mb-0">Descartados</p>
         </div>
     </div>
