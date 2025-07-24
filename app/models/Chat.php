@@ -283,6 +283,24 @@ class Chat {
         
         return $this->db->select($sql, [$usuarioId, $usuarioId, $usuarioId]);
     }
+
+    /**
+     * Obtener solo el conteo de mensajes no leídos para el navbar
+     * 
+     * @param int $usuarioId ID del usuario
+     * @return int Número de mensajes no leídos
+     */
+    public function getUnreadCount($usuarioId) {
+        $sql = "SELECT COUNT(*) as total
+                FROM mensajes_chat mc
+                INNER JOIN solicitudes_compra sc ON mc.solicitud_id = sc.id
+                WHERE (sc.cliente_id = ? OR sc.agente_id = ?)
+                AND mc.leido = 0 
+                AND mc.remitente_id != ?";
+        
+        $result = $this->db->selectOne($sql, [$usuarioId, $usuarioId, $usuarioId]);
+        return $result ? (int)$result['total'] : 0;
+    }
     
     /**
      * Obtener el último ID insertado

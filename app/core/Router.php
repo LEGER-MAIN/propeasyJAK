@@ -464,6 +464,7 @@ class Router {
         
         // Rutas específicas del chat (DEBEN IR ANTES que /chat/{id})
         $this->get('/chat/unread-messages', 'ChatController@getUnreadMessages');
+        $this->get('/chat/unread-count', 'ChatController@unreadCount');
         $this->get('/chat/stats', 'ChatController@getStats');
         $this->get('/chat/search', 'ChatController@search');
         $this->get('/chat/search-users', 'ChatController@searchUsers');

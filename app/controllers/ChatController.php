@@ -537,6 +537,39 @@ class ChatController {
     }
 
     /**
+     * Obtener solo el conteo de mensajes no leídos para el navbar
+     */
+    public function unreadCount() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            http_response_code(405);
+            echo json_encode(['error' => 'Método no permitido']);
+            return;
+        }
+
+        // Verificar sesión de forma segura
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['user_id'])) {
+            http_response_code(401);
+            echo json_encode(['error' => 'No autorizado']);
+            return;
+        }
+
+        $user_id = $_SESSION['user_id'];
+        
+        // Obtener solo el conteo de mensajes no leídos
+        $unreadCount = $this->chatModel->getUnreadCount($user_id);
+        
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'unread_count' => $unreadCount
+        ]);
+    }
+
+    /**
      * Verificar si un usuario está online
      */
     private function isUserOnline($user_id) {

@@ -75,6 +75,13 @@
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
+                    
+                    <!-- Chat Icon -->
+                    <a href="/chat" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 relative" style="color: var(--text-primary);">
+                        <i class="fas fa-comments"></i>
+                        <span>Chat</span>
+                        <span id="chat-notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                    </a>
                 <?php endif; ?>
             </nav>
             
@@ -107,6 +114,12 @@
                                 <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                                     <i class="fas fa-user"></i>
                                     <span>Mi Perfil</span>
+                                </a>
+                                
+                                <a href="/chat" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 relative">
+                                    <i class="fas fa-comments"></i>
+                                    <span>Chat</span>
+                                    <span id="chat-notification-badge-dropdown" class="ml-auto bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hidden">0</span>
                                 </a>
 
                                 <?php if (hasRole(ROLE_CLIENTE)): ?>
@@ -237,6 +250,12 @@
                         <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
                     </a>
                     
+                    <!-- Chat en menú mobile -->
+                    <a href="/chat" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium relative">
+                        <i class="fas fa-comments mr-3"></i>Chat
+                        <span id="chat-notification-badge-mobile" class="absolute top-2 right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                    </a>
+                    
 
                     
                     <?php if (hasRole(ROLE_AGENTE)): ?>
@@ -347,15 +366,52 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Chat notification (mantener funcionalidad de notificaciones)
     const chatNotification = document.getElementById('chat-notification');
+    const chatBadge = document.getElementById('chat-notification-badge');
+    const chatBadgeMobile = document.getElementById('chat-notification-badge-mobile');
+    const chatBadgeDropdown = document.getElementById('chat-notification-badge-dropdown');
     
     // Función para actualizar notificaciones de chat
     function updateChatNotifications() {
-        // Aquí puedes agregar lógica para obtener notificaciones no leídas
-        // Por ahora lo dejamos como placeholder
+        // Verificar si el usuario está autenticado
+        if (!document.querySelector('[data-user-id]')) return;
+        
+        fetch('/chat/unread-count', {
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const unreadCount = data.unread_count || 0;
+                updateChatBadges(unreadCount);
+            }
+        })
+        .catch(error => {
+            console.log('Error al obtener notificaciones de chat:', error);
+        });
+    }
+    
+    // Función para actualizar badges de chat
+    function updateChatBadges(count) {
+        const badges = [chatBadge, chatBadgeMobile, chatBadgeDropdown];
+        
+        badges.forEach(badge => {
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        });
     }
     
     // Actualizar notificaciones cada 30 segundos
     setInterval(updateChatNotifications, 30000);
+    
+    // Actualizar notificaciones al cargar la página
+    updateChatNotifications();
     
     // Eliminar favoritos rápidos desde el dropdown
     document.querySelectorAll('.remove-favorite-quick').forEach(btn => {
