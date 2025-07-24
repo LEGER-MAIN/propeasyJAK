@@ -1696,6 +1696,43 @@ class User {
     }
     
     /**
+     * Buscar usuarios para el panel de administración
+     * 
+     * @param string $search Término de búsqueda (nombre, email, username)
+     * @param string $role Filtro por rol
+     * @param string $status Filtro por estado
+     * @return array Lista de usuarios filtrados
+     */
+    public function searchUsersForAdmin($search = '', $role = '', $status = '') {
+        $conditions = [];
+        $params = [];
+        
+        // Filtro de búsqueda
+        if (!empty($search)) {
+            $conditions[] = "(nombre LIKE ? OR apellido LIKE ? OR email LIKE ? OR username LIKE ? OR CONCAT(nombre, ' ', apellido) LIKE ?)";
+            $searchTerm = '%' . $search . '%';
+            $params = array_merge($params, [$searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm]);
+        }
+        
+        // Filtro por rol
+        if (!empty($role)) {
+            $conditions[] = "rol = ?";
+            $params[] = $role;
+        }
+        
+        // Filtro por estado
+        if (!empty($status)) {
+            $conditions[] = "estado = ?";
+            $params[] = $status;
+        }
+        
+        $whereClause = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+        
+        $query = "SELECT * FROM {$this->table} {$whereClause} ORDER BY fecha_registro DESC";
+        return $this->db->select($query, $params);
+    }
+    
+    /**
      * Cambiar estado de usuario
      * 
      * @param int $userId ID del usuario

@@ -33,37 +33,82 @@
 
 <!-- Filtros y Búsqueda -->
 <div class="filter-section">
-    <div class="row align-items-center">
-        <div class="col-md-4">
-            <label for="roleFilter" class="form-label">Filtrar por Rol:</label>
-            <select class="form-select" id="roleFilter">
-                <option value="">Todos los roles</option>
-                <option value="admin">Administradores</option>
-                <option value="agente">Agentes</option>
-                <option value="cliente">Clientes</option>
-            </select>
+    <form method="GET" action="/admin/users" id="searchForm">
+        <input type="hidden" name="action" value="list">
+        <div class="row align-items-end">
+            <div class="col-md-3">
+                <label for="roleFilter" class="form-label">Filtrar por Rol:</label>
+                <select class="form-select" id="roleFilter" name="role">
+                    <option value="">Todos los roles</option>
+                    <option value="admin" <?= ($_GET['role'] ?? '') === 'admin' ? 'selected' : '' ?>>Administradores</option>
+                    <option value="agente" <?= ($_GET['role'] ?? '') === 'agente' ? 'selected' : '' ?>>Agentes</option>
+                    <option value="cliente" <?= ($_GET['role'] ?? '') === 'cliente' ? 'selected' : '' ?>>Clientes</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="statusFilter" class="form-label">Filtrar por Estado:</label>
+                <select class="form-select" id="statusFilter" name="status">
+                    <option value="">Todos los estados</option>
+                    <option value="activo" <?= ($_GET['status'] ?? '') === 'activo' ? 'selected' : '' ?>>Activos</option>
+                    <option value="suspendido" <?= ($_GET['status'] ?? '') === 'suspendido' ? 'selected' : '' ?>>Suspendidos</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="searchUser" class="form-label">Buscar Usuario:</label>
+                <input type="text" class="form-control" id="searchUser" name="search" placeholder="Nombre, email..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4">
-            <label for="statusFilter" class="form-label">Filtrar por Estado:</label>
-            <select class="form-select" id="statusFilter">
-                <option value="">Todos los estados</option>
-                <option value="activo">Activos</option>
-                <option value="suspendido">Suspendidos</option>
-            </select>
+        <div class="row mt-2">
+            <div class="col-12">
+                <?php if (!empty($_GET['search']) || !empty($_GET['role']) || !empty($_GET['status'])): ?>
+                    <div class="alert alert-info alert-sm mb-2">
+                        <i class="fas fa-filter"></i> 
+                        <strong>Filtros activos:</strong>
+                        <?php if (!empty($_GET['search'])): ?>
+                            <span class="badge bg-primary me-1">Búsqueda: "<?= htmlspecialchars($_GET['search']) ?>"</span>
+                        <?php endif; ?>
+                        <?php if (!empty($_GET['role'])): ?>
+                            <span class="badge bg-info me-1">Rol: <?= ucfirst($_GET['role']) ?></span>
+                        <?php endif; ?>
+                        <?php if (!empty($_GET['status'])): ?>
+                            <span class="badge bg-warning me-1">Estado: <?= ucfirst($_GET['status']) ?></span>
+                        <?php endif; ?>
+                        <a href="/admin/users?action=list" class="btn btn-outline-secondary btn-sm ms-2">
+                            <i class="fas fa-times"></i> Limpiar Filtros
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
-        <div class="col-md-4">
-            <label for="searchUser" class="form-label">Buscar Usuario:</label>
-            <input type="text" class="form-control" id="searchUser" placeholder="Nombre, email...">
-        </div>
-    </div>
+    </form>
 </div>
 
 <!-- Lista de Usuarios -->
 <div class="content-card">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0">
-            <i class="fas fa-list"></i> Lista de Usuarios
-        </h4>
+        <div>
+            <h4 class="mb-0">
+                <i class="fas fa-list"></i> Lista de Usuarios
+            </h4>
+            <small class="text-muted">
+                <?php if (!empty($_GET['search']) || !empty($_GET['role']) || !empty($_GET['status'])): ?>
+                    Mostrando <?= count($users) ?> resultado<?= count($users) !== 1 ? 's' : '' ?>
+                    <?php if (count($users) === 0): ?>
+                        - No se encontraron usuarios con los filtros aplicados
+                    <?php endif; ?>
+                <?php else: ?>
+                    Total: <?= count($users) ?> usuario<?= count($users) !== 1 ? 's' : '' ?>
+                <?php endif; ?>
+            </small>
+        </div>
         <div>
             <button class="btn btn-success" onclick="exportUsers()">
                 <i class="fas fa-download"></i> Exportar
@@ -96,13 +141,46 @@
                                         <i class="fas fa-user-circle fa-2x text-muted"></i>
                                     </div>
                                     <div>
-                                        <strong><?= htmlspecialchars(($user['nombre'] ?? '') . ' ' . ($user['apellido'] ?? '')) ?></strong>
+                                        <strong>
+                                            <?php 
+                                            $fullName = ($user['nombre'] ?? '') . ' ' . ($user['apellido'] ?? '');
+                                            if (!empty($_GET['search'])) {
+                                                $searchTerm = $_GET['search'];
+                                                $highlightedName = str_ireplace($searchTerm, '<span class="search-highlight">' . $searchTerm . '</span>', htmlspecialchars($fullName));
+                                                echo $highlightedName;
+                                            } else {
+                                                echo htmlspecialchars($fullName);
+                                            }
+                                            ?>
+                                        </strong>
                                         <br>
-                                        <small class="text-muted">@<?= htmlspecialchars($user['username'] ?? $user['email'] ?? 'usuario') ?></small>
+                                        <small class="text-muted">
+                                            @<?php 
+                                            $username = $user['username'] ?? $user['email'] ?? 'usuario';
+                                            if (!empty($_GET['search'])) {
+                                                $searchTerm = $_GET['search'];
+                                                $highlightedUsername = str_ireplace($searchTerm, '<span class="search-highlight">' . $searchTerm . '</span>', htmlspecialchars($username));
+                                                echo $highlightedUsername;
+                                            } else {
+                                                echo htmlspecialchars($username);
+                                            }
+                                            ?>
+                                        </small>
                                     </div>
                                 </div>
                             </td>
-                            <td><?= htmlspecialchars($user['email'] ?? '') ?></td>
+                            <td>
+                                <?php 
+                                $email = $user['email'] ?? '';
+                                if (!empty($_GET['search']) && !empty($email)) {
+                                    $searchTerm = $_GET['search'];
+                                    $highlightedEmail = str_ireplace($searchTerm, '<span class="search-highlight">' . $searchTerm . '</span>', htmlspecialchars($email));
+                                    echo $highlightedEmail;
+                                } else {
+                                    echo htmlspecialchars($email);
+                                }
+                                ?>
+                            </td>
                             <td>
                                 <span class="role-badge role-<?= $user['rol'] ?? 'cliente' ?>">
                                     <?= ucfirst($user['rol'] ?? 'cliente') ?>
@@ -209,6 +287,22 @@
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.filter-section form {
+    margin-bottom: 0;
+}
+
+.alert-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.search-highlight {
+    background-color: #fff3cd;
+    padding: 2px 4px;
+    border-radius: 3px;
 }
 
 .content-card {
@@ -260,42 +354,39 @@
     }
 
     function exportUsers() {
-        // Exportar usuarios a CSV
-        window.location.href = '/admin/users?action=export';
+        // Exportar usuarios a CSV con filtros aplicados
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set('action', 'export');
+        window.location.href = '/admin/users?' + searchParams.toString();
     }
 
-    // Filtros
-    $('#roleFilter, #statusFilter').change(function() {
-        const role = $('#roleFilter').val();
-        const status = $('#statusFilter').val();
+    // Búsqueda en tiempo real (opcional - para mejor UX)
+    let searchTimeout;
+    $('#searchUser').on('input', function() {
+        clearTimeout(searchTimeout);
+        const searchTerm = $(this).val();
         
-        $('#usersTable tbody tr').each(function() {
-            const row = $(this);
-            const userRole = row.find('td:nth-child(4)').text().toLowerCase().trim();
-            const userStatus = row.find('td:nth-child(5)').text().toLowerCase().trim();
-            
-            let show = true;
-            
-            if (role && userRole !== role) show = false;
-            if (status && userStatus !== status) show = false;
-            
-            row.toggle(show);
-        });
+        // Si el campo está vacío, no hacer búsqueda automática
+        if (searchTerm.length === 0) {
+            return;
+        }
+        
+        // Esperar 500ms después de que el usuario deje de escribir
+        searchTimeout = setTimeout(function() {
+            $('#searchForm').submit();
+        }, 500);
     });
-
-    $('#searchUser').keyup(function() {
-        const searchTerm = $(this).val().toLowerCase();
-        
-        $('#usersTable tbody tr').each(function() {
-            const row = $(this);
-            const userName = row.find('td:nth-child(2)').text().toLowerCase();
-            const userEmail = row.find('td:nth-child(3)').text().toLowerCase();
-            
-            if (userName.includes(searchTerm) || userEmail.includes(searchTerm)) {
-                row.show();
-            } else {
-                row.hide();
-            }
-        });
+    
+    // Búsqueda al presionar Enter
+    $('#searchUser').on('keypress', function(e) {
+        if (e.which === 13) { // Enter key
+            e.preventDefault();
+            $('#searchForm').submit();
+        }
+    });
+    
+    // Auto-submit al cambiar filtros
+    $('#roleFilter, #statusFilter').change(function() {
+        $('#searchForm').submit();
     });
 </script> 

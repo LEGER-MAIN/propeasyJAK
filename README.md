@@ -107,6 +107,20 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Interfaz intuitiva** con botones de cierre
 - **Sistema opcional** que no afecta el funcionamiento general
 
+### 🔍 Sistema de Búsqueda Avanzado
+- **Búsqueda de usuarios** por nombre, email, username
+- **Filtros por rol** (Administradores, Agentes, Clientes)
+- **Filtros por estado** (Activos, Suspendidos)
+- **Búsqueda en tiempo real** con auto-submit
+- **Búsqueda manual** con botón y tecla Enter
+- **Filtros combinables** para búsquedas precisas
+- **Resaltado de términos** de búsqueda en resultados
+- **Indicadores visuales** de filtros activos
+- **Contador de resultados** dinámico
+- **Exportación inteligente** que respeta filtros aplicados
+- **Limpieza de filtros** con un solo clic
+- **Interfaz responsive** optimizada para todos los dispositivos
+
 ### ℹ️ Página "Acerca de"
 - **Información corporativa** completa de PropEasy
 - **Sección Hero** con descripción principal
@@ -125,7 +139,14 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 
 ### 🎯 Panel de Administración
 - **Dashboard completo** con estadísticas en tiempo real
-- **Gestión de usuarios** con cambio de roles y estados
+- **Gestión de usuarios** con búsqueda y filtros avanzados
+- **Sistema de búsqueda inteligente** por nombre, email, rol y estado
+- **Filtros combinables** para encontrar usuarios específicos rápidamente
+- **Búsqueda en tiempo real** con auto-completado
+- **Resaltado de términos** de búsqueda en resultados
+- **Exportación inteligente** que respeta filtros aplicados
+- **Indicadores visuales** de filtros activos
+- **Contador de resultados** dinámico
 - **Gestión de propiedades** con validación y aprobación
 - **Sistema de alertas inteligente** con eliminación permanente
 - **Actividades recientes** con paginación y filtros
@@ -169,6 +190,10 @@ PropEasy es una plataforma web completa para la gestión y venta de bienes raíc
 - **Sistema de alertas inteligente** con persistencia en base de datos
 - **Manejo robusto de errores** con fallback graceful
 - **Gestión de estado** de alertas eliminadas
+- **Sistema de búsqueda optimizado** con consultas SQL eficientes
+- **Búsqueda en tiempo real** con JavaScript y AJAX
+- **Filtros dinámicos** con combinación de criterios
+- **Exportación de datos** con respeto a filtros aplicados
 
 ## 🚀 Instalación
 
@@ -347,6 +372,17 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 ## 📝 Changelog
 
 ### v2.9.0 (2025-01-24)
+- ✅ **Sistema de búsqueda avanzado** para gestión de usuarios
+- ✅ **Búsqueda en tiempo real** con auto-submit y filtros combinables
+- ✅ **Filtros por rol y estado** para encontrar usuarios específicos
+- ✅ **Resaltado de términos** de búsqueda en resultados
+- ✅ **Indicadores visuales** de filtros activos y contador de resultados
+- ✅ **Exportación inteligente** que respeta filtros aplicados
+- ✅ **Interfaz responsive** optimizada para todos los dispositivos
+- ✅ **Limpieza de filtros** con un solo clic
+- ✅ **Nuevo método** `searchUsersForAdmin()` en modelo User
+- ✅ **Controlador actualizado** para manejar parámetros de búsqueda
+- ✅ **Vista mejorada** con formulario funcional y JavaScript optimizado
 - ✅ Sistema de alertas inteligente con eliminación permanente
 - ✅ Persistencia de alertas eliminadas en base de datos
 - ✅ No reaparición de alertas eliminadas al recargar la página

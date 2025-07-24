@@ -641,6 +641,11 @@ class AdminController {
         switch ($action) {
             case 'list':
                 try {
+                    // Obtener parámetros de búsqueda y filtros
+                    $search = trim($_GET['search'] ?? '');
+                    $role = trim($_GET['role'] ?? '');
+                    $status = trim($_GET['status'] ?? '');
+                    
                     // Obtener estadísticas de usuarios
                     $stats = [
                         'total' => $this->userModel->getTotalCount(),
@@ -653,7 +658,8 @@ class AdminController {
                         'nuevos_semana' => $this->userModel->getNewUsersThisWeek()
                     ];
                     
-                    $users = $this->userModel->getAllUsers();
+                    // Obtener usuarios con filtros aplicados
+                    $users = $this->userModel->searchUsersForAdmin($search, $role, $status);
                     if (!is_array($users)) {
                         $users = [];
                     }
@@ -946,7 +952,12 @@ class AdminController {
      */
     private function exportUsers() {
         try {
-            $users = $this->userModel->getAllUsers();
+            // Obtener parámetros de búsqueda y filtros
+            $search = trim($_GET['search'] ?? '');
+            $role = trim($_GET['role'] ?? '');
+            $status = trim($_GET['status'] ?? '');
+            
+            $users = $this->userModel->searchUsersForAdmin($search, $role, $status);
             
             // Configurar headers para descarga
             header('Content-Type: text/csv; charset=utf-8');
