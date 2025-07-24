@@ -137,7 +137,17 @@ class SolicitudCompra {
      * @return array Lista de solicitudes
      */
     public function obtenerPorAgente($agenteId, $limit = 10, $offset = 0) {
-        $sql = "SELECT sc.*, 
+        $sql = "SELECT sc.id as solicitud_id,
+                       sc.cliente_id,
+                       sc.propiedad_id,
+                       sc.agente_id,
+                       sc.estado,
+                       sc.fecha_solicitud,
+                       sc.mensaje,
+                       sc.presupuesto_min,
+                       sc.presupuesto_max,
+                       sc.respuesta_agente,
+                       sc.fecha_respuesta,
                        p.titulo as titulo_propiedad,
                        p.precio as precio_propiedad,
                        p.moneda as moneda_propiedad,
@@ -166,7 +176,17 @@ class SolicitudCompra {
      * @return array Lista de solicitudes
      */
     public function obtenerPorEstado($estado, $limit = 10, $offset = 0) {
-        $sql = "SELECT sc.*, 
+        $sql = "SELECT sc.id as solicitud_id,
+                       sc.cliente_id,
+                       sc.propiedad_id,
+                       sc.agente_id,
+                       sc.estado,
+                       sc.fecha_solicitud,
+                       sc.mensaje,
+                       sc.presupuesto_min,
+                       sc.presupuesto_max,
+                       sc.respuesta_agente,
+                       sc.fecha_respuesta,
                        p.titulo as titulo_propiedad,
                        p.precio as precio_propiedad,
                        p.moneda as moneda_propiedad,
@@ -419,7 +439,17 @@ class SolicitudCompra {
      * @return array Lista de solicitudes
      */
     public function getSolicitudesAgente($agenteId, $estado = null, $limit = 10, $offset = 0) {
-        $sql = "SELECT sc.*, 
+        $sql = "SELECT sc.id as solicitud_id,
+                       sc.cliente_id,
+                       sc.propiedad_id,
+                       sc.agente_id,
+                       sc.estado,
+                       sc.fecha_solicitud,
+                       sc.mensaje,
+                       sc.presupuesto_min,
+                       sc.presupuesto_max,
+                       sc.respuesta_agente,
+                       sc.fecha_respuesta,
                        p.titulo as titulo_propiedad,
                        p.precio as precio_propiedad,
                        p.moneda as moneda_propiedad,
@@ -457,7 +487,7 @@ class SolicitudCompra {
      */
     public function getSolicitudesRecientesPorAgente($agenteId, $limit = 5) {
         $sql = "SELECT 
-                    sc.id,
+                    sc.id as solicitud_id,
                     sc.estado,
                     sc.fecha_solicitud,
                     sc.nombre_cliente,
@@ -480,7 +510,16 @@ class SolicitudCompra {
      * @return array Lista de solicitudes recientes
      */
     public function getRecentSolicitudes($limit = 10) {
-        $query = "SELECT sc.*, p.titulo as titulo_propiedad, 
+        $query = "SELECT sc.id as solicitud_id,
+                         sc.cliente_id,
+                         sc.propiedad_id,
+                         sc.agente_id,
+                         sc.estado,
+                         sc.fecha_solicitud,
+                         sc.mensaje,
+                         sc.presupuesto_min,
+                         sc.presupuesto_max,
+                         p.titulo as titulo_propiedad, 
                          ua.nombre as agente_nombre, ua.apellido as agente_apellido,
                          uc.nombre as cliente_nombre, uc.apellido as cliente_apellido
                   FROM solicitudes_compra sc
