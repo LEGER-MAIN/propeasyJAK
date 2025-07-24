@@ -135,7 +135,7 @@ class PropertyController {
             'descripcion' => $_POST['descripcion'] ?? '',
             'tipo' => $_POST['tipo'] ?? '',
             'precio' => $_POST['precio'] ?? '',
-            'moneda' => $_POST['moneda'] ?? 'USD',
+            'moneda' => 'USD', // Solo se permite USD
             'ciudad' => $_POST['ciudad'] ?? '',
             'sector' => $_POST['sector'] ?? '',
             'direccion' => $_POST['direccion'] ?? '',
@@ -280,7 +280,7 @@ class PropertyController {
             'descripcion' => $_POST['descripcion'] ?? '',
             'tipo' => $_POST['tipo'] ?? '',
             'precio' => $_POST['precio'] ?? '',
-            'moneda' => $_POST['moneda'] ?? 'USD',
+            'moneda' => 'USD', // Solo se permite USD
             'ciudad' => $_POST['ciudad'] ?? '',
             'sector' => $_POST['sector'] ?? '',
             'direccion' => $_POST['direccion'] ?? '',

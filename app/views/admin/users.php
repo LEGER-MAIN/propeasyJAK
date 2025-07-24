@@ -275,15 +275,7 @@ if (!hasRole(ROLE_ADMIN)) {
                         <a class="nav-link" href="/admin/reports?action=list">
                             <i class="fas fa-flag"></i> Gestión de Reportes
                         </a>
-                        <a class="nav-link" href="/admin/logs">
-                            <i class="fas fa-file-alt"></i> Logs del Sistema
-                        </a>
-                        <a class="nav-link" href="/admin/backup">
-                            <i class="fas fa-database"></i> Backup & Restore
-                        </a>
-                        <a class="nav-link" href="/admin/config">
-                            <i class="fas fa-cog"></i> Configuración
-                        </a>
+
                         <hr>
                         <a class="nav-link" href="/dashboard">
                             <i class="fas fa-home"></i> Volver al Sistema

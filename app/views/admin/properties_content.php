@@ -178,8 +178,8 @@ require_once APP_PATH . '/helpers/PropertyHelper.php';
                                 </span>
                             </td>
                             <td>
-                                <span class="status-badge status-<?= $property['estado'] ?? 'activa' ?>">
-                                    <?= ucfirst(str_replace('_', ' ', $property['estado'] ?? 'activa')) ?>
+                                <span class="status-badge status-<?= $property['estado_publicacion'] ?? 'activa' ?>">
+                                    <?= ucfirst(str_replace('_', ' ', $property['estado_publicacion'] ?? 'activa')) ?>
                                 </span>
                             </td>
                             <td>
@@ -193,13 +193,9 @@ require_once APP_PATH . '/helpers/PropertyHelper.php';
                                         <i class="fas fa-eye"></i>
                                     </button>
                                     
-                                    <button type="button" class="btn btn-sm btn-outline-warning" 
-                                            onclick="toggleFavorite(<?= $property['id'] ?>, '<?= htmlspecialchars($property['titulo'] ?? 'Propiedad') ?>')"
-                                            title="Agregar/Quitar de Favoritos">
-                                        <i class="fas fa-heart"></i>
-                                    </button>
+
                                     
-                                    <?php if (($property['estado'] ?? 'activa') === 'en_revision'): ?>
+                                    <?php if (($property['estado_publicacion'] ?? 'activa') === 'en_revision'): ?>
                                         <button type="button" class="btn btn-sm btn-outline-success" 
                                                 onclick="approveProperty(<?= $property['id'] ?>, '<?= htmlspecialchars($property['titulo'] ?? 'Propiedad') ?>')">
                                             <i class="fas fa-check"></i>
@@ -231,30 +227,7 @@ require_once APP_PATH . '/helpers/PropertyHelper.php';
     </div>
 </div>
 
-<!-- Sección de Propiedades Favoritas -->
-<div class="content-card mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0">
-            <i class="fas fa-heart text-danger"></i> Propiedades Favoritas
-        </h5>
-        <span class="badge bg-danger">0</span>
-    </div>
-    
-    <div class="alert alert-info">
-        <i class="fas fa-info-circle"></i>
-        <strong>Información:</strong> Las propiedades marcadas como favoritas aparecerán aquí para acceso rápido.
-        <br>
-        <small class="text-muted">Haz clic en el botón <i class="fas fa-heart"></i> de cualquier propiedad para agregarla a favoritos.</small>
-    </div>
-    
-    <div class="row" id="favoritesContainer">
-        <div class="col-12 text-center py-4">
-            <i class="fas fa-heart fa-3x text-muted mb-3"></i>
-            <p class="text-muted">No hay propiedades favoritas</p>
-            <small class="text-muted">Las propiedades que marques como favoritas aparecerán aquí</small>
-        </div>
-    </div>
-</div>
+
 
 <!-- Modal para Rechazar Propiedad -->
 <div class="modal fade" id="rejectPropertyModal" tabindex="-1">
@@ -301,22 +274,10 @@ require_once APP_PATH . '/helpers/PropertyHelper.php';
             order: [[0, 'desc']]
         });
         
-        // Cargar favoritos al inicializar
-        loadFavorites();
+
     });
 
-    function loadFavorites() {
-        fetch('/admin/favorites')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                updateFavoritesSection(data.favorites, data.total_favorites);
-            }
-        })
-        .catch(error => {
-            console.error('Error al cargar favoritos:', error);
-        });
-    }
+
 
     // Funciones de gestión de propiedades
     function viewProperty(propertyId) {
@@ -362,127 +323,9 @@ require_once APP_PATH . '/helpers/PropertyHelper.php';
         window.location.href = '/admin/properties?' + params.toString();
     }
 
-    function toggleFavorite(propertyId, propertyTitle) {
-        // Mostrar indicador de carga
-        const button = event.target.closest('button');
-        const originalIcon = button.innerHTML;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        button.disabled = true;
-        
-        // Realizar petición AJAX
-        fetch('/admin/favorites/toggle', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `property_id=${propertyId}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Actualizar el botón
-                if (data.is_favorite) {
-                    button.classList.remove('btn-outline-warning');
-                    button.classList.add('btn-warning');
-                    button.innerHTML = '<i class="fas fa-heart"></i>';
-                } else {
-                    button.classList.remove('btn-warning');
-                    button.classList.add('btn-outline-warning');
-                    button.innerHTML = '<i class="fas fa-heart"></i>';
-                }
-                
-                // Actualizar la sección de favoritos
-                updateFavoritesSection(data.favorites, data.total_favorites);
-                
-                // Mostrar mensaje de éxito
-                showNotification(data.message, 'success');
-            } else {
-                // Restaurar botón original
-                button.innerHTML = originalIcon;
-                button.disabled = false;
-                showNotification(data.message, 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            button.innerHTML = originalIcon;
-            button.disabled = false;
-            showNotification('Error al procesar la solicitud', 'error');
-        });
-    }
 
-    function updateFavoritesSection(favorites, totalFavorites) {
-        const container = document.getElementById('favoritesContainer');
-        const badge = document.querySelector('.content-card .badge');
-        
-        // Actualizar contador
-        if (badge) {
-            badge.textContent = totalFavorites;
-        }
-        
-        if (totalFavorites === 0) {
-            container.innerHTML = `
-                <div class="col-12 text-center py-4">
-                    <i class="fas fa-heart fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">No hay propiedades favoritas</p>
-                    <small class="text-muted">Las propiedades que marques como favoritas aparecerán aquí</small>
-                </div>
-            `;
-        } else {
-            let html = '';
-            favorites.forEach(favorite => {
-                html += `
-                    <div class="col-md-6 col-lg-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <h6 class="card-title mb-0">${favorite.titulo}</h6>
-                                    <button type="button" class="btn btn-sm btn-outline-danger" 
-                                            onclick="removeFavorite(${favorite.favorito_id}, ${favorite.propiedad_id})">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                                <p class="card-text small text-muted">${favorite.direccion}</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="text-primary fw-bold">$${parseInt(favorite.precio).toLocaleString()}</span>
-                                    <span class="badge bg-secondary">${getPropertyTypeDisplayName(favorite.tipo)}</span>
-                                </div>
-                                <div class="mt-2">
-                                    <small class="text-muted">Agregado: ${new Date(favorite.fecha_agregado).toLocaleDateString()}</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-    }
 
-    function removeFavorite(favoriteId, propertyId) {
-        if (confirm('¿Estás seguro de que quieres quitar esta propiedad de favoritos?')) {
-            fetch('/admin/favorites/remove', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `favorite_id=${favoriteId}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    updateFavoritesSection(data.favorites, data.total_favorites);
-                    showNotification(data.message, 'success');
-                } else {
-                    showNotification(data.message, 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('Error al quitar de favoritos', 'error');
-            });
-        }
-    }
+
 
     function showNotification(message, type = 'info') {
         // Crear notificación

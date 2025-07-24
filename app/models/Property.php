@@ -226,7 +226,13 @@ class Property {
         
         // Solo mostrar propiedades activas para el público (excepto para admin)
         if (!isset($filters['estado_publicacion'])) {
-            $whereConditions[] = "p.estado_publicacion = 'activa'";
+            if (isset($filters['show_all']) && $filters['show_all']) {
+                // Para admin, mostrar todas las propiedades si no hay filtro específico
+                // No agregar condición de estado
+            } else {
+                // Para público, solo mostrar activas
+                $whereConditions[] = "p.estado_publicacion = 'activa'";
+            }
         } else {
             $whereConditions[] = "p.estado_publicacion = ?";
             $params[] = $filters['estado_publicacion'];
@@ -1072,6 +1078,34 @@ class Property {
     }
     
     /**
+     * Obtener propiedades por mes para dashboard (formato específico)
+     * 
+     * @param int $months Número de meses
+     * @return array Datos de propiedades por mes en formato dashboard
+     */
+    public function getPropertiesByMonthForDashboard($months = 12) {
+        $query = "SELECT DATE_FORMAT(fecha_creacion, '%Y-%m') as mes, COUNT(*) as total 
+                  FROM {$this->table} 
+                  WHERE fecha_creacion >= DATE_SUB(NOW(), INTERVAL ? MONTH) 
+                  GROUP BY DATE_FORMAT(fecha_creacion, '%Y-%m') 
+                  ORDER BY mes";
+        $results = $this->db->select($query, [$months]);
+        
+        // Crear array con 12 meses (0-11)
+        $data = array_fill(0, 12, ['total' => 0]);
+        
+        // Mapear los resultados a los meses correspondientes
+        foreach ($results as $row) {
+            $month = (int)substr($row['mes'], -2) - 1; // Convertir mes a índice 0-11
+            if ($month >= 0 && $month < 12) {
+                $data[$month] = ['total' => (int)$row['total']];
+            }
+        }
+        
+        return $data;
+    }
+    
+    /**
      * Obtener ventas por mes
      * 
      * @param int $months Número de meses
@@ -1085,6 +1119,35 @@ class Property {
                   GROUP BY DATE_FORMAT(fecha_actualizacion, '%Y-%m') 
                   ORDER BY mes";
         return $this->db->select($query, [$months]);
+    }
+    
+    /**
+     * Obtener ventas por mes para dashboard (formato específico)
+     * 
+     * @param int $months Número de meses
+     * @return array Datos de ventas por mes en formato dashboard
+     */
+    public function getSalesByMonthForDashboard($months = 12) {
+        $query = "SELECT DATE_FORMAT(fecha_actualizacion, '%Y-%m') as mes, COUNT(*) as total 
+                  FROM {$this->table} 
+                  WHERE estado_publicacion = 'vendida' 
+                  AND fecha_actualizacion >= DATE_SUB(NOW(), INTERVAL ? MONTH) 
+                  GROUP BY DATE_FORMAT(fecha_actualizacion, '%Y-%m') 
+                  ORDER BY mes";
+        $results = $this->db->select($query, [$months]);
+        
+        // Crear array con 12 meses (0-11)
+        $data = array_fill(0, 12, ['total' => 0]);
+        
+        // Mapear los resultados a los meses correspondientes
+        foreach ($results as $row) {
+            $month = (int)substr($row['mes'], -2) - 1; // Convertir mes a índice 0-11
+            if ($month >= 0 && $month < 12) {
+                $data[$month] = ['total' => (int)$row['total']];
+            }
+        }
+        
+        return $data;
     }
     
     /**
@@ -1546,9 +1609,28 @@ class Property {
 
                 // Map actual data to correct positions
                 foreach ($results as $row) {
-                    $weekNumber = (int)substr($row['period_key'], -1); // Extract week number
-                    if ($weekNumber >= 1 && $weekNumber <= $limit) {
-                        $data[$limit - $weekNumber] = (int)$row['total'];
+                    $year = (int)substr($row['period_key'], 0, 4);
+                    $week = (int)substr($row['period_key'], 4);
+                    
+                    // Calculate which week position this should be in our array
+                    $currentYear = (int)date('Y');
+                    $currentWeek = (int)date('W');
+                    
+                    // Find the position in our 4-week array
+                    for ($i = 0; $i < $limit; $i++) {
+                        $targetWeek = $currentWeek - ($limit - 1 - $i);
+                        $targetYear = $currentYear;
+                        
+                        // Adjust for year boundary
+                        if ($targetWeek <= 0) {
+                            $targetWeek += 52;
+                            $targetYear--;
+                        }
+                        
+                        if ($year === $targetYear && $week === $targetWeek) {
+                            $data[$i] = (int)$row['total'];
+                            break;
+                        }
                     }
                 }
                 

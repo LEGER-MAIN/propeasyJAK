@@ -360,10 +360,7 @@ class Router {
 
         $this->post('/admin/properties/delete', 'AdminController@deleteProperty');
         
-        // Gestión de favoritos del admin
-        $this->post('/admin/favorites/toggle', 'AdminController@toggleFavorite');
-        $this->get('/admin/favorites', 'AdminController@getFavorites');
-        $this->post('/admin/favorites/remove', 'AdminController@removeFavorite');
+
         
         // Gestión de Reportes
         $this->get('/admin/reports', 'AdminController@manageReports');
@@ -371,24 +368,7 @@ class Router {
         $this->get('/admin/reports/{action}/{id}', 'AdminController@manageReports');
         $this->post('/admin/reports', 'AdminController@manageReports');
         
-        // Configuración del sistema
-        $this->get('/admin/config', 'AdminController@systemConfig');
-        $this->post('/admin/config', 'AdminController@updateSystemConfig');
-        $this->post('/admin/config/email', 'AdminController@updateEmailConfig');
-        $this->post('/admin/config/security', 'AdminController@updateSecurityConfig');
-        
-        // Logs del sistema
-        $this->get('/admin/logs', 'AdminController@systemLogs');
-        $this->post('/admin/logs/clear', 'AdminController@clearLogs');
-        $this->post('/admin/logs/delete', 'AdminController@deleteLog');
-        
-        // Backup y Restore
-        $this->get('/admin/backup', 'AdminController@systemBackup');
-        $this->post('/admin/backup/create', 'AdminController@createBackup');
-        $this->post('/admin/backup/restore', 'AdminController@restoreBackup');
-        $this->post('/admin/backup/delete', 'AdminController@deleteBackup');
-        $this->post('/admin/backup/config', 'AdminController@updateBackupConfig');
-        $this->get('/admin/backup/download/{id}', 'AdminController@downloadBackup');
+
         
         // Endpoint AJAX para datos de gráficos
         $this->get('/admin/chart-data', 'AdminController@getChartData');

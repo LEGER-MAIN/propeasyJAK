@@ -1887,6 +1887,34 @@ class User {
     }
     
     /**
+     * Obtener usuarios por mes para dashboard (formato específico)
+     * 
+     * @param int $months Número de meses
+     * @return array Datos de usuarios por mes en formato dashboard
+     */
+    public function getUsersByMonthForDashboard($months = 12) {
+        $query = "SELECT DATE_FORMAT(fecha_registro, '%Y-%m') as mes, COUNT(*) as total 
+                  FROM {$this->table} 
+                  WHERE fecha_registro >= DATE_SUB(NOW(), INTERVAL ? MONTH) 
+                  GROUP BY DATE_FORMAT(fecha_registro, '%Y-%m') 
+                  ORDER BY mes";
+        $results = $this->db->select($query, [$months]);
+        
+        // Crear array con 12 meses (0-11)
+        $data = array_fill(0, 12, ['total' => 0]);
+        
+        // Mapear los resultados a los meses correspondientes
+        foreach ($results as $row) {
+            $month = (int)substr($row['mes'], -2) - 1; // Convertir mes a índice 0-11
+            if ($month >= 0 && $month < 12) {
+                $data[$month] = ['total' => (int)$row['total']];
+            }
+        }
+        
+        return $data;
+    }
+    
+    /**
      * Obtener usuarios por estado
      * 
      * @return array Datos de usuarios por estado

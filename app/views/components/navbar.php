@@ -81,12 +81,7 @@
             <!-- Navegación Mobile y Usuario -->
             <div class="flex items-center space-x-2 sm:space-x-4">
                 <?php if (isAuthenticated()): ?>
-                    <!-- Chat Rápido - Solo visible en desktop -->
-                    <a href="/chat" class="hidden md:block relative p-2 text-gray-700 hover:text-primary-600 transition-colors" style="color: var(--text-primary);" title="Ir al Chat">
-                        <i class="fas fa-comments text-lg"></i>
-                        <span id="chat-notification" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
-                        <span id="ws-status" class="absolute -bottom-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
-                    </a>
+
                     
                     <!-- Perfil de Usuario Desktop -->
                     <div class="hidden lg:block relative group">
@@ -134,10 +129,7 @@
                                     <span>Reportar Problema</span>
                                 </a>
                                 
-                                <a href="/chat" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                    <i class="fas fa-comments"></i>
-                                    <span>Chat</span>
-                                </a>
+
                                 
 
                                 
@@ -245,9 +237,7 @@
                         <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
                     </a>
                     
-                    <a href="/chat" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
-                        <i class="fas fa-comments mr-3"></i>Chat
-                    </a>
+
                     
                     <?php if (hasRole(ROLE_AGENTE)): ?>
                         <hr class="my-2 border-gray-200">
@@ -291,9 +281,6 @@
                     </a>
                     <a href="/reportes/crear" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
                         <i class="fas fa-exclamation-triangle mr-3"></i>Reportar Problema
-                    </a>
-                    <a href="/chat" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium">
-                        <i class="fas fa-comments mr-3"></i>Chat
                     </a>
                     <a href="/logout" class="block px-3 py-2 text-red-600 hover:bg-red-50 rounded-md text-base font-medium">
                         <i class="fas fa-sign-out-alt mr-3"></i>Cerrar Sesión

@@ -273,15 +273,7 @@ if (!hasRole(ROLE_ADMIN)) {
                         <a class="nav-link" href="/admin/reports?action=list">
                             <i class="fas fa-flag"></i> Gestión de Reportes
                         </a>
-                        <a class="nav-link" href="/admin/logs">
-                            <i class="fas fa-file-alt"></i> Logs del Sistema
-                        </a>
-                        <a class="nav-link" href="/admin/backup">
-                            <i class="fas fa-database"></i> Backup & Restore
-                        </a>
-                        <a class="nav-link" href="/admin/config">
-                            <i class="fas fa-cog"></i> Configuración
-                        </a>
+
                         <hr>
                         <a class="nav-link" href="/dashboard">
                             <i class="fas fa-home"></i> Volver al Sistema
@@ -340,15 +332,7 @@ if (!hasRole(ROLE_ADMIN)) {
                         <a href="/admin/reports?action=list" class="action-btn warning">
                             <i class="fas fa-flag"></i> Revisar Reportes
                         </a>
-                        <a href="/admin/logs" class="action-btn info">
-                            <i class="fas fa-file-alt"></i> Ver Logs
-                        </a>
-                        <a href="/admin/backup?action=create" class="action-btn danger">
-                            <i class="fas fa-database"></i> Crear Backup
-                        </a>
-                        <a href="/admin/config" class="action-btn">
-                            <i class="fas fa-cog"></i> Configuración
-                        </a>
+
                     </div>
                 </div>
 
@@ -586,7 +570,7 @@ if (!hasRole(ROLE_ADMIN)) {
                     },
                     title: {
                         display: true,
-                        text: 'Tendencias del Sistema'
+                        text: 'Tendencias del Sistema - Último Mes'
                     }
                 },
                 scales: {

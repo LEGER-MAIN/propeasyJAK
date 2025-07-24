@@ -557,17 +557,8 @@
                     <a class="nav-link <?= $currentPage === 'reports' ? 'active' : '' ?>" href="/admin/reports?action=list">
                         <i class="fas fa-flag"></i> Gestión de Reportes
                     </a>
-                    <a class="nav-link <?= $currentPage === 'logs' ? 'active' : '' ?>" href="/admin/logs">
-                        <i class="fas fa-file-alt"></i> Logs del Sistema
-                    </a>
                     <a class="nav-link <?= $currentPage === 'activities' ? 'active' : '' ?>" href="/admin/activities">
                         <i class="fas fa-history"></i> Todas las Actividades
-                    </a>
-                    <a class="nav-link <?= $currentPage === 'backup' ? 'active' : '' ?>" href="/admin/backup">
-                        <i class="fas fa-database"></i> Backup & Restore
-                    </a>
-                    <a class="nav-link <?= $currentPage === 'config' ? 'active' : '' ?>" href="/admin/config">
-                        <i class="fas fa-cog"></i> Configuración
                     </a>
                     <hr>
                     <a class="nav-link" href="/">

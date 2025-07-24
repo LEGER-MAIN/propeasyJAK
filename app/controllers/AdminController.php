@@ -507,15 +507,11 @@ class AdminController {
         $chartData = [];
 
         try {
-            // Default to 'month' view (last 4 weeks) for initial load
-            $usersData = $this->userModel->getUsersByPeriod('week', 4);
-            $propertiesData = $this->propertyModel->getPropertiesByPeriod('week', 4);
-            $salesData = $this->propertyModel->getSalesByPeriod('week', 4);
-
-            $chartData['labels'] = $usersData['labels'];
-            $chartData['usuarios_data'] = $usersData['data'];
-            $chartData['propiedades_data'] = $propertiesData['data'];
-            $chartData['ventas_data'] = $salesData['data'];
+            // Default to 'month' view (last 12 months) for initial load
+            $chartData['labels'] = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            $chartData['usuarios_por_mes'] = $this->userModel->getUsersByMonthForDashboard(12);
+            $chartData['propiedades_por_mes'] = $this->propertyModel->getPropertiesByMonthForDashboard(12);
+            $chartData['ventas_por_mes'] = $this->propertyModel->getSalesByMonthForDashboard(12);
 
             // Other chart data (distribution, etc.)
             $chartData['propiedades_por_tipo'] = $this->propertyModel->getPropertiesByType();
@@ -525,10 +521,10 @@ class AdminController {
         } catch (Exception $e) {
             error_log("Error obteniendo datos de gráficos: " . $e->getMessage());
             // Usar datos temporales si hay error
-            $chartData['labels'] = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'];
-            $chartData['usuarios_data'] = [0, 0, 0, 0];
-            $chartData['propiedades_data'] = [0, 0, 0, 0];
-            $chartData['ventas_data'] = [0, 0, 0, 0];
+            $chartData['labels'] = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            $chartData['usuarios_por_mes'] = array_fill(0, 12, ['total' => 0]);
+            $chartData['propiedades_por_mes'] = array_fill(0, 12, ['total' => 0]);
+            $chartData['ventas_por_mes'] = array_fill(0, 12, ['total' => 0]);
             $chartData['propiedades_por_tipo'] = [];
             $chartData['propiedades_por_ciudad'] = [];
             $chartData['usuarios_por_estado'] = [];
@@ -552,15 +548,11 @@ class AdminController {
             
             switch($period) {
                 case 'month':
-                    $usersData = $this->userModel->getUsersByPeriod('week', 4);
-                    $propertiesData = $this->propertyModel->getPropertiesByPeriod('week', 4);
-                    $salesData = $this->propertyModel->getSalesByPeriod('week', 4);
-
                     $chartData = [
-                        'labels' => $usersData['labels'],
-                        'usuarios' => $usersData['data'],
-                        'propiedades' => $propertiesData['data'],
-                        'ventas' => $salesData['data']
+                        'labels' => ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                        'usuarios' => array_column($this->userModel->getUsersByMonthForDashboard(12), 'total'),
+                        'propiedades' => array_column($this->propertyModel->getPropertiesByMonthForDashboard(12), 'total'),
+                        'ventas' => array_column($this->propertyModel->getSalesByMonthForDashboard(12), 'total')
                     ];
                     break;
                     
@@ -591,16 +583,12 @@ class AdminController {
                     break;
                     
                 default:
-                    // Default to month (4 weeks)
-                    $usersData = $this->userModel->getUsersByPeriod('week', 4);
-                    $propertiesData = $this->propertyModel->getPropertiesByPeriod('week', 4);
-                    $salesData = $this->propertyModel->getSalesByPeriod('week', 4);
-
+                    // Default to month (12 months)
                     $chartData = [
-                        'labels' => $usersData['labels'],
-                        'usuarios' => $usersData['data'],
-                        'propiedades' => $propertiesData['data'],
-                        'ventas' => $salesData['data']
+                        'labels' => ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                        'usuarios' => array_column($this->userModel->getUsersByMonthForDashboard(12), 'total'),
+                        'propiedades' => array_column($this->propertyModel->getPropertiesByMonthForDashboard(12), 'total'),
+                        'ventas' => array_column($this->propertyModel->getSalesByMonthForDashboard(12), 'total')
                     ];
             }
             
@@ -1030,7 +1018,10 @@ class AdminController {
                         $filters['search'] = $_GET['search'];
                     }
                     
-                    // Obtener propiedades con filtros
+                    // Obtener propiedades con filtros - para admin mostrar todas si no hay filtro de estado
+                    if (empty($filters['estado_publicacion'])) {
+                        $filters['show_all'] = true; // Marca especial para mostrar todas las propiedades
+                    }
                     $properties = $this->propertyModel->getAll($filters);
                     if (!is_array($properties)) {
                         $properties = [];
@@ -1532,372 +1523,7 @@ class AdminController {
             redirect('/admin/reports');
         }
     }
-    
-    /**
-     * Configuración del sistema
-     */
-    public function systemConfig() {
-        requireRole(ROLE_ADMIN);
-        
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->updateSystemConfig();
-        }
-        
-        $config = $this->getSystemConfig();
-        $pageTitle = 'Configuración del Sistema - ' . APP_NAME;
-        $currentPage = 'config';
-        
-        // Capturar el contenido de la vista
-        ob_start();
-        include APP_PATH . '/views/admin/config_content.php';
-        $content = ob_get_clean();
-        
-        // Incluir el layout administrativo
-        include APP_PATH . '/views/layouts/admin.php';
-    }
-    
-    /**
-     * Obtener configuración del sistema
-     */
-    private function getSystemConfig() {
-        // Aquí se obtendría la configuración desde la base de datos
-        return [
-            'site_name' => APP_NAME,
-            'site_description' => 'Sistema de Gestión Inmobiliaria',
-            'maintenance_mode' => false,
-            'registration_enabled' => true,
-            'email_notifications' => true,
-            'max_properties_per_user' => 10,
-            'max_images_per_property' => 10,
-            'commission_rate' => 5.0
-        ];
-    }
-    
-    /**
-     * Actualizar configuración del sistema
-     */
-    private function updateSystemConfig() {
-        // Aquí se actualizaría la configuración en la base de datos
-        setFlashMessage('success', 'Configuración actualizada exitosamente');
-        redirect('/admin/config');
-    }
-    
-    /**
-     * Logs del sistema
-     */
-    public function systemLogs() {
-        requireRole(ROLE_ADMIN);
-        
-        $action = $_GET['action'] ?? 'list';
-        
-        switch ($action) {
-            case 'clear':
-                $this->clearLogs();
-                break;
-                
-            case 'export':
-                $this->exportLogs();
-                break;
-                
-            case 'list':
-            default:
-                $logType = $_GET['type'] ?? 'all';
-                $logs = $this->getSystemLogs($logType);
-                
-                $pageTitle = 'Logs del Sistema - ' . APP_NAME;
-                $currentPage = 'logs';
-                $includeDataTables = true;
-                
-                // Capturar el contenido de la vista
-                ob_start();
-                include APP_PATH . '/views/admin/logs_content.php';
-                $content = ob_get_clean();
-                
-                // Incluir el layout administrativo
-                include APP_PATH . '/views/layouts/admin.php';
-                break;
-        }
-    }
-    
-    /**
-     * Obtener logs del sistema
-     */
-    private function getSystemLogs($type = 'all') {
-        $logs = [];
-        
-        try {
-            // Leer logs del archivo de error.log
-            $logFile = APP_PATH . '/../logs/error.log';
-            if (file_exists($logFile)) {
-                $logContent = file_get_contents($logFile);
-                $lines = explode("\n", $logContent);
-                
-                $id = 1;
-                foreach ($lines as $line) {
-                    if (trim($line) !== '') {
-                        // Parsear línea de log (formato básico)
-                        $log = $this->parseLogLine($line, $id);
-                        if ($log) {
-                            $logs[] = $log;
-                            $id++;
-                        }
-                    }
-                }
-            }
-            
-            // Si no hay logs reales, generar algunos de ejemplo
-            if (empty($logs)) {
-                $logs = $this->generateSampleLogs();
-            }
-            
-            // Aplicar filtros
-            if ($type !== 'all') {
-                $logs = array_filter($logs, function($log) use ($type) {
-                    return strtolower($log['level']) === strtolower($type);
-                });
-            }
-            
-            // Ordenar por fecha (más reciente primero)
-            usort($logs, function($a, $b) {
-                return strtotime($b['date']) - strtotime($a['date']);
-            });
-            
-            // Limitar a los últimos 100 logs
-            return array_slice($logs, 0, 100);
-            
-        } catch (Exception $e) {
-            error_log("Error obteniendo logs: " . $e->getMessage());
-            return $this->generateSampleLogs();
-        }
-    }
-    
-    /**
-     * Parsear línea de log
-     */
-    private function parseLogLine($line, $id) {
-        // Formato nuevo: [fecha] nivel: mensaje | módulo | usuario | ip
-        if (preg_match('/\[(.*?)\]\s*(\w+):\s*(.*?)\s*\|\s*(\w+)\s*\|\s*(.*?)\s*\|\s*(.*)/', $line, $matches)) {
-            return [
-                'id' => $id,
-                'level' => strtoupper($matches[2]),
-                'module' => $matches[4],
-                'message' => trim($matches[3]),
-                'user' => trim($matches[5]),
-                'ip' => trim($matches[6]),
-                'date' => $matches[1]
-            ];
-        }
-        
-        // Formato básico de log: [fecha] nivel: mensaje
-        if (preg_match('/\[(.*?)\]\s*(\w+):\s*(.*)/', $line, $matches)) {
-            return [
-                'id' => $id,
-                'level' => strtoupper($matches[2]),
-                'module' => 'system',
-                'message' => $matches[3],
-                'user' => 'Sistema',
-                'ip' => '127.0.0.1',
-                'date' => $matches[1]
-            ];
-        }
-        
-        // Si no coincide con el formato esperado, crear un log básico
-        return [
-            'id' => $id,
-            'level' => 'INFO',
-            'module' => 'system',
-            'message' => substr(trim($line), 0, 200),
-            'user' => 'Sistema',
-            'ip' => '127.0.0.1',
-            'date' => date('Y-m-d H:i:s')
-        ];
-    }
-    
-    /**
-     * Generar logs de ejemplo
-     */
-    private function generateSampleLogs() {
-        return [
-            [
-                'id' => 1,
-                'level' => 'INFO',
-                'module' => 'auth',
-                'message' => 'Usuario admin inició sesión exitosamente',
-                'user' => 'admin',
-                'ip' => '192.168.1.100',
-                'date' => date('Y-m-d H:i:s', time() - 300)
-            ],
-            [
-                'id' => 2,
-                'level' => 'WARNING',
-                'module' => 'property',
-                'message' => 'Intento de acceso no autorizado a propiedad ID: 123',
-                'user' => 'usuario_test',
-                'ip' => '192.168.1.101',
-                'date' => date('Y-m-d H:i:s', time() - 600)
-            ],
-            [
-                'id' => 3,
-                'level' => 'ERROR',
-                'module' => 'system',
-                'message' => 'Error de conexión a la base de datos',
-                'user' => 'Sistema',
-                'ip' => '127.0.0.1',
-                'date' => date('Y-m-d H:i:s', time() - 900)
-            ],
-            [
-                'id' => 4,
-                'level' => 'INFO',
-                'module' => 'user',
-                'message' => 'Nuevo usuario registrado: juan_perez',
-                'user' => 'Sistema',
-                'ip' => '127.0.0.1',
-                'date' => date('Y-m-d H:i:s', time() - 1200)
-            ],
-            [
-                'id' => 5,
-                'level' => 'DEBUG',
-                'module' => 'system',
-                'message' => 'Inicialización del sistema completada',
-                'user' => 'Sistema',
-                'ip' => '127.0.0.1',
-                'date' => date('Y-m-d H:i:s', time() - 1500)
-            ]
-        ];
-    }
-    
-    /**
-     * Limpiar logs del sistema
-     */
-    private function clearLogs() {
-        try {
-            $logFile = APP_PATH . '/../logs/error.log';
-            if (file_exists($logFile)) {
-                // Crear backup antes de limpiar
-                $backupFile = $logFile . '.backup.' . date('Y-m-d-H-i-s');
-                copy($logFile, $backupFile);
-                
-                // Limpiar el archivo
-                file_put_contents($logFile, '');
-                
-                setFlashMessage('success', 'Logs limpiados exitosamente. Backup creado en: ' . basename($backupFile));
-            } else {
-                setFlashMessage('info', 'No hay archivo de logs para limpiar');
-            }
-        } catch (Exception $e) {
-            setFlashMessage('error', 'Error al limpiar logs: ' . $e->getMessage());
-        }
-        
-        redirect('/admin/logs');
-    }
-    
-    /**
-     * Exportar logs del sistema
-     */
-    private function exportLogs() {
-        try {
-            $logs = $this->getSystemLogs('all');
-            
-            // Configurar headers para descarga
-            header('Content-Type: text/csv; charset=utf-8');
-            header('Content-Disposition: attachment; filename="logs_sistema_' . date('Y-m-d_H-i-s') . '.csv"');
-            
-            // Crear archivo CSV
-            $output = fopen('php://output', 'w');
-            
-            // Headers del CSV
-            fputcsv($output, [
-                'ID',
-                'Nivel',
-                'Módulo',
-                'Mensaje',
-                'Usuario',
-                'IP',
-                'Fecha'
-            ]);
-            
-            // Datos de los logs
-            foreach ($logs as $log) {
-                fputcsv($output, [
-                    $log['id'],
-                    $log['level'],
-                    $log['module'],
-                    $log['message'],
-                    $log['user'],
-                    $log['ip'],
-                    $log['date']
-                ]);
-            }
-            
-            fclose($output);
-            exit;
-            
-        } catch (Exception $e) {
-            setFlashMessage('error', 'Error al exportar logs: ' . $e->getMessage());
-            redirect('/admin/logs');
-        }
-    }
-    
-    /**
-     * Backup del sistema
-     */
-    public function systemBackup() {
-        requireRole(ROLE_ADMIN);
-        
-        $action = $_GET['action'] ?? 'list';
-        
-        switch ($action) {
-            case 'create':
-                $this->createBackup();
-                break;
-                
-            case 'restore':
-                $this->restoreBackup();
-                break;
-                
-            case 'list':
-            default:
-                $backups = $this->getBackups();
-                $pageTitle = 'Backup del Sistema - ' . APP_NAME;
-                $currentPage = 'backup';
-                $includeDataTables = true;
-                
-                // Capturar el contenido de la vista
-                ob_start();
-                include APP_PATH . '/views/admin/backup_content.php';
-                $content = ob_get_clean();
-                
-                // Incluir el layout administrativo
-                include APP_PATH . '/views/layouts/admin.php';
-                break;
-        }
-    }
-    
-    /**
-     * Crear backup
-     */
-    private function createBackup() {
-        // Implementar lógica de backup
-        setFlashMessage('success', 'Backup creado exitosamente');
-        redirect('/admin/backup');
-    }
-    
-    /**
-     * Restaurar backup
-     */
-    private function restoreBackup() {
-        // Implementar lógica de restauración
-        setFlashMessage('success', 'Backup restaurado exitosamente');
-        redirect('/admin/backup');
-    }
-    
-    /**
-     * Obtener backups
-     */
-    private function getBackups() {
-        // Implementar lógica para obtener lista de backups
-        return [];
-    }
+
     
     /**
      * Enviar notificación de bloqueo al usuario
@@ -2266,126 +1892,7 @@ Este es un mensaje automático del sistema " . APP_NAME . "
 Si tienes preguntas, no respondas a este correo. Contacta directamente a soporte.";
     }
     
-    /**
-     * Toggle favorito (agregar/quitar de favoritos)
-     */
-    public function toggleFavorite() {
-        requireAuth();
-        requireRole('admin');
-        
-        $propertyId = $_POST['property_id'] ?? null;
-        $userId = $_SESSION['user_id'] ?? null;
-        
-        if (!$propertyId || !$userId) {
-            http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'Datos requeridos faltantes']);
-            return;
-        }
-        
-        require_once APP_PATH . '/models/Favorite.php';
-        $favoriteModel = new Favorite();
-        
-        // Verificar si ya está en favoritos
-        $esFavorito = $favoriteModel->esFavorito($userId, $propertyId);
-        
-        if ($esFavorito) {
-            // Quitar de favoritos
-            $result = $favoriteModel->eliminarFavorito($userId, $propertyId);
-            $action = 'removed';
-        } else {
-            // Agregar a favoritos
-            $result = $favoriteModel->agregarFavorito($userId, $propertyId);
-            $action = 'added';
-        }
-        
-        if ($result['success']) {
-            // Obtener datos actualizados
-            $favorites = $favoriteModel->getFavoritosCompletos($userId);
-            $totalFavorites = $favoriteModel->getTotalFavoritosUsuario($userId);
-            
-            echo json_encode([
-                'success' => true,
-                'action' => $action,
-                'message' => $result['message'],
-                'favorites' => $favorites,
-                'total_favorites' => $totalFavorites,
-                'is_favorite' => !$esFavorito
-            ]);
-        } else {
-            echo json_encode([
-                'success' => false,
-                'message' => $result['message']
-            ]);
-        }
-    }
-    
-    /**
-     * Obtener favoritos del admin
-     */
-    public function getFavorites() {
-        requireAuth();
-        requireRole('admin');
-        
-        $userId = $_SESSION['user_id'] ?? null;
-        
-        if (!$userId) {
-            http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'Usuario no autenticado']);
-            return;
-        }
-        
-        require_once APP_PATH . '/models/Favorite.php';
-        $favoriteModel = new Favorite();
-        
-        $favorites = $favoriteModel->getFavoritosCompletos($userId);
-        $totalFavorites = $favoriteModel->getTotalFavoritosUsuario($userId);
-        
-        echo json_encode([
-            'success' => true,
-            'favorites' => $favorites,
-            'total_favorites' => $totalFavorites
-        ]);
-    }
-    
-    /**
-     * Remover favorito específico
-     */
-    public function removeFavorite() {
-        requireAuth();
-        requireRole('admin');
-        
-        $favoriteId = $_POST['favorite_id'] ?? null;
-        $userId = $_SESSION['user_id'] ?? null;
-        
-        if (!$favoriteId || !$userId) {
-            http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'Datos requeridos faltantes']);
-            return;
-        }
-        
-        require_once APP_PATH . '/models/Favorite.php';
-        $favoriteModel = new Favorite();
-        
-        $result = $favoriteModel->eliminarFavoritoPorId($userId, $favoriteId);
-        
-        if ($result['success']) {
-            // Obtener datos actualizados
-            $favorites = $favoriteModel->getFavoritosCompletos($userId);
-            $totalFavorites = $favoriteModel->getTotalFavoritosUsuario($userId);
-            
-            echo json_encode([
-                'success' => true,
-                'message' => $result['message'],
-                'favorites' => $favorites,
-                'total_favorites' => $totalFavorites
-            ]);
-        } else {
-            echo json_encode([
-                'success' => false,
-                'message' => $result['message']
-            ]);
-        }
-    }
+
     
     /**
      * Ver detalles de un reporte específico

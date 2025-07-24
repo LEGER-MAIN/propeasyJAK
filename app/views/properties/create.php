@@ -128,12 +128,10 @@ $content = ob_start();
                             <i class="fas fa-coins mr-2" style="color: var(--color-verde-esmeralda);"></i>
                             Moneda
                         </label>
-                        <select name="moneda" id="moneda"
+                        <select name="moneda" id="moneda" required
                                 class="w-full px-4 py-3 text-lg border-2 rounded-xl focus:outline-none transition-all duration-200 appearance-none"
                                 style="border-color: var(--color-gris-claro); background-color: var(--bg-light); color: var(--text-primary);">
-                            <option value="USD">💵 USD - Dólar Estadounidense</option>
-                            <option value="DOP">💲 DOP - Peso Dominicano</option>
-                            <option value="EUR">💶 EUR - Euro</option>
+                            <option value="USD" selected>💵 USD - Dólar Estadounidense</option>
                         </select>
                     </div>
                 </div>

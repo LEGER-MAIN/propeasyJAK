@@ -481,18 +481,20 @@
     });
 
     // Función para actualizar gráfico con diferentes períodos
-    function updateChart(period) {
+    function updateChart(period, updateButtons = true) {
         // Mostrar indicador de carga
         const chartContainer = document.querySelector('.chart-container');
         chartContainer.style.opacity = '0.6';
         
-        // Actualizar el estado activo de los botones
-        document.querySelectorAll('.chart-controls .btn').forEach(btn => {
-            btn.classList.remove('btn-primary');
-            btn.classList.add('btn-outline-primary');
-        });
-        event.target.classList.remove('btn-outline-primary');
-        event.target.classList.add('btn-primary');
+        // Actualizar el estado activo de los botones solo si se solicita
+        if (updateButtons && event && event.target) {
+            document.querySelectorAll('.chart-controls .btn').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-primary');
+            });
+            event.target.classList.remove('btn-outline-primary');
+            event.target.classList.add('btn-primary');
+        }
         
         // Obtener datos del servidor
         fetch(`/admin/chart-data?period=${period}`)
@@ -528,10 +530,10 @@
                 
                 switch(period) {
                     case 'month':
-                        labels = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'];
-                        userData = [0, 0, 0, 0];
-                        propertyData = [0, 0, 0, 0];
-                        salesData = [0, 0, 0, 0];
+                        labels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+                        userData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        propertyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        salesData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         break;
                     case 'quarter':
                         labels = ['Ene-Mar', 'Abr-Jun', 'Jul-Sep', 'Oct-Dic'];
@@ -571,6 +573,9 @@
 
     // Gestión de alertas del sistema
     document.addEventListener('DOMContentLoaded', function() {
+        // Cargar automáticamente datos mensuales al cargar la página (sin cambiar botones)
+        updateChart('month', false);
+        
         // Manejar eliminación de alertas
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('dismiss-alert-btn')) {

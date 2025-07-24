@@ -122,11 +122,9 @@ $content = ob_start();
                         <label for="moneda" class="block text-sm font-medium text-gray-700 mb-1">
                             Moneda
                         </label>
-                        <select name="moneda" id="moneda"
+                        <select name="moneda" id="moneda" required
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
-                            <option value="USD" <?= ($property['moneda'] === 'USD') ? 'selected' : '' ?>>USD - Dólar Estadounidense</option>
-                            <option value="DOP" <?= ($property['moneda'] === 'DOP') ? 'selected' : '' ?>>DOP - Peso Dominicano</option>
-                            <option value="EUR" <?= ($property['moneda'] === 'EUR') ? 'selected' : '' ?>>EUR - Euro</option>
+                            <option value="USD" selected>USD - Dólar Estadounidense</option>
                         </select>
                     </div>
                 </div>
