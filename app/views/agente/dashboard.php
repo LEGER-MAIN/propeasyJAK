@@ -22,7 +22,7 @@
                        onmouseover="this.style.backgroundColor='var(--color-gris-claro)'; this.style.transform='translateY(-2px)'"
                        onmouseout="this.style.backgroundColor='var(--bg-light)'; this.style.transform='translateY(0)'">
                         <i class="fas fa-user-edit mr-2"></i>
-                        Gestionar Perfil Público
+                        Ver Perfil Público
                     </a>
                 </div>
             </div>
@@ -264,7 +264,7 @@
                         </div>
                     </a>
                     
-                    <a href="/agente/perfil-publico" class="flex items-center p-4 border rounded-lg transition-all duration-200" style="border-color: var(--color-gris-claro);" onmouseover="this.style.backgroundColor='var(--bg-secondary)'" onmouseout="this.style.backgroundColor='transparent'">
+                    <a href="/profile" class="flex items-center p-4 border rounded-lg transition-all duration-200" style="border-color: var(--color-gris-claro);" onmouseover="this.style.backgroundColor='var(--bg-secondary)'" onmouseout="this.style.backgroundColor='transparent'">
                         <div class="flex-shrink-0">
                             <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background-color: rgba(42, 157, 143, 0.1);">
                                 <i class="fas fa-user-edit" style="color: var(--color-verde-esmeralda);"></i>
@@ -272,7 +272,7 @@
                         </div>
                         <div class="ml-4">
                             <h3 class="text-sm font-medium" style="color: var(--text-primary);">Editar Perfil</h3>
-                            <p class="text-sm" style="color: var(--text-secondary);">Actualizar información pública</p>
+                            <p class="text-sm" style="color: var(--text-secondary);">Actualizar información personal</p>
                         </div>
                     </a>
                 </div>

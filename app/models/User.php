@@ -943,7 +943,7 @@ class User {
         
         $whereClause = implode(' AND ', $conditions) . ' AND (' . implode(' OR ', $searchConditions) . ')';
         
-        $query = "SELECT id, nombre, apellido, email, rol, ultimo_acceso 
+        $query = "SELECT id, nombre, apellido, email, rol, ultimo_acceso, foto_perfil 
                   FROM {$this->table} 
                   WHERE {$whereClause} 
                   ORDER BY COALESCE(nombre, ''), COALESCE(apellido, '') 
@@ -978,7 +978,7 @@ class User {
         
         $whereClause = implode(' AND ', $conditions);
         
-        $query = "SELECT id, nombre, apellido, email, rol, ultimo_acceso 
+        $query = "SELECT id, nombre, apellido, email, rol, ultimo_acceso, foto_perfil 
                   FROM {$this->table} 
                   WHERE {$whereClause} 
                   LIMIT 1";
@@ -1027,6 +1027,7 @@ class User {
                         email,
                         rol,
                         ultimo_acceso,
+                        foto_perfil,
                         CASE 
                             WHEN ultimo_acceso > DATE_SUB(NOW(), INTERVAL 5 MINUTE) THEN 1 
                             ELSE 0 

@@ -112,13 +112,22 @@ $content = ob_start();
                     </div>
                     
                     <div class="flex items-end space-x-3">
-                        <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                style="color: white;"
+                                onmouseover="this.style.color='white'"
+                                onmouseout="this.style.color='white'">
                             <i class="fas fa-filter mr-2"></i>Filtrar
                         </button>
-                        <a href="/properties/pending-validation" class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <a href="/properties/pending-validation" class="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                           style="color: white;"
+                           onmouseover="this.style.color='white'"
+                           onmouseout="this.style.color='white'">
                             <i class="fas fa-clock mr-2"></i>Pendientes
                         </a>
-                        <a href="/properties/create" class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <a href="/properties/create" class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                           style="color: white;"
+                           onmouseover="this.style.color='white'"
+                           onmouseout="this.style.color='white'">
                             <i class="fas fa-plus mr-2"></i>Nueva
                         </a>
                     </div>

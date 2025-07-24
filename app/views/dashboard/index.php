@@ -105,7 +105,7 @@ try {
         $recentAppointments = $appointmentModel->getRecent(10);
     }
 } catch (Exception $e) {
-    error_log("Error obteniendo estadísticas del dashboard: " . $e->getMessage());
+            // error_log("Error obteniendo estadísticas del dashboard: " . $e->getMessage());
     $stats = [];
     $recentAppointments = [];
 }

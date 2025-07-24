@@ -33,7 +33,7 @@ try {
     $agentes = $userModel->getByRole(ROLE_AGENTE);
     
 } catch (Exception $e) {
-    error_log("Error obteniendo reporte de citas: " . $e->getMessage());
+            // error_log("Error obteniendo reporte de citas: " . $e->getMessage());
     $citas = [];
     $stats = [];
     $agentes = [];

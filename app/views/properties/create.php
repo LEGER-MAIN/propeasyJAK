@@ -565,7 +565,7 @@ function selectAgente(agenteId, element) {
     
     // Mostrar confirmación
     const agenteName = element.querySelector('h4').textContent;
-    console.log('Agente seleccionado:', agenteName);
+    
 }
 
 // Función para mostrar/ocultar loading

@@ -122,13 +122,19 @@ $content = ob_start();
                             </div>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 lg:items-end">
-                            <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl">
+                            <button type="submit" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                                    style="color: white;"
+                                    onmouseover="this.style.color='white'"
+                                    onmouseout="this.style.color='white'">
                                 <i class="fas fa-search mr-2"></i>Buscar
                             </button>
                             <a href="/properties/pending-validation" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center shadow-sm">
                                 <i class="fas fa-times mr-2"></i>Limpiar
                             </a>
-                            <a href="/dashboard" class="bg-gray-800 hover:bg-gray-900 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl">
+                            <a href="/dashboard" class="bg-gray-800 hover:bg-gray-900 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
+                               style="color: white;"
+                               onmouseover="this.style.color='white'"
+                               onmouseout="this.style.color='white'">
                                 <i class="fas fa-arrow-left mr-2"></i>Dashboard
                             </a>
                         </div>

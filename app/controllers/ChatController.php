@@ -379,12 +379,16 @@ class ChatController {
             $otro_usuario_id = ($user_role === 'cliente') ? $conv['agente_id'] : $conv['cliente_id'];
             
             $formatted_conversations[] = [
-                'id' => $conv['solicitud_id'],
-                'name' => $conv['nombre_otro_usuario'],
+                'conversacion_id' => $conv['conversacion_id'] ?? $conv['solicitud_id'],
+                'cliente_id' => $conv['cliente_id'],
+                'agente_id' => $conv['agente_id'],
+                'nombre_otro_usuario' => $conv['nombre_otro_usuario'],
+                'apellido_otro_usuario' => $conv['apellido_otro_usuario'],
+                'foto_perfil' => $conv['foto_perfil_otro_usuario'] ?? '',
                 'online' => $this->isUserOnline($otro_usuario_id),
-                'unread' => $conv['mensajes_no_leidos'] ?? 0,
-                'last_message' => $conv['ultimo_mensaje'] ?? '',
-                'last_message_time' => $conv['fecha_ultimo_mensaje'] ?? ''
+                'mensajes_no_leidos' => $conv['mensajes_no_leidos'] ?? 0,
+                'ultimo_mensaje' => $conv['ultimo_mensaje'] ?? '',
+                'fecha_ultimo_mensaje' => $conv['fecha_ultimo_mensaje'] ?? ''
             ];
         }
 
@@ -709,6 +713,7 @@ class ChatController {
                 'apellido' => $apellido,
                 'name' => $nombreCompleto,
                 'email' => $user['email'],
+                'foto_perfil' => $user['foto_perfil'] ?? '',
                 'online' => $this->isUserOnline($user['id']),
                 'role' => $user['rol']
             ];

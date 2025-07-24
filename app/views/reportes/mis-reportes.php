@@ -62,7 +62,10 @@ function getTipoReporteTexto($tipo) {
                 </div>
                 
                 <a href="/reportes/crear" 
-                   class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-medium shadow-lg transition-all duration-200 hover:shadow-xl">
+                   class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-medium shadow-lg transition-all duration-200 hover:shadow-xl"
+                   style="color: white;"
+                   onmouseover="this.style.color='white'"
+                   onmouseout="this.style.color='white'">
                     <i class="fas fa-plus"></i>
                     Nuevo Reporte
                 </a>
@@ -83,7 +86,10 @@ function getTipoReporteTexto($tipo) {
                         no dudes en reportarlo para ayudarnos a mejorar la plataforma.
                     </p>
                     <a href="/reportes/crear" 
-                       class="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-medium shadow-lg transition-all duration-200 hover:shadow-xl">
+                       class="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-medium shadow-lg transition-all duration-200 hover:shadow-xl"
+                       style="color: white;"
+                       onmouseover="this.style.color='white'"
+                       onmouseout="this.style.color='white'">
                         <i class="fas fa-plus"></i>
                         Crear mi primer reporte
                     </a>
@@ -143,7 +149,10 @@ function getTipoReporteTexto($tipo) {
                             
                             <!-- Botón de acción -->
                             <a href="/reportes/mostrar/<?= $reporte['id'] ?>" 
-                               class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-50 hover:bg-primary-100 text-primary-600 rounded-lg font-medium transition-colors group-hover:bg-primary-100">
+                               class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-medium transition-colors group-hover:bg-gray-900"
+                               style="color: white;"
+                               onmouseover="this.style.color='white'"
+                               onmouseout="this.style.color='white'">
                                 <i class="fas fa-eye"></i>
                                 Ver Detalles
                             </a>

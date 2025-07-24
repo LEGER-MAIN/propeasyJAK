@@ -307,7 +307,7 @@ function trackContact(type, contact) {
             button.style.color = '';
         }, 1000);
         
-        console.log('Chat contact tracked:', contact);
+        
     }
     
     // Aquí podrías enviar datos a Google Analytics o tu sistema de tracking

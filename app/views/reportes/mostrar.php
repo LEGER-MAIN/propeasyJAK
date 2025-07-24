@@ -113,13 +113,19 @@ function getTipoReporteTexto($tipo) {
                 
                 <div class="flex flex-col sm:flex-row gap-3">
                     <a href="/reportes/mis-reportes" 
-                       class="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors">
+                       class="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
+                       style="color: #374151;"
+                       onmouseover="this.style.color='#374151'"
+                       onmouseout="this.style.color='#374151'">
                         <i class="fas fa-arrow-left"></i>
                         Volver
                     </a>
                     <?php if ($reporte['estado'] === 'pendiente'): ?>
                         <a href="/reportes/crear" 
-                           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-medium shadow-lg transition-all duration-200 hover:shadow-xl">
+                           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-lg font-medium shadow-lg transition-all duration-200 hover:shadow-xl"
+                           style="color: white;"
+                           onmouseover="this.style.color='white'"
+                           onmouseout="this.style.color='white'">
                             <i class="fas fa-plus"></i>
                             Nuevo Reporte
                         </a>
@@ -133,13 +139,13 @@ function getTipoReporteTexto($tipo) {
             <!-- Tarjeta principal del reporte -->
             <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
                 <!-- Header de la tarjeta -->
-                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-red-50 to-orange-50">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-indigo-600">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <h2 class="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                            <i class="fas fa-exclamation-triangle text-red-500"></i>
+                        <h2 class="text-xl font-semibold text-white flex items-center gap-2">
+                            <i class="fas fa-exclamation-triangle text-white"></i>
                             <?= htmlspecialchars($reporte['titulo']) ?>
                         </h2>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium <?= getEstadoColor($reporte['estado']) ?>">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                             <?= ucfirst($reporte['estado']) ?>
                         </span>
                     </div>
@@ -225,7 +231,10 @@ function getTipoReporteTexto($tipo) {
                                 </div>
                                 <a href="/uploads/reportes/<?= htmlspecialchars($reporte['archivo_adjunto']) ?>" 
                                    target="_blank" 
-                                   class="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors">
+                                   class="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+                                   style="color: white;"
+                                   onmouseover="this.style.color='white'"
+                                   onmouseout="this.style.color='white'">
                                     <i class="fas fa-download"></i>
                                     Descargar
                                 </a>
@@ -269,28 +278,28 @@ function getTipoReporteTexto($tipo) {
 
             <!-- Información adicional -->
             <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                        <i class="fas fa-info-circle text-blue-500"></i>
+                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-indigo-600">
+                    <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                        <i class="fas fa-info-circle text-white"></i>
                         Información Importante
                     </h3>
                 </div>
-                <div class="p-6">
-                    <ul class="space-y-2 text-gray-700">
+                <div class="p-6 bg-blue-50">
+                    <ul class="space-y-2 text-gray-800">
                         <li class="flex items-start gap-2">
-                            <i class="fas fa-check text-green-500 mt-1 text-xs"></i>
+                            <i class="fas fa-check text-green-600 mt-1 text-xs"></i>
                             <span>Todos los reportes son revisados por nuestro equipo de administración</span>
                         </li>
                         <li class="flex items-start gap-2">
-                            <i class="fas fa-check text-green-500 mt-1 text-xs"></i>
+                            <i class="fas fa-check text-green-600 mt-1 text-xs"></i>
                             <span>Mantendremos la confidencialidad de tu información</span>
                         </li>
                         <li class="flex items-start gap-2">
-                            <i class="fas fa-check text-green-500 mt-1 text-xs"></i>
+                            <i class="fas fa-check text-green-600 mt-1 text-xs"></i>
                             <span>Si tienes preguntas adicionales, puedes crear un nuevo reporte</span>
                         </li>
                         <li class="flex items-start gap-2">
-                            <i class="fas fa-exclamation-triangle text-orange-500 mt-1 text-xs"></i>
+                            <i class="fas fa-exclamation-triangle text-orange-600 mt-1 text-xs"></i>
                             <span>Los reportes falsos o maliciosos pueden resultar en la suspensión de tu cuenta</span>
                         </li>
                     </ul>

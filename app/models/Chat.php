@@ -120,6 +120,10 @@ class Chat {
                         ELSE cl.email
                     END as email_otro_usuario,
                     CASE 
+                        WHEN sc.cliente_id = ? THEN ag.foto_perfil
+                        ELSE cl.foto_perfil
+                    END as foto_perfil_otro_usuario,
+                    CASE 
                         WHEN sc.cliente_id = ? THEN 'agente'
                         ELSE 'cliente'
                     END as rol_otro_usuario,
@@ -441,6 +445,10 @@ class Chat {
                         ELSE cl.email
                     END as email_otro_usuario,
                     CASE 
+                        WHEN cd.cliente_id = ? THEN ag.foto_perfil
+                        ELSE cl.foto_perfil
+                    END as foto_perfil_otro_usuario,
+                    CASE 
                         WHEN cd.cliente_id = ? THEN 'agente'
                         ELSE 'cliente'
                     END as rol_otro_usuario,
@@ -459,7 +467,7 @@ class Chat {
                 WHERE (cd.cliente_id = ? OR cd.agente_id = ?)
                 ORDER BY fecha_ultimo_mensaje DESC";
         
-        $params = [$usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId];
+        $params = [$usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId, $usuarioId];
         error_log("🔍 SQL: $sql");
         error_log("🔍 Params: " . json_encode($params));
         
@@ -484,9 +492,11 @@ class Chat {
                     cl.nombre as nombre_cliente,
                     cl.apellido as apellido_cliente,
                     cl.email as email_cliente,
+                    cl.foto_perfil as foto_cliente,
                     ag.nombre as nombre_agente,
                     ag.apellido as apellido_agente,
-                    ag.email as email_agente
+                    ag.email as email_agente,
+                    ag.foto_perfil as foto_agente
                 FROM conversaciones_directas cd
                 INNER JOIN usuarios cl ON cd.cliente_id = cl.id
                 INNER JOIN usuarios ag ON cd.agente_id = ag.id

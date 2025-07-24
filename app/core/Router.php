@@ -81,6 +81,12 @@ class Router {
         $method = $_SERVER['REQUEST_METHOD'];
         $path = $this->getCurrentPath();
         
+        // Verificar si es un archivo estático (uploads, css, js, etc.)
+        if ($this->isStaticFile($path)) {
+            $this->serveStaticFile($path);
+            return;
+        }
+        
         // Verificar si existe la ruta
         if (isset($this->routes[$method][$path])) {
             $callback = $this->routes[$method][$path];
@@ -117,6 +123,79 @@ class Router {
         }
         
         return $path;
+    }
+    
+    /**
+     * Verificar si la ruta es un archivo estático
+     * 
+     * @param string $path Ruta de la URL
+     * @return bool True si es un archivo estático
+     */
+    private function isStaticFile($path) {
+        // Verificar si la ruta comienza con /uploads/, /css/, /js/, /images/
+        $staticPaths = ['/uploads/', '/css/', '/js/', '/images/'];
+        foreach ($staticPaths as $staticPath) {
+            if (strpos($path, $staticPath) === 0) {
+                return true;
+            }
+        }
+        
+        // Verificar si termina con una extensión de archivo estático
+        $staticExtensions = ['.css', '.js', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.pdf', '.txt'];
+        foreach ($staticExtensions as $ext) {
+            if (strpos($path, $ext) !== false) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Servir archivo estático
+     * 
+     * @param string $path Ruta del archivo
+     */
+    private function serveStaticFile($path) {
+        $filePath = __DIR__ . '/../../public' . $path;
+        
+        // Verificar que el archivo existe y está dentro del directorio public
+        if (!file_exists($filePath) || !is_file($filePath)) {
+            http_response_code(404);
+            return;
+        }
+        
+        // Verificar que el archivo está dentro del directorio public (seguridad)
+        $realPath = realpath($filePath);
+        $publicPath = realpath(__DIR__ . '/../../public');
+        if (strpos($realPath, $publicPath) !== 0) {
+            http_response_code(403);
+            return;
+        }
+        
+        // Determinar el tipo MIME
+        $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+        $mimeTypes = [
+            'css' => 'text/css',
+            'js' => 'application/javascript',
+            'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'svg' => 'image/svg+xml',
+            'ico' => 'image/x-icon',
+            'pdf' => 'application/pdf',
+            'txt' => 'text/plain'
+        ];
+        
+        $contentType = $mimeTypes[$extension] ?? 'application/octet-stream';
+        
+        // Servir el archivo
+        header('Content-Type: ' . $contentType);
+        header('Content-Length: ' . filesize($filePath));
+        header('Cache-Control: public, max-age=31536000'); // Cache por 1 año
+        
+        readfile($filePath);
     }
     
     /**

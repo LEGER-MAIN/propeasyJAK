@@ -135,21 +135,7 @@
                                 
 
                                 
-                                <?php if (hasRole(ROLE_CLIENTE)): ?>
-                                    <hr class="my-1">
-                                    <a href="/buscar-agentes" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                        <i class="fas fa-search"></i>
-                                        <span>Buscar Agentes</span>
-                                    </a>
-                                    <a href="/cliente/propiedades-enviadas" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                        <i class="fas fa-paper-plane"></i>
-                                        <span>Propiedades Enviadas</span>
-                                    </a>
-                                    <a href="/appointments" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                                        <i class="fas fa-calendar-alt"></i>
-                                        <span>Mis Citas</span>
-                                    </a>
-                                <?php endif; ?>
+
                                 
                                 <hr class="my-1">
                                 <a href="/logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">

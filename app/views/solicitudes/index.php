@@ -218,9 +218,9 @@ $csrfToken = generateCSRFToken();
                             <a 
                                 href="/chat/simple?agent=<?= $solicitud['agente_id'] ?>&v=<?= time() ?>" 
                                 class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white transition-all duration-200"
-                                style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%);"
-                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(29, 53, 87, 0.3)'"
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                                style="background: linear-gradient(135deg, var(--color-azul-marino) 0%, var(--color-azul-marino-hover) 100%); color: white;"
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(29, 53, 87, 0.3)'; this.style.color='white'"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'; this.style.color='white'"
                             >
                                 Chat
                             </a>

@@ -608,7 +608,7 @@
         const favoritesScript = document.createElement('script');
         favoritesScript.src = '/js/favorites.js';
         favoritesScript.onload = function() {
-            console.log('Sistema de favoritos cargado correctamente');
+            
         };
         favoritesScript.onerror = function() {
             console.error('Error al cargar el sistema de favoritos');
@@ -622,7 +622,7 @@
         const appointmentsScript = document.createElement('script');
         appointmentsScript.src = '/js/appointments.js';
         appointmentsScript.onload = function() {
-            console.log('Sistema de citas cargado correctamente');
+            
         };
         appointmentsScript.onerror = function() {
             console.error('Error al cargar el sistema de citas');
@@ -636,7 +636,7 @@
         const appointmentNotificationsScript = document.createElement('script');
         appointmentNotificationsScript.src = '/js/appointment-notifications.js';
         appointmentNotificationsScript.onload = function() {
-            console.log('Sistema de notificaciones de citas cargado correctamente');
+            
         };
         appointmentNotificationsScript.onerror = function() {
             console.error('Error al cargar el sistema de notificaciones de citas');
