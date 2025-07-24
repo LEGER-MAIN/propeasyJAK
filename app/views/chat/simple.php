@@ -197,6 +197,15 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
 
     <script>
         // ===== CHAT SIMPLE DESDE CERO =====
+        console.log('🚀 INICIANDO CHAT SIMPLE DESDE CERO');
+        
+
+        console.log('🔍 Variables de sesión disponibles:');
+        console.log('user_id:', <?= $user_id ?? 'null' ?>);
+        console.log('user_nombre:', '<?= $user_nombre ?? 'null' ?>');
+        console.log('user_apellido:', '<?= $user_apellido ?? 'null' ?>');
+        console.log('user_rol:', '<?= $user_role ?? 'null' ?>');
+        console.log('user_email:', '<?= $user_email ?? 'null' ?>');
 
         // Variables globales
         let currentChat = null;
@@ -227,20 +236,29 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
 
         // FUNCIÓN DE ENVÍO DE MENSAJES
         async function sendMessage() {
+            console.log('🚀 Función sendMessage ejecutada');
+            
             const content = elements.messageInput.value.trim();
             
             if (!content) {
+                console.log('❌ Mensaje vacío');
                 alert('Escribe un mensaje');
                 return;
             }
             
             if (!currentChat) {
+                console.log('❌ No hay chat seleccionado');
                 alert('Selecciona un chat');
                 return;
             }
             
+            console.log('🚀 Enviando mensaje...');
+            console.log('📝 Conversación:', currentChat.conversacion_id);
+            console.log('💬 Mensaje:', content);
+            
             // Intentar enviar por WebSocket primero
             if (isWebSocketConnected && websocket) {
+                console.log('🔌 Enviando por WebSocket...');
                 
                 const messageData = {
                     type: 'direct_message',
@@ -264,7 +282,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             }
             
             // Fallback a HTTP si WebSocket no está disponible
-            
+            console.log('🌐 WebSocket no disponible, usando HTTP...');
             
             try {
                 const response = await fetch('/chat/send-direct-message', {
@@ -279,17 +297,17 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                     })
                 });
                 
-                
+                console.log('📥 Response status:', response.status);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                
+                console.log('📥 Response data:', data);
                 
                 if (data.success) {
-                    
+                    console.log('✅ Mensaje enviado exitosamente');
                     
                     // Limpiar input
                     elements.messageInput.value = '';
@@ -312,8 +330,6 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
 
         // AGREGAR MENSAJE A LA INTERFAZ
         function addMessageToUI(content, isOwn = false, timestamp = null) {
-            
-            
             const messageDiv = document.createElement('div');
             messageDiv.className = `mb-4 ${isOwn ? 'flex justify-end' : 'flex justify-start'}`;
             
@@ -328,15 +344,12 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             
             elements.messagesContainer.appendChild(messageDiv);
             elements.messagesContainer.scrollTop = elements.messagesContainer.scrollHeight;
-            
-            
         }
 
         // CARGAR CONVERSACIONES
         async function loadConversations() {
             try {
-                
-                
+                console.log('📥 Cargando conversaciones...');
                 
                 const response = await fetch('/chat/direct-conversations', {
                     headers: {
@@ -344,45 +357,32 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                     }
                 });
                 
-                
-                
+                console.log('📥 Response status:', response.status);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                
+                console.log('📥 Response data:', data);
                 
                 if (data.success) {
                     conversations = data.conversations;
-                    
-                    
+                    console.log('✅ Conversaciones cargadas:', conversations);
                     renderConversations();
-                    
-                    // Disparar evento personalizado para notificar que las conversaciones están listas
-                    const event = new CustomEvent('conversationsLoaded', { 
-                        detail: { conversations: conversations } 
-                    });
-                    document.dispatchEvent(event);
-                    
                 } else {
                     console.error('❌ Error en respuesta:', data.error);
                     showError('Error cargando conversaciones: ' + data.error);
                 }
             } catch (error) {
                 console.error('❌ Error cargando conversaciones:', error);
-                console.error('❌ Error stack:', error.stack);
                 showError('Error cargando conversaciones: ' + error.message);
             }
         }
 
         // RENDERIZAR CONVERSACIONES
         function renderConversations() {
-            
-            
             if (conversations.length === 0) {
-                
                 elements.conversationsList.innerHTML = `
                     <div class="p-4 text-center text-gray-500">
                         <i class="fas fa-comments text-4xl mb-2"></i>
@@ -393,85 +393,57 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 return;
             }
             
-            
-            
             elements.conversationsList.innerHTML = conversations.map(conv => `
-                <div class="conversation-item p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors ${conv.conversacion_id === currentChat?.conversacion_id ? 'bg-green-50 border-green-200' : ''}" 
-                     data-conversation-id="${conv.conversacion_id}" data-user-id="${conv.cliente_id === <?= $user_id ?? 0 ?> ? conv.agente_id : conv.cliente_id}">
+                <div class="conversation-item p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors ${conv.conversacion_id === currentChat?.conversacion_id ? 'bg-green-50 border-green-200' : ''}" 
+                     data-conversation-id="${conv.conversacion_id}" data-user-id="${conv.cliente_id === <?= $_SESSION['user_id'] ?? 0 ?> ? conv.agente_id : conv.cliente_id}">
                     <div class="flex items-center space-x-3">
-                        <div class="flex-1 flex items-center space-x-3 cursor-pointer" onclick="selectConversation('${conv.conversacion_id}', '${conv.cliente_id === <?= $user_id ?? 0 ?> ? conv.agente_id : conv.cliente_id}')">
-                            ${conv.foto_perfil ? 
-                                `<img src="${conv.foto_perfil}" alt="${conv.nombre_otro_usuario}" class="w-12 h-12 rounded-full object-cover" onerror=" this.style.display='none'; this.nextElementSibling.style.display='flex';">` :
-                                `<div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-white"></i>
-                                </div>`
-                            }
-                            <div class="flex-1 min-w-0">
-                                <h4 class="font-medium text-gray-900 truncate">${conv.nombre_otro_usuario} ${conv.apellido_otro_usuario}</h4>
-                                <p class="text-sm text-gray-500 truncate">${conv.ultimo_mensaje || 'Sin mensajes'}</p>
-                            </div>
-                            <div class="flex flex-col items-end space-y-1">
-                                <span class="text-xs text-gray-400">${formatTime(conv.fecha_ultimo_mensaje)}</span>
-                                ${conv.mensajes_no_leidos > 0 ? `<span class="bg-green-500 text-white text-xs rounded-full px-2 py-1">${conv.mensajes_no_leidos}</span>` : ''}
-                            </div>
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white"></i>
                         </div>
-
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-medium text-gray-900 truncate">${conv.nombre_otro_usuario} ${conv.apellido_otro_usuario}</h4>
+                            <p class="text-sm text-gray-500 truncate">${conv.ultimo_mensaje || 'Sin mensajes'}</p>
+                        </div>
+                        <div class="flex flex-col items-end space-y-1">
+                            <span class="text-xs text-gray-400">${formatTime(conv.fecha_ultimo_mensaje)}</span>
+                            ${conv.mensajes_no_leidos > 0 ? `<span class="bg-green-500 text-white text-xs rounded-full px-2 py-1">${conv.mensajes_no_leidos}</span>` : ''}
+                        </div>
                     </div>
                 </div>
             `).join('');
             
-            
-            
-            // Los event listeners ahora están en el onclick de cada elemento
+            // Agregar event listeners
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const conversationId = this.dataset.conversationId;
+                    const userId = this.dataset.userId;
+                    selectConversation(conversationId, userId);
+                });
+            });
         }
 
         // SELECCIONAR CONVERSACIÓN
         function selectConversation(conversationId, userId) {
-            
-            
-            
             currentChat = conversations.find(c => c.conversacion_id == conversationId);
-            if (!currentChat) {
-                
-
-                return;
-            }
+            if (!currentChat) return;
             
             currentChat.user_id = userId;
-            currentChat.current_user_id = <?= $user_id ?? 0 ?>;
+        currentChat.current_user_id = <?= $user_id ?? 0 ?>;
             
-            
-            
+            console.log('✅ Seleccionando conversación:', conversationId, 'Usuario:', userId);
             
             // Actualizar UI
             document.querySelectorAll('.conversation-item').forEach(item => {
                 item.classList.remove('bg-green-50', 'border-green-200');
             });
-            
-            const conversationElement = document.querySelector(`[data-conversation-id="${conversationId}"]`);
-            if (conversationElement) {
-                conversationElement.classList.add('bg-green-50', 'border-green-200');
-                
-            } else {
-                
-            }
+            document.querySelector(`[data-conversation-id="${conversationId}"]`).classList.add('bg-green-50', 'border-green-200');
             
             // Actualizar header
             elements.chatTitle.textContent = `${currentChat.nombre_otro_usuario} ${currentChat.apellido_otro_usuario}`;
             elements.chatSubtitle.textContent = 'En línea';
             
-            // Actualizar foto de perfil en el header
-            const headerAvatar = document.querySelector('#chat-header .w-10.h-10');
-            if (headerAvatar && currentChat.foto_perfil) {
-                headerAvatar.innerHTML = `<img src="${currentChat.foto_perfil}" alt="${currentChat.nombre_otro_usuario}" class="w-10 h-10 rounded-full object-cover">`;
-            } else if (headerAvatar) {
-                headerAvatar.innerHTML = `<i class="fas fa-user text-gray-600"></i>`;
-            }
-            
-            
             // Mostrar área de mensajes
             elements.messageInputContainer.classList.remove('hidden');
-            
             
             // Cargar mensajes
             loadMessages(conversationId);
@@ -480,8 +452,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
         // CARGAR MENSAJES
         async function loadMessages(conversationId) {
             try {
-                
-                
+                console.log('📥 Cargando mensajes para conversación:', conversationId);
                 
                 const response = await fetch(`/chat/direct/${conversationId}/messages`, {
                     headers: {
@@ -489,17 +460,17 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                     }
                 });
                 
-                
+                console.log('📥 Response status:', response.status);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                
+                console.log('📥 Response data:', data);
                 
                 if (data.success) {
-                    
+                    console.log('✅ Mensajes cargados:', data.messages);
                     renderMessages(data.messages);
                 } else {
                     console.error('❌ Error en respuesta:', data.error);
@@ -513,12 +484,9 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
 
         // RENDERIZAR MENSAJES
         function renderMessages(messages) {
-            
-            
             elements.messagesContainer.innerHTML = '';
             
             if (messages.length === 0) {
-                
                 elements.messagesContainer.innerHTML = `
                     <div class="text-center text-gray-500 py-8">
                         <i class="fas fa-comment-dots text-4xl mb-2"></i>
@@ -529,7 +497,6 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 return;
             }
             
-            
             messages.forEach(msg => {
                 const isOwnMessage = msg.remitente_id == <?= $user_id ?? 0 ?>;
                 const messageContent = msg.mensaje || 'Mensaje sin contenido';
@@ -537,8 +504,6 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 
                 addMessageToUI(messageContent, isOwnMessage, timestamp);
             });
-            
-            
         }
 
         // BUSCAR USUARIOS
@@ -549,7 +514,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             }
             
             try {
-                
+                console.log('🔍 Buscando usuarios con query:', query);
                 
                 const response = await fetch(`/chat/search-users?q=${encodeURIComponent(query)}`, {
                     headers: {
@@ -562,7 +527,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 }
                 
                 const data = await response.json();
-                
+                console.log('📥 Usuarios encontrados:', data);
                 
                 if (data.success) {
                     renderSearchResults(data.users);
@@ -576,7 +541,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
 
         // RENDERIZAR RESULTADOS DE BÚSQUEDA
         function renderSearchResults(users) {
-            
+            console.log('🔍 Renderizando resultados de búsqueda:', users);
             
             if (!users || users.length === 0) {
                 elements.searchResults.innerHTML = `
@@ -593,18 +558,15 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 const email = user.email || 'Sin email';
                 const nombreCompleto = `${nombre} ${apellido}`.trim();
                 
-                
+                console.log('👤 Usuario encontrado:', { id: user.id, nombre: nombreCompleto, email });
                 
                 return `
                     <div class="user-item p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors" 
                          data-user-id="${user.id}" data-user-name="${nombreCompleto}">
                         <div class="flex items-center space-x-3">
-                            ${user.foto_perfil ? 
-                                `<img src="${user.foto_perfil}" alt="${nombreCompleto}" class="w-10 h-10 rounded-full object-cover">` :
-                                `<div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-white"></i>
-                                </div>`
-                            }
+                            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
                             <div>
                                 <h4 class="font-medium text-gray-900">${nombreCompleto}</h4>
                                 <p class="text-sm text-gray-500">${email}</p>
@@ -627,8 +589,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
         // CREAR CONVERSACIÓN
         async function createConversation(userId, userName) {
             try {
-                
-                
+                console.log('🚀 Creando conversación con usuario:', userId);
                 
                 const response = await fetch('/chat/create-direct-conversation', {
                     method: 'POST',
@@ -641,59 +602,17 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                     })
                 });
                 
-                
-                
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const data = await response.json();
-                
+                console.log('📥 Response data:', data);
                 
                 if (data.success) {
-                    
+                    console.log('✅ Conversación creada');
                     elements.searchModal.classList.add('hidden');
-                    
-                    // Recargar conversaciones y seleccionar la nueva
-                    
-                    await loadConversations();
-                    
-                    
-                    // Buscar la conversación recién creada y seleccionarla
-                    const newConversation = conversations.find(conv => 
-                        conv.agente_id == userId || conv.cliente_id == userId
-                    );
-                    
-                    
-                    
-                    if (newConversation) {
-                        
-                        // Seleccionar la conversación directamente
-                        currentChat = newConversation;
-                        currentChat.user_id = newConversation.agente_id || newConversation.cliente_id;
-                        currentChat.current_user_id = <?= $user_id ?? 0 ?>;
-                        
-                        // Actualizar UI
-                        document.querySelectorAll('.conversation-item').forEach(item => {
-                            item.classList.remove('bg-green-50', 'border-green-200');
-                        });
-                        const conversationElement = document.querySelector(`[data-conversation-id="${newConversation.conversacion_id}"]`);
-                        if (conversationElement) {
-                            conversationElement.classList.add('bg-green-50', 'border-green-200');
-                        }
-                        
-                        // Actualizar header
-                        elements.chatTitle.textContent = `${newConversation.nombre_otro_usuario} ${newConversation.apellido_otro_usuario}`;
-                        elements.chatSubtitle.textContent = 'En línea';
-                        
-                        // Mostrar área de mensajes
-                        elements.messageInputContainer.classList.remove('hidden');
-                        
-                        // Cargar mensajes
-                        loadMessages(newConversation.conversacion_id);
-                    } else {
-                        console.error('❌ No se encontró la conversación recién creada');
-                    }
+                    loadConversations(); // Recargar conversaciones
                 } else {
                     console.error('❌ Error:', data.error);
                     alert('Error: ' + (data.error || 'Error desconocido'));
@@ -707,35 +626,45 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
         // SELECCIONAR AGENTE POR ID
         async function selectAgentById(agentId) {
             try {
+                console.log('🎯 Seleccionando agente por ID:', agentId);
                 
-                
-                
-                // Esperar a que las conversaciones se carguen si no están disponibles
-                if (!conversations || conversations.length === 0) {
-                    
-                    await loadConversations();
-                    
-                }
-                
-                // Buscar conversación existente con este agente
+                // Primero verificar si ya existe una conversación con este agente
                 const existingConversation = conversations.find(conv => 
                     conv.agente_id == agentId || conv.cliente_id == agentId
                 );
                 
-                
-                
                 if (existingConversation) {
-                    
-                    // Seleccionar la conversación directamente usando selectConversation
-                    const userId = existingConversation.agente_id == agentId ? existingConversation.agente_id : existingConversation.cliente_id;
-                    selectConversation(existingConversation.conversacion_id, userId);
+                    console.log('✅ Conversación existente encontrada, seleccionando...');
+                    selectConversation(existingConversation);
                     return;
                 }
                 
-                // Si no existe, crear conversación directamente
+                // Si no existe, buscar el agente y crear conversación
+                console.log('🔍 Buscando información del agente...');
+                // Usar una búsqueda más específica para encontrar el agente por ID
+                const response = await fetch(`/chat/search-users?q=id:${agentId}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
                 
-                await createConversation(agentId, 'Agente');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
+                const data = await response.json();
+                
+                if (data.success && data.users && data.users.length > 0) {
+                    const agent = data.users.find(user => user.id == agentId);
+                    if (agent) {
+                        console.log('✅ Agente encontrado:', agent);
+                        await createConversation(agent.id, `${agent.nombre} ${agent.apellido}`);
+                    } else {
+                        console.error('❌ Agente no encontrado en los resultados');
+                    }
+                } else {
+                    console.error('❌ No se encontró información del agente');
+                }
             } catch (error) {
                 console.error('❌ Error seleccionando agente:', error);
             }
@@ -786,12 +715,12 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
         // INICIALIZAR WEBSOCKET
         function initWebSocket() {
             try {
-                
+                console.log('🔌 Conectando WebSocket...');
                 
                 websocket = new WebSocket('ws://localhost:8080');
                 
                 websocket.onopen = function(event) {
-                    
+                    console.log('✅ WebSocket conectado');
                     isWebSocketConnected = true;
                     elements.wsStatus.className = 'w-3 h-3 bg-green-500 rounded-full';
                     
@@ -809,7 +738,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 };
                 
                 websocket.onmessage = function(event) {
-                    
+                    console.log('📨 WebSocket mensaje recibido:', event.data);
                     
                     try {
                         const data = JSON.parse(event.data);
@@ -820,7 +749,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 };
                 
                 websocket.onclose = function(event) {
-                    
+                    console.log('🔌 WebSocket desconectado');
                     isWebSocketConnected = false;
                     elements.wsStatus.className = 'w-3 h-3 bg-red-500 rounded-full';
                     
@@ -845,12 +774,12 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
 
         // MANEJAR MENSAJES WEBSOCKET
         function handleWebSocketMessage(data) {
-            
+            console.log('📨 Procesando mensaje WebSocket:', data);
             
             switch (data.type) {
                 case 'auth':
                     if (data.status === 'success') {
-                        
+                        console.log('✅ Usuario autenticado en WebSocket');
                     } else {
                         console.error('❌ Error de autenticación WebSocket:', data.message);
                     }
@@ -861,17 +790,17 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                     break;
                     
                 default:
-                    
+                    console.log('❓ Tipo de mensaje WebSocket desconocido:', data.type);
             }
         }
 
         // MANEJAR MENSAJE ENTRANTE
         function handleIncomingMessage(data) {
-            
+            console.log('📨 Mensaje entrante recibido:', data);
             
             // Solo procesar si es para la conversación actual
             if (currentChat && data.conversation_id == currentChat.conversacion_id) {
-                
+                console.log('✅ Mensaje para conversación actual, agregando a UI');
                 
                 // Verificar que no sea nuestro propio mensaje
                 const isOwnMessage = data.user_id == <?= $user_id ?? 0 ?>;
@@ -883,7 +812,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                     updateLastMessage(data.conversation_id, data.message);
                 }
             } else {
-                
+                console.log('📝 Mensaje para otra conversación, actualizando lista');
             }
             
             // Actualizar conversaciones para mostrar nuevo mensaje
@@ -893,12 +822,12 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
         // ===== EVENT LISTENERS =====
 
         document.addEventListener('DOMContentLoaded', function() {
-            
+            console.log('🚀 DOM cargado, configurando chat simple...');
             
             // Verificar elementos
-            
+            console.log('🔍 Verificando elementos del DOM...');
             Object.keys(elements).forEach(key => {
-                
+                console.log(`${key}:`, elements[key]);
             });
             
             // Preseleccionar agente si se pasa como parámetro
@@ -906,52 +835,26 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             const selectedAgentId = urlParams.get('agent');
             const propertyId = urlParams.get('property');
             
-            
-                agent: selectedAgentId,
-                property: propertyId,
-                fullUrl: window.location.href
-            });
-            
             if (selectedAgentId) {
-                
-                
-                // Escuchar el evento de conversaciones cargadas
-                const handleConversationsLoaded = async (event) => {
-                    
-                    await selectAgentById(selectedAgentId);
-                    // Remover el listener después de usarlo
-                    document.removeEventListener('conversationsLoaded', handleConversationsLoaded);
-                };
-                
-                document.addEventListener('conversationsLoaded', handleConversationsLoaded);
-                
-                // También mantener el método de polling como fallback
-                const checkAndSelectAgent = async () => {
-                    if (conversations && conversations.length > 0) {
-                        await selectAgentById(selectedAgentId);
-                    } else {
-                        setTimeout(checkAndSelectAgent, 500); // Verificar cada 500ms
-                    }
-                };
-                
-                // Iniciar el proceso de verificación como fallback
-                setTimeout(checkAndSelectAgent, 2000); // Empezar después de 2 segundos como fallback
-            } else {
-                
+                console.log('🎯 Agente preseleccionado:', selectedAgentId);
+                // Buscar el agente y crear conversación automáticamente
+                setTimeout(() => {
+                    selectAgentById(selectedAgentId);
+                }, 1000); // Esperar a que se carguen las conversaciones
             }
             
             // BOTÓN ENVIAR
             elements.sendMessage.addEventListener('click', function(e) {
-                
+                console.log('🖱️ Botón enviar clickeado');
                 e.preventDefault();
                 sendMessage();
             });
             
             // INPUT ENTER
             elements.messageInput.addEventListener('keypress', function(e) {
-                
+                console.log('⌨️ Tecla presionada:', e.key);
                 if (e.key === 'Enter' && !e.shiftKey) {
-    
+                    console.log('🖱️ Enter presionado (sin Shift)');
                     e.preventDefault();
                     sendMessage();
                 }
@@ -959,7 +862,7 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             
             // BOTÓN NUEVO CHAT
             elements.newChatBtn.addEventListener('click', function() {
-                
+                console.log('🖱️ Botón nuevo chat clickeado');
                 elements.searchModal.classList.remove('hidden');
                 elements.modalSearchInput.focus();
             });
@@ -988,17 +891,16 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
                 }, 300);
             });
             
-            
+            console.log('🚀 Event listeners configurados');
             
             // Cargar conversaciones iniciales
-            
             loadConversations();
             
             // Inicializar WebSocket
             initWebSocket();
         });
 
-        
+        console.log('🚀 CHAT SIMPLE CARGADO');
     </script>
 </body>
 </html> 

@@ -123,7 +123,7 @@ function initWebSocket() {
         ws = new WebSocket(WS_URL);
         
         ws.onopen = function() {
-            
+            console.log('WebSocket conectado');
             updateConnectionStatus(true);
             reconnectAttempts = 0;
             
@@ -145,7 +145,7 @@ function initWebSocket() {
         };
         
         ws.onclose = function() {
-            
+            console.log('WebSocket desconectado');
             updateConnectionStatus(false);
             
             // Intentar reconectar

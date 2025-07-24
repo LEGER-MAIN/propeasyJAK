@@ -98,7 +98,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
 
 <script>
     // ===== CHAT PRINCIPAL DESDE CERO =====
-    
+    console.log('🚀 INICIANDO CHAT PRINCIPAL DESDE CERO');
 
     // Variables globales
     let currentChat = null;
@@ -129,28 +129,28 @@ $pageTitle = 'Chat - ' . APP_NAME;
 
     // FUNCIÓN DE ENVÍO DE MENSAJES
     async function sendMessage() {
-        
-        
-        
+        console.log('🚀 Función sendMessage ejecutada');
+        console.log('🔍 Elementos del DOM:', elements);
+        console.log('🔍 currentChat:', currentChat);
         
         const content = elements.messageInput.value.trim();
-        
+        console.log('📝 Contenido del mensaje:', content);
         
         if (!content) {
-            
+            console.log('❌ Mensaje vacío');
             alert('Escribe un mensaje');
             return;
         }
         
         if (!currentChat) {
-            
+            console.log('❌ No hay chat seleccionado');
             alert('Selecciona un chat');
             return;
         }
         
-        
-        
-        
+        console.log('🚀 Enviando mensaje...');
+        console.log('📝 Conversación:', currentChat.conversacion_id);
+        console.log('💬 Mensaje:', content);
         
         try {
             const response = await fetch('/chat/send-direct-message', {
@@ -165,17 +165,17 @@ $pageTitle = 'Chat - ' . APP_NAME;
                 })
             });
             
-            
+            console.log('📥 Response status:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const data = await response.json();
-            
+            console.log('📥 Response data:', data);
             
             if (data.success) {
-                
+                console.log('✅ Mensaje enviado exitosamente');
                 
                 // Limpiar input
                 elements.messageInput.value = '';
@@ -217,7 +217,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
     // CARGAR CONVERSACIONES
     async function loadConversations() {
         try {
-            
+            console.log('📥 Cargando conversaciones...');
             
             const response = await fetch('/chat/direct-conversations', {
                 headers: {
@@ -225,18 +225,18 @@ $pageTitle = 'Chat - ' . APP_NAME;
                 }
             });
             
-            
+            console.log('📥 Response status:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const data = await response.json();
-            
+            console.log('📥 Response data:', data);
             
             if (data.success) {
                 conversations = data.conversations;
-                
+                console.log('✅ Conversaciones cargadas:', conversations);
                 renderConversations();
             } else {
                 console.error('❌ Error en respuesta:', data.error);
@@ -297,7 +297,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
         
         currentChat.user_id = userId;
         
-        
+        console.log('✅ Seleccionando conversación:', conversationId, 'Usuario:', userId);
         
         // Actualizar UI
         document.querySelectorAll('.conversation-item').forEach(item => {
@@ -319,7 +319,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
     // CARGAR MENSAJES
     async function loadMessages(conversationId) {
         try {
-            
+            console.log('📥 Cargando mensajes para conversación:', conversationId);
             
             const response = await fetch(`/chat/direct/${conversationId}/messages`, {
                 headers: {
@@ -327,17 +327,17 @@ $pageTitle = 'Chat - ' . APP_NAME;
                 }
             });
             
-            
+            console.log('📥 Response status:', response.status);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const data = await response.json();
-            
+            console.log('📥 Response data:', data);
             
             if (data.success) {
-                
+                console.log('✅ Mensajes cargados:', data.messages);
                 renderMessages(data.messages);
             } else {
                 console.error('❌ Error en respuesta:', data.error);
@@ -381,7 +381,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
         }
         
         try {
-            
+            console.log('🔍 Buscando usuarios con query:', query);
             
             const response = await fetch(`/chat/search-users?q=${encodeURIComponent(query)}`, {
                 headers: {
@@ -394,7 +394,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
             }
             
             const data = await response.json();
-            
+            console.log('📥 Usuarios encontrados:', data);
             
             if (data.success) {
                 renderSearchResults(data.users);
@@ -445,7 +445,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
     // CREAR CONVERSACIÓN
     async function createConversation(userId, userName) {
         try {
-            
+            console.log('🚀 Creando conversación con usuario:', userId);
             
             const response = await fetch('/chat/create-direct-conversation', {
                 method: 'POST',
@@ -463,10 +463,10 @@ $pageTitle = 'Chat - ' . APP_NAME;
             }
             
             const data = await response.json();
-            
+            console.log('📥 Response data:', data);
             
             if (data.success) {
-                
+                console.log('✅ Conversación creada');
                 elements.searchModal.classList.add('hidden');
                 loadConversations(); // Recargar conversaciones
             } else {
@@ -524,12 +524,12 @@ $pageTitle = 'Chat - ' . APP_NAME;
     // INICIALIZAR WEBSOCKET
     function initWebSocket() {
         try {
-            
+            console.log('🔌 Conectando WebSocket...');
             
             websocket = new WebSocket('ws://localhost:8080');
             
             websocket.onopen = function(event) {
-                
+                console.log('✅ WebSocket conectado');
                 isWebSocketConnected = true;
                 if (elements.wsStatus) {
                     elements.wsStatus.className = 'absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white';
@@ -549,7 +549,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
             };
             
             websocket.onmessage = function(event) {
-                
+                console.log('📨 WebSocket mensaje recibido:', event.data);
                 
                 try {
                     const data = JSON.parse(event.data);
@@ -560,7 +560,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
             };
             
             websocket.onclose = function(event) {
-                
+                console.log('🔌 WebSocket desconectado');
                 isWebSocketConnected = false;
                 if (elements.wsStatus) {
                     elements.wsStatus.className = 'absolute -bottom-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white';
@@ -589,12 +589,12 @@ $pageTitle = 'Chat - ' . APP_NAME;
 
     // MANEJAR MENSAJES WEBSOCKET
     function handleWebSocketMessage(data) {
-        
+        console.log('📨 Procesando mensaje WebSocket:', data);
         
         switch (data.type) {
             case 'auth':
                 if (data.status === 'success') {
-                    
+                    console.log('✅ Usuario autenticado en WebSocket');
                 } else {
                     console.error('❌ Error de autenticación WebSocket:', data.message);
                 }
@@ -605,7 +605,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
                 break;
                 
             default:
-                
+                console.log('❓ Tipo de mensaje WebSocket desconocido:', data.type);
         }
     }
 
@@ -627,27 +627,27 @@ $pageTitle = 'Chat - ' . APP_NAME;
     // ===== EVENT LISTENERS =====
 
     document.addEventListener('DOMContentLoaded', function() {
-        
+        console.log('🚀 DOM cargado, configurando chat principal...');
         
         // Verificar elementos
-        
+        console.log('🔍 Verificando elementos del DOM...');
         Object.keys(elements).forEach(key => {
-            
+            console.log(`${key}:`, elements[key]);
         });
         
         // BOTÓN ENVIAR
         elements.sendMessage.addEventListener('click', function(e) {
-            
+            console.log('🖱️ Botón enviar clickeado');
             e.preventDefault();
-            
+            console.log('🚀 Llamando a sendMessage()...');
             sendMessage();
         });
         
         // INPUT ENTER
         elements.messageInput.addEventListener('keypress', function(e) {
-            
+            console.log('⌨️ Tecla presionada:', e.key);
             if (e.key === 'Enter' && !e.shiftKey) {
-
+                console.log('🖱️ Enter presionado (sin Shift)');
                 e.preventDefault();
                 sendMessage();
             }
@@ -655,7 +655,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
         
         // BOTÓN NUEVO CHAT
         elements.newChatBtn.addEventListener('click', function() {
-            
+            console.log('🖱️ Botón nuevo chat clickeado');
             elements.searchModal.classList.remove('hidden');
             elements.modalSearchInput.focus();
         });
@@ -684,7 +684,7 @@ $pageTitle = 'Chat - ' . APP_NAME;
             }, 300);
         });
         
-        
+        console.log('🚀 Event listeners configurados');
         
         // Cargar conversaciones iniciales
         loadConversations();
@@ -693,5 +693,5 @@ $pageTitle = 'Chat - ' . APP_NAME;
         initWebSocket();
     });
 
-    
+    console.log('🚀 CHAT PRINCIPAL CARGADO');
 </script> 
