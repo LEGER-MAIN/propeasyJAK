@@ -244,9 +244,9 @@ $total_propiedades = $data['total_propiedades'] ?? 0;
                             <!-- Información del agente -->
                             <div class="flex items-center justify-between pt-3 border-t border-gray-200">
                                 <div class="flex items-center">
-                                    <?php if (!empty($propiedad['foto_agente']) || !empty($propiedad['agente_foto'])): ?>
-                                        <img src="<?= htmlspecialchars($propiedad['foto_agente'] ?? $propiedad['agente_foto']) ?>" 
-                                             alt="<?= htmlspecialchars(($propiedad['nombre_agente'] ?? '') . ' ' . ($propiedad['apellido_agente'] ?? '')) ?>" 
+                                    <?php if (!empty($propiedad['agente_foto'])): ?>
+                                        <img src="<?= htmlspecialchars($propiedad['agente_foto']) ?>" 
+                                             alt="<?= htmlspecialchars(($propiedad['agente_nombre'] ?? '') . ' ' . ($propiedad['agente_apellido'] ?? '')) ?>" 
                                              class="w-8 h-8 rounded-full mr-3">
                                     <?php else: ?>
                                         <div class="w-8 h-8 bg-gray-300 rounded-full mr-3 flex items-center justify-center">
@@ -256,7 +256,7 @@ $total_propiedades = $data['total_propiedades'] ?? 0;
                                     
                                     <div>
                                         <div class="font-medium text-gray-800 text-sm">
-                                            <?= htmlspecialchars(($propiedad['nombre_agente'] ?? '') . ' ' . ($propiedad['apellido_agente'] ?? 'Sin asignar')) ?>
+                                            <?= htmlspecialchars(($propiedad['agente_nombre'] ?? '') . ' ' . ($propiedad['agente_apellido'] ?? 'Sin asignar')) ?>
                                         </div>
                                         <div class="text-xs text-gray-500">
                                             Enviada el <?= date('d/m/Y', strtotime($propiedad['fecha_solicitud'] ?? $propiedad['fecha_creacion'] ?? date('Y-m-d H:i:s'))) ?>
