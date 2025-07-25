@@ -36,7 +36,7 @@ if (!defined('ROOT_PATH')) define('ROOT_PATH', dirname(__DIR__));
 if (!defined('APP_PATH')) define('APP_PATH', ROOT_PATH . '/app');
 if (!defined('PUBLIC_PATH')) define('PUBLIC_PATH', ROOT_PATH . '/public');
 if (!defined('UPLOAD_PATH')) define('UPLOAD_PATH', PUBLIC_PATH . '/uploads');
-if (!defined('UPLOADS_URL')) define('UPLOADS_URL', (function_exists('getAppUrl') ? getAppUrl() : 'http://localhost:8000') . '/uploads');
+if (!defined('UPLOADS_URL')) define('UPLOADS_URL', (function_exists('getAppUrl') ? getAppUrl() : 'http://localhost:80') . '/uploads');
 
 // Incluir helper de imágenes
 require_once APP_PATH . '/helpers/ImageHelper.php';
@@ -83,7 +83,7 @@ if (!defined('SUPPORT_PHONE')) define('SUPPORT_PHONE', '809 359 5322');
 
 // Configuración de la aplicación
 if (!defined('APP_NAME')) define('APP_NAME', 'PropEasy');
-if (!defined('APP_URL')) define('APP_URL', 'http://localhost:8000');
+if (!defined('APP_URL')) define('APP_URL', 'http://localhost:80');
 if (!defined('APP_VERSION')) define('APP_VERSION', '1.0.0');
 
 // Configuración de entorno

@@ -75,7 +75,9 @@ class EmailHelper {
             $this->mailer->isHTML(true);
             $this->mailer->Subject = 'Verifica tu cuenta - ' . APP_NAME;
             
-            $verificationUrl = (function_exists('getAppUrl') ? getAppUrl() : APP_URL) . '/verify-email?token=' . $token;
+            // Usar la función getAppUrl si está disponible, sino usar APP_URL
+            $baseUrl = function_exists('getAppUrl') ? getAppUrl() : (defined('APP_URL') ? APP_URL : 'http://localhost:80');
+            $verificationUrl = $baseUrl . '/verify-email?token=' . $token;
             
             $this->mailer->Body = $this->getVerificationEmailTemplate($nombre, $verificationUrl);
             $this->mailer->AltBody = $this->getVerificationEmailText($nombre, $verificationUrl);
@@ -110,7 +112,9 @@ class EmailHelper {
             $this->mailer->isHTML(true);
             $this->mailer->Subject = 'Recuperación de contraseña - ' . APP_NAME;
             
-            $resetUrl = (function_exists('getAppUrl') ? getAppUrl() : APP_URL) . '/reset-password?token=' . $token;
+            // Usar la función getAppUrl si está disponible, sino usar APP_URL
+            $baseUrl = function_exists('getAppUrl') ? getAppUrl() : (defined('APP_URL') ? APP_URL : 'http://localhost:80');
+            $resetUrl = $baseUrl . '/reset-password?token=' . $token;
             
             $this->mailer->Body = $this->getPasswordResetEmailTemplate($nombre, $resetUrl);
             $this->mailer->AltBody = $this->getPasswordResetEmailText($nombre, $resetUrl);

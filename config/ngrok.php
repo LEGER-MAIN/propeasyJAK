@@ -15,7 +15,9 @@ function isNgrok() {
 function isLocalDevelopment() {
     return isset($_SERVER['HTTP_HOST']) && (
         $_SERVER['HTTP_HOST'] === 'localhost:8000' || 
+        $_SERVER['HTTP_HOST'] === 'localhost:80' ||
         $_SERVER['HTTP_HOST'] === '127.0.0.1:8000' ||
+        $_SERVER['HTTP_HOST'] === '127.0.0.1:80' ||
         strpos($_SERVER['HTTP_HOST'], 'localhost') !== false
     );
 }
@@ -27,26 +29,27 @@ function getDynamicBaseUrl() {
         $host = $_SERVER['HTTP_HOST'];
         return $protocol . '://' . $host;
     } elseif (isLocalDevelopment()) {
-        return 'http://localhost:8000';
+        return 'http://localhost:80';
     }
     
     // Fallback a la configuración por defecto
-    return defined('APP_URL') ? APP_URL : 'http://localhost:8000';
+    return defined('APP_URL') ? APP_URL : 'http://localhost:80';
 }
 
 // Configurar APP_URL dinámicamente si estamos en ngrok
 if (isNgrok()) {
-    if (defined('APP_URL')) {
-        // Redefinir APP_URL si ya está definida
-        $newUrl = getDynamicBaseUrl();
-        if ($newUrl !== APP_URL) {
-            // No podemos redefinir constantes, pero podemos usar una función
-            function getAppUrl() {
-                return getDynamicBaseUrl();
-            }
+    // Siempre definir la función getAppUrl para ngrok
+    if (!function_exists('getAppUrl')) {
+        function getAppUrl() {
+            return getDynamicBaseUrl();
         }
-    } else {
-        define('APP_URL', getDynamicBaseUrl());
+    }
+} else {
+    // Para desarrollo local, usar la función que devuelve APP_URL
+    if (!function_exists('getAppUrl')) {
+        function getAppUrl() {
+            return defined('APP_URL') ? APP_URL : 'http://localhost:80';
+        }
     }
 }
 
