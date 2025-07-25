@@ -9,6 +9,7 @@ define('APP_PATH', __DIR__);
 
 // Cargar configuración
 require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/ngrok.php';
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/core/Database.php';
@@ -63,6 +64,9 @@ class ChatWebSocket implements MessageComponentInterface {
             case 'read':
                 $this->handleRead($from, $data);
                 break;
+            case 'get_messages':
+                $this->handleGetMessages($from, $data);
+                break;
         }
     }
 
@@ -86,7 +90,7 @@ class ChatWebSocket implements MessageComponentInterface {
     }
 
     protected function handleAuth($conn, $data) {
-        $userId = $data['user_id'] ?? null;
+        $userId = $data['user_id'] ?? $data['userId'] ?? null;
         
         if ($userId) {
             $this->userConnections[$userId] = $conn;
@@ -210,6 +214,23 @@ class ChatWebSocket implements MessageComponentInterface {
         $this->broadcastToConversation($solicitudId, $readData);
     }
 
+    protected function handleGetMessages($conn, $data) {
+        $conversationId = $data['conversationId'] ?? $data['conversation_id'] ?? null;
+        
+        if (!$conversationId) {
+            return;
+        }
+
+        // Obtener mensajes de la base de datos
+        $sql = "SELECT * FROM mensajes_chat WHERE solicitud_id = ? ORDER BY fecha_envio ASC";
+        $messages = $this->db->select($sql, [$conversationId]);
+        
+        $conn->send(json_encode([
+            'type' => 'messages',
+            'messages' => $messages
+        ]));
+    }
+
     protected function broadcastToConversation($solicitudId, $data) {
         // Obtener usuarios de la conversación
         $sql = "SELECT cliente_id, agente_id FROM solicitudes_compra WHERE id = ?";
@@ -247,6 +268,10 @@ class ChatWebSocket implements MessageComponentInterface {
     }
 }
 
+// Configurar host y puerto para ngrok
+$host = '0.0.0.0'; // Escuchar en todas las interfaces
+$port = 8080;
+
 // Crear y ejecutar el servidor
 $server = IoServer::factory(
     new HttpServer(
@@ -254,8 +279,11 @@ $server = IoServer::factory(
             new ChatWebSocket()
         )
     ),
-    8080
+    $port,
+    $host
 );
 
-echo "Servidor WebSocket iniciado en puerto 8080\n";
+echo "Servidor WebSocket iniciado en {$host}:{$port}\n";
+echo "Configurado para funcionar con ngrok\n";
+echo "URL del WebSocket: wss://[tu-dominio-ngrok]:{$port}\n";
 $server->run(); 

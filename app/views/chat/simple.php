@@ -717,16 +717,19 @@ $pageTitle = 'Chat Simple - ' . APP_NAME;
             try {
                 console.log('🔌 Conectando WebSocket...');
                 
-                websocket = new WebSocket('<?= function_exists("getWebSocketUrl") ? getWebSocketUrl() : "ws://localhost:8080" ?>');
+                const wsUrl = '<?= function_exists("getWebSocketUrl") ? getWebSocketUrl() : "ws://localhost:8080" ?>';
+                console.log('🔌 URL del WebSocket:', wsUrl);
+                
+                websocket = new WebSocket(wsUrl);
                 
                 websocket.onopen = function(event) {
                     console.log('✅ WebSocket conectado');
                     isWebSocketConnected = true;
                     elements.wsStatus.className = 'w-3 h-3 bg-green-500 rounded-full';
                     
-                                    // Autenticar usuario
-                const userId = <?= $user_id ?? 0 ?>;
-                const userRole = '<?= $user_role ?? 'cliente' ?>';
+                    // Autenticar usuario
+                    const userId = <?= $user_id ?? 0 ?>;
+                    const userRole = '<?= $user_role ?? 'cliente' ?>';
                     
                     if (userId) {
                         websocket.send(JSON.stringify({

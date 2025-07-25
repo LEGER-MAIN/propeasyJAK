@@ -526,7 +526,10 @@ $pageTitle = 'Chat - ' . APP_NAME;
         try {
             console.log('🔌 Conectando WebSocket...');
             
-            websocket = new WebSocket('<?= function_exists("getWebSocketUrl") ? getWebSocketUrl() : "ws://localhost:8080" ?>');
+            const wsUrl = '<?= function_exists("getWebSocketUrl") ? getWebSocketUrl() : "ws://localhost:8080" ?>';
+            console.log('🔌 URL del WebSocket:', wsUrl);
+            
+            websocket = new WebSocket(wsUrl);
             
             websocket.onopen = function(event) {
                 console.log('✅ WebSocket conectado');

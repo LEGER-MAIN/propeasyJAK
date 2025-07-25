@@ -53,16 +53,38 @@ if (isNgrok()) {
 // Configuración específica para WebSocket en ngrok
 function getWebSocketUrl() {
     if (isNgrok()) {
-        $baseUrl = getDynamicBaseUrl();
-        // Cambiar http/https por ws/wss
-        $wsUrl = str_replace(['http://', 'https://'], ['ws://', 'wss://'], $baseUrl);
-        return $wsUrl . ':8080';
+        // Intentar obtener la URL del WebSocket desde la API de ngrok
+        try {
+            $tunnels = file_get_contents('http://localhost:4040/api/tunnels');
+            $data = json_decode($tunnels, true);
+            
+            if ($data && isset($data['tunnels'])) {
+                foreach ($data['tunnels'] as $tunnel) {
+                    if ($tunnel['name'] === 'websocket' || 
+                        (isset($tunnel['config']['addr']) && $tunnel['config']['addr'] === 'http://localhost:8080')) {
+                        return 'wss://' . parse_url($tunnel['public_url'], PHP_URL_HOST);
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            // Si no se puede obtener, usar la URL hardcodeada como fallback
+        }
+        
+        // Fallback a la URL específica del WebSocket
+        return 'wss://cb1c4a6910f9.ngrok-free.app';
     } elseif (isLocalDevelopment()) {
         return 'ws://localhost:8080';
     }
     
     // Fallback para desarrollo local
     return 'ws://localhost:8080';
+}
+
+// Función para obtener la URL del WebSocket desde JavaScript
+function getWebSocketUrlForJS() {
+    $wsUrl = getWebSocketUrl();
+    // Escapar para JavaScript
+    return str_replace('"', '\\"', $wsUrl);
 }
 
 // Configuración de CORS para ngrok
@@ -104,3 +126,7 @@ if (isNgrok() || isLocalDevelopment()) {
         setNgrokHeaders();
     }
 } 
+
+
+
+

@@ -93,7 +93,7 @@ $pageTitle = 'Conversación - ' . APP_NAME;
 // Configuración del WebSocket
 const WS_HOST = window.location.hostname;
 const WS_PORT = 8080;
-const WS_URL = `ws://${WS_HOST}:${WS_PORT}`;
+const WS_URL = '<?= function_exists("getWebSocketUrl") ? getWebSocketUrl() : "ws://localhost:8080" ?>';
 
 // Variables globales
 let ws = null;
