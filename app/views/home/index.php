@@ -122,9 +122,13 @@ ob_start();
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300" style="background-color: var(--bg-light); border: 1px solid var(--color-gris-claro);">
                         <div class="h-48 bg-gray-200 flex items-center justify-center relative" style="background-color: var(--color-gris-claro);">
                             <?php if (!empty($propiedad['imagen_principal'])): ?>
-                                <img src="<?= htmlspecialchars($propiedad['imagen_principal']) ?>" 
+                                <img src="<?= htmlspecialchars(getPropertyImageUrl($propiedad['imagen_principal'])) ?>" 
                                      alt="<?= htmlspecialchars($propiedad['titulo']) ?>" 
-                                     class="w-full h-full object-cover">
+                                     class="w-full h-full object-cover"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="w-full h-full flex items-center justify-center" style="display: none;">
+                                    <i class="fas fa-home text-gray-400 text-4xl" style="color: var(--text-muted);"></i>
+                                </div>
                             <?php else: ?>
                                 <i class="fas fa-home text-gray-400 text-4xl" style="color: var(--text-muted);"></i>
                             <?php endif; ?>

@@ -12,6 +12,7 @@ RewriteRule ^(.*)$ index.php [QSA,L]
     Deny from all
     Allow from 127.0.0.1
     Allow from ::1
+    Allow from all
 </Files>
 
 <Files "index.php">
@@ -59,6 +60,12 @@ RewriteRule ^(.*)$ index.php [QSA,L]
     Header always set X-Frame-Options DENY
     Header always set X-XSS-Protection "1; mode=block"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Configuración CORS para ngrok
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+    Header always set Access-Control-Allow-Credentials "true"
 </IfModule>
 
 # Proteger archivos sensibles

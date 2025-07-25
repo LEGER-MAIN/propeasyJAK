@@ -45,7 +45,7 @@ $content = ob_start();
                     <div class="relative">
                         <!-- Imagen principal -->
                         <div class="h-96 bg-gray-200">
-                            <img id="main-image" src="<?= htmlspecialchars($property['imagenes'][0]['ruta']) ?>" 
+                            <img id="main-image" src="<?= htmlspecialchars(getPropertyImageUrl($property['imagenes'][0]['ruta'])) ?>" 
                                  alt="<?= htmlspecialchars($property['titulo']) ?>"
                                  class="w-full h-full object-cover">
                         </div>
@@ -55,12 +55,12 @@ $content = ob_start();
                             <div class="p-4 border-t" style="border-color: var(--color-gris-claro);">
                                 <div class="flex space-x-2 overflow-x-auto">
                                     <?php foreach ($property['imagenes'] as $index => $imagen): ?>
-                                        <button onclick="changeMainImage('<?= htmlspecialchars($imagen['ruta']) ?>')" 
+                                        <button onclick="changeMainImage('<?= htmlspecialchars(getPropertyImageUrl($imagen['ruta'])) ?>')" 
                                                 class="flex-shrink-0 w-20 h-20 border-2 border-transparent rounded-lg overflow-hidden transition-all duration-200 hover:transform hover:scale-105"
                                                 style="border-color: transparent;"
                                                 onmouseover="this.style.borderColor='var(--color-azul-marino)'; this.style.boxShadow='0 4px 8px rgba(29, 53, 87, 0.3)';"
                                                 onmouseout="this.style.borderColor='transparent'; this.style.boxShadow='none';">
-                                            <img src="<?= htmlspecialchars($imagen['ruta']) ?>" 
+                                            <img src="<?= htmlspecialchars(getPropertyImageUrl($imagen['ruta'])) ?>" 
                                                  alt="Imagen <?= $index + 1 ?>"
                                                  class="w-full h-full object-cover">
                                         </button>

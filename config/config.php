@@ -10,6 +10,9 @@
 // Incluir configuración de base de datos
 require_once __DIR__ . '/database.php';
 
+// Incluir configuración específica para ngrok
+require_once __DIR__ . '/ngrok.php';
+
 // Configuración de errores
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
@@ -21,9 +24,9 @@ date_default_timezone_set('America/Santo_Domingo');
 
 // Configuración de sesión
 ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 0); // Cambiar a 1 en producción con HTTPS
+ini_set('session.cookie_secure', 0); // Deshabilitado para desarrollo local
 ini_set('session.use_strict_mode', 1);
-ini_set('session.cookie_samesite', 'Strict');
+ini_set('session.cookie_samesite', 'Strict'); // Cambiado a Strict para local
 
 // Iniciar sesión
 session_start();
@@ -33,7 +36,10 @@ if (!defined('ROOT_PATH')) define('ROOT_PATH', dirname(__DIR__));
 if (!defined('APP_PATH')) define('APP_PATH', ROOT_PATH . '/app');
 if (!defined('PUBLIC_PATH')) define('PUBLIC_PATH', ROOT_PATH . '/public');
 if (!defined('UPLOAD_PATH')) define('UPLOAD_PATH', PUBLIC_PATH . '/uploads');
-if (!defined('UPLOADS_URL')) define('UPLOADS_URL', '/uploads');
+if (!defined('UPLOADS_URL')) define('UPLOADS_URL', (function_exists('getAppUrl') ? getAppUrl() : APP_URL) . '/uploads');
+
+// Incluir helper de imágenes
+require_once APP_PATH . '/helpers/ImageHelper.php';
 
 // Configuración de roles de usuario
 if (!defined('ROLE_CLIENTE')) define('ROLE_CLIENTE', 'cliente');
@@ -77,7 +83,7 @@ if (!defined('SUPPORT_PHONE')) define('SUPPORT_PHONE', '809 359 5322');
 
 // Configuración de la aplicación
 if (!defined('APP_NAME')) define('APP_NAME', 'PropEasy');
-if (!defined('APP_URL')) define('APP_URL', 'http://localhost');
+if (!defined('APP_URL')) define('APP_URL', 'http://localhost:8000');
 if (!defined('APP_VERSION')) define('APP_VERSION', '1.0.0');
 
 // Configuración de entorno

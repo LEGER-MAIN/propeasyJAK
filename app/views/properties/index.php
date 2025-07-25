@@ -218,9 +218,13 @@ $content = ob_start();
                     <!-- Imagen de la propiedad -->
                     <div class="relative h-48 bg-gray-200">
                         <?php if (!empty($property['imagen_principal'])): ?>
-                            <img src="<?= htmlspecialchars($property['imagen_principal']) ?>" 
+                            <img src="<?= htmlspecialchars(getPropertyImageUrl($property['imagen_principal'])) ?>" 
                                  alt="<?= htmlspecialchars($property['titulo']) ?>"
-                                 class="w-full h-full object-cover">
+                                 class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="w-full h-full flex items-center justify-center" style="display: none;">
+                                <i class="fas fa-home text-4xl text-gray-400"></i>
+                            </div>
                         <?php else: ?>
                             <div class="w-full h-full flex items-center justify-center">
                                 <i class="fas fa-home text-4xl text-gray-400"></i>

@@ -986,7 +986,7 @@ class Property {
                     u.apellido as agente_apellido,
                     u.telefono as agente_telefono,
                     0 as total_favoritos,
-                    (SELECT ruta FROM imagenes_propiedades 
+                    (SELECT CONCAT('" . UPLOADS_URL . "', SUBSTRING(ruta, 9)) FROM imagenes_propiedades 
                      WHERE propiedad_id = p.id AND es_principal = 1 
                      LIMIT 1) as imagen_principal,
                     (SELECT COUNT(*) FROM imagenes_propiedades WHERE propiedad_id = p.id) as total_imagenes
