@@ -245,8 +245,8 @@ class ActivityLog {
     private function formatActivityForDashboard($activity) {
         $action = $activity['accion'];
         $table = $activity['tabla_afectada'];
-        $userName = $activity['nombre'] . ' ' . $activity['apellido'];
-        $userRole = $activity['rol'];
+        $userName = ($activity['nombre'] ?? '') . ' ' . ($activity['apellido'] ?? '');
+        $userRole = $activity['rol'] ?? 'usuario';
         
         // Determinar el tipo de actividad y formatear la descripción
         $formattedActivity = [
@@ -259,7 +259,7 @@ class ActivityLog {
             'user' => [
                 'name' => $userName,
                 'role' => $userRole,
-                'email' => $activity['email']
+                'email' => $activity['email'] ?? ''
             ]
         ];
         

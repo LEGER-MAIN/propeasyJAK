@@ -147,8 +147,8 @@
                                 <div class="activity-user">
                                     <i class="fas fa-user"></i> 
                                     <?= htmlspecialchars($activity['user']['name']) ?>
-                                    <span class="badge bg-<?= $activity['user']['role'] === 'admin' ? 'danger' : ($activity['user']['role'] === 'agente' ? 'primary' : 'success') ?>">
-                                        <?= ucfirst($activity['user']['role']) ?>
+                                    <span class="badge bg-<?= ($activity['user']['role'] ?? '') === 'admin' ? 'danger' : (($activity['user']['role'] ?? '') === 'agente' ? 'primary' : 'success') ?>">
+                                        <?= ucfirst($activity['user']['role'] ?? 'usuario') ?>
                                     </span>
                                 </div>
                                 <div class="activity-time-full">
