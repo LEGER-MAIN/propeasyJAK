@@ -292,14 +292,19 @@ class Appointment {
         ];
         
         if (!in_array($estado, $estadosValidos)) {
+            error_log("Estado inválido para cita: " . $estado);
             return false;
         }
         
         $query = "UPDATE {$this->table} 
-                  SET estado = ?, fecha_actualizacion = NOW() 
+                  SET estado = ? 
                   WHERE id = ?";
         
         $result = $this->db->update($query, [$estado, (int)$id]);
+        
+        if (!$result) {
+            error_log("Error actualizando estado de cita ID {$id} a {$estado}");
+        }
         
         return $result;
     }

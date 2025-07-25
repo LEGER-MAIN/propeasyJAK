@@ -38,7 +38,7 @@ class AppointmentNotifications {
             if (response.ok) {
                 const data = await response.json();
                 
-                if (data.success && data.count > 0) {
+                if (data.success && data.count > 0 && !this.isModalOpen) {
                     this.showNotificationModal(data.citas);
                 }
             }
@@ -92,7 +92,18 @@ class AppointmentNotifications {
             return; // No mostrar múltiples modales
         }
 
+        // Verificar si ya se mostró recientemente para estas citas
+        const citasIds = citas.map(c => c.id).join(',');
+        const lastShown = sessionStorage.getItem('lastShownAppointments');
+        
+        if (lastShown === citasIds) {
+            return; // Ya se mostró para estas citas
+        }
+
         this.isModalOpen = true;
+        
+        // Guardar las citas mostradas
+        sessionStorage.setItem('lastShownAppointments', citasIds);
         
         const modalHTML = this.generateModalHTML(citas);
         
@@ -180,6 +191,8 @@ class AppointmentNotifications {
 
             if (response.ok || response.status === 302) {
                 this.showSuccessMessage('Cita aceptada exitosamente');
+                // Limpiar sessionStorage para permitir mostrar nuevas citas
+                sessionStorage.removeItem('lastShownAppointments');
                 this.closeModal();
                 // Recargar la página para actualizar el estado
                 setTimeout(() => {
@@ -214,6 +227,8 @@ class AppointmentNotifications {
 
             if (response.ok || response.status === 302) {
                 this.showSuccessMessage('Cita rechazada exitosamente');
+                // Limpiar sessionStorage para permitir mostrar nuevas citas
+                sessionStorage.removeItem('lastShownAppointments');
                 this.closeModal();
                 // Recargar la página para actualizar el estado
                 setTimeout(() => {
@@ -238,6 +253,8 @@ class AppointmentNotifications {
             setTimeout(() => {
                 modal.remove();
                 this.isModalOpen = false;
+                // Limpiar el sessionStorage para permitir mostrar el modal nuevamente si hay nuevas citas
+                sessionStorage.removeItem('lastShownAppointments');
             }, 300);
         }
     }
