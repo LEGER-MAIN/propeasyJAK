@@ -133,6 +133,58 @@ ob_start();
                         <div id="telefono-error" class="hidden text-sm mt-2 font-medium" style="color: var(--color-rojo-error);"></div>
                     </div>
 
+                    <!-- Ciudad -->
+                    <div>
+                        <label for="ciudad" class="block text-base font-semibold mb-2" style="color: var(--text-primary);">
+                            <i class="fas fa-map-marker-alt mr-2" style="color: var(--color-azul-marino);"></i>
+                            Ciudad *
+                        </label>
+                        <div class="relative">
+                            <input 
+                                id="ciudad" 
+                                name="ciudad" 
+                                type="text" 
+                                required 
+                                class="w-full px-4 py-3 text-lg border-2 rounded-xl focus:outline-none transition-all duration-200"
+                                style="border-color: var(--color-gris-claro); color: var(--text-primary);" 
+                                onfocus="this.style.borderColor='var(--color-azul-marino)'; this.style.boxShadow='0 0 0 3px rgba(29, 53, 87, 0.1)'" 
+                                onblur="this.style.borderColor='var(--color-gris-claro)'; this.style.boxShadow='none'"
+                                placeholder="Ej: Santo Domingo"
+                                value="<?= htmlspecialchars($_POST['ciudad'] ?? '') ?>"
+                            >
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-map-marker-alt" style="color: var(--text-secondary);"></i>
+                            </div>
+                        </div>
+                        <div id="ciudad-error" class="hidden text-sm mt-2 font-medium" style="color: var(--color-rojo-error);"></div>
+                    </div>
+
+                    <!-- Sector -->
+                    <div>
+                        <label for="sector" class="block text-base font-semibold mb-2" style="color: var(--text-primary);">
+                            <i class="fas fa-map mr-2" style="color: var(--color-azul-marino);"></i>
+                            Sector *
+                        </label>
+                        <div class="relative">
+                            <input 
+                                id="sector" 
+                                name="sector" 
+                                type="text" 
+                                required 
+                                class="w-full px-4 py-3 text-lg border-2 rounded-xl focus:outline-none transition-all duration-200"
+                                style="border-color: var(--color-gris-claro); color: var(--text-primary);" 
+                                onfocus="this.style.borderColor='var(--color-azul-marino)'; this.style.boxShadow='0 0 0 3px rgba(29, 53, 87, 0.1)'" 
+                                onblur="this.style.borderColor='var(--color-gris-claro)'; this.style.boxShadow='none'"
+                                placeholder="Ej: Zona Colonial"
+                                value="<?= htmlspecialchars($_POST['sector'] ?? '') ?>"
+                            >
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-map" style="color: var(--text-secondary);"></i>
+                            </div>
+                        </div>
+                        <div id="sector-error" class="hidden text-sm mt-2 font-medium" style="color: var(--color-rojo-error);"></div>
+                    </div>
+
                     <!-- Rol -->
                     <div>
                         <label for="rol" class="block text-base font-semibold mb-2" style="color: var(--text-primary);">
@@ -406,7 +458,7 @@ ob_start();
         let isValid = true;
         
         // Validar campos requeridos
-        const requiredFields = ['nombre', 'apellido', 'email', 'telefono', 'rol', 'password', 'confirm_password'];
+        const requiredFields = ['nombre', 'apellido', 'email', 'telefono', 'ciudad', 'sector', 'rol', 'password', 'confirm_password'];
         requiredFields.forEach(fieldId => {
             const field = document.getElementById(fieldId);
             const value = field.value.trim();

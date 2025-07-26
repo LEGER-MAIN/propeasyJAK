@@ -98,7 +98,7 @@ function showDetailedError($error, $file = '', $line = '') {
         if ($file) echo '<p><strong>Archivo:</strong> ' . htmlspecialchars($file) . '</p>';
         if ($line) echo '<p><strong>Línea:</strong> ' . htmlspecialchars($line) . '</p>';
         echo '<p><strong>Backtrace:</strong></p>';
-        // echo '<pre>' . htmlspecialchars(print_r(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5), true)) . '</pre>';
+        
         echo '</div>';
     }
 }

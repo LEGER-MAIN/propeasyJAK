@@ -949,7 +949,7 @@ class Property {
         
         if (!empty($filters['precio_max'])) {
             $whereConditions[] = "precio <= ?";
-            $params[] = floatval($filters['max_price']);
+            $params[] = floatval($filters['precio_max']);
         }
         
         if (!empty($filters['habitaciones'])) {

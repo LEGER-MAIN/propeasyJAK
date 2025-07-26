@@ -483,37 +483,7 @@ $calificaciones = $calificaciones ?? [];
                 </a>
             <?php endif; ?>
             
-            <?php if (!empty($perfilPublico['horario_atencion'])): ?>
-                <div class="contacto-item">
-                    <i class="fas fa-clock"></i>
-                    <span><?= htmlspecialchars($perfilPublico['horario_atencion']) ?></span>
-                </div>
-            <?php endif; ?>
         </div>
-        
-        <!-- Especialidades -->
-        <?php 
-        $especialidades = $perfilPublico['especialidades'] ?? [];
-        $especialidadesValidas = [];
-        if (!empty($especialidades)) {
-            if (is_array($especialidades)) {
-                $especialidadesValidas = array_filter(array_map('trim', $especialidades));
-            } else {
-                $especialidadesArray = explode(',', $especialidades);
-                $especialidadesValidas = array_filter(array_map('trim', $especialidadesArray));
-            }
-        }
-        if (!empty($especialidadesValidas)):
-        ?>
-        <div class="especialidades-perfil">
-            <div class="especialidades-titulo">Especialidades</div>
-            <div class="especialidades-tags">
-                <?php foreach ($especialidadesValidas as $especialidad): ?>
-                    <span class="especialidad-tag"><?= htmlspecialchars($especialidad) ?></span>
-                <?php endforeach; ?>
-            </div>
-        </div>
-        <?php endif; ?>
         
         <!-- Idiomas -->
         <?php if (!empty($perfilPublico['idiomas'])): ?>

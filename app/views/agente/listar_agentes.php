@@ -681,11 +681,7 @@ $ciudad = $ciudad ?? '';
                     </div>
                     <?php endif; ?>
                     
-                    <?php if (!empty($agente['descripcion_corta'])): ?>
-                    <div class="descripcion-agente">
-                        <p><?= htmlspecialchars(substr($agente['descripcion_corta'], 0, 120)) ?><?= strlen($agente['descripcion_corta']) > 120 ? '...' : '' ?></p>
-                    </div>
-                    <?php endif; ?>
+
                     
                     <?php if (!empty($agente['idiomas'])): ?>
                     <div class="idiomas-agente">
@@ -704,13 +700,6 @@ $ciudad = $ciudad ?? '';
                     <?php endif; ?>
                 </div>
                 <div class="agente-footer">
-                    <?php if (!empty($agente['horario_atencion'])): ?>
-                        <div class="horario-atencion">
-                            <i class="fas fa-clock"></i>
-                            <span><?= htmlspecialchars($agente['horario_atencion']) ?></span>
-                        </div>
-                    <?php endif; ?>
-                    
                     <div class="acciones-agente">
                         <a href="/agente/<?= $agente['id'] ?>/perfil" class="btn-ver-perfil">
                             <i class="fas fa-eye"></i>

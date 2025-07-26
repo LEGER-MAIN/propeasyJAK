@@ -120,6 +120,8 @@ class AuthController {
             'password' => $_POST['password'] ?? '',
             'confirm_password' => $_POST['confirm_password'] ?? '',
             'telefono' => $_POST['telefono'] ?? '',
+            'ciudad' => $_POST['ciudad'] ?? '',
+            'sector' => $_POST['sector'] ?? '',
             'rol' => $_POST['rol'] ?? ROLE_CLIENTE
         ];
         

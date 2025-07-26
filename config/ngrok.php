@@ -74,7 +74,7 @@ function getWebSocketUrl() {
         }
         
         // Fallback a la URL específica del WebSocket
-        return 'wss://cb1c4a6910f9.ngrok-free.app';
+        return 'wss://b31aff22ceb8.ngrok-free.app';
     } elseif (isLocalDevelopment()) {
         return 'ws://localhost:8080';
     }
@@ -129,6 +129,8 @@ if (isNgrok() || isLocalDevelopment()) {
         setNgrokHeaders();
     }
 } 
+
+
 
 
 

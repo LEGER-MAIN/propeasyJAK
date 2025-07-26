@@ -69,18 +69,21 @@ class User {
             'email' => strtolower(sanitizeInput($data['email'])),
             'password' => $hashedPassword,
             'telefono' => sanitizeInput($data['telefono']),
+            'ciudad' => sanitizeInput($data['ciudad']),
+            'sector' => sanitizeInput($data['sector']),
             'rol' => $data['rol'],
             'estado' => 'activo',
             'email_verificado' => 0,
             'token_verificacion' => $verificationToken,
-            'fecha_registro' => date('Y-m-d H:i:s')
+            'fecha_registro' => date('Y-m-d H:i:s'),
+            'perfil_publico_activo' => ($data['rol'] === 'agente') ? 1 : 0
         ];
         
         // Insertar usuario en la base de datos
         $query = "INSERT INTO {$this->table} 
-                  (nombre, apellido, email, password, telefono, rol, estado, 
-                   email_verificado, token_verificacion, fecha_registro) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                  (nombre, apellido, email, password, telefono, ciudad, sector, rol, estado, 
+                   email_verificado, token_verificacion, fecha_registro, perfil_publico_activo) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $userId = $this->db->insert($query, array_values($userData));
         
@@ -595,6 +598,16 @@ class User {
             $errors[] = 'El teléfono no puede tener más de 20 caracteres.';
         }
         
+        // Validar ciudad
+        if (empty($data['ciudad']) || strlen($data['ciudad']) < 2) {
+            $errors[] = 'Ciudad válida requerida.';
+        }
+        
+        // Validar sector
+        if (empty($data['sector']) || strlen($data['sector']) < 2) {
+            $errors[] = 'Sector válido requerido.';
+        }
+        
         // Validar rol
         $allowedRoles = [ROLE_CLIENTE, ROLE_AGENTE, ROLE_ADMIN];
         if (empty($data['rol']) || !in_array($data['rol'], $allowedRoles)) {
@@ -1074,13 +1087,8 @@ class User {
                         ciudad,
                         sector,
                         biografia,
-                        experiencia_anos,
-                        especialidades,
                         foto_perfil,
-                        licencia_inmobiliaria,
-                        horario_disponibilidad,
                         idiomas,
-                        redes_sociales,
                         perfil_publico_activo,
                         fecha_registro,
                         ultimo_acceso
@@ -1090,17 +1098,6 @@ class User {
             $agente = $this->db->selectOne($query, [$agenteId]);
             
             if ($agente) {
-                // Decodificar JSON de redes sociales
-                if ($agente['redes_sociales']) {
-                    $agente['redes_sociales'] = json_decode($agente['redes_sociales'], true);
-                }
-                
-                // Convertir especialidades de string a array
-                if ($agente['especialidades']) {
-                    $agente['especialidades'] = explode(',', $agente['especialidades']);
-                    $agente['especialidades'] = array_map('trim', $agente['especialidades']);
-                }
-                
                 // Convertir idiomas de string a array
                 if ($agente['idiomas']) {
                     $agente['idiomas'] = explode(',', $agente['idiomas']);
@@ -1380,13 +1377,8 @@ class User {
                         u.telefono,
                         u.ciudad,
                         u.sector,
-                        u.experiencia_anos,
-                        u.especialidades,
                         u.idiomas,
                         u.biografia,
-                        u.descripcion_corta,
-                        u.licencia_inmobiliaria,
-                        u.horario_atencion,
                         u.foto_perfil,
                         u.fecha_registro,
                         u.ultimo_acceso,
@@ -1416,12 +1408,6 @@ class User {
             
             // Procesar datos para cada agente
             foreach ($agentes as &$agente) {
-                // Procesar especialidades
-                if ($agente['especialidades']) {
-                    $agente['especialidades'] = explode(',', $agente['especialidades']);
-                    $agente['especialidades'] = array_map('trim', $agente['especialidades']);
-                }
-                
                 // Procesar idiomas
                 if ($agente['idiomas']) {
                     $agente['idiomas'] = explode(',', $agente['idiomas']);
@@ -1491,11 +1477,11 @@ class User {
                 $params[] = "%{$ciudad}%";
             }
             
-            // Filtro por experiencia mínima
-            if (!empty($experiencia)) {
-                $conditions[] = "u.experiencia_anos >= ?";
-                $params[] = intval($experiencia);
-            }
+            // Filtro por experiencia mínima (eliminado - columna no existe)
+            // if (!empty($experiencia)) {
+            //     $conditions[] = "u.experiencia_anos >= ?";
+            //     $params[] = intval($experiencia);
+            // }
             
             // Filtro por idioma
             if (!empty($idioma)) {
@@ -1509,18 +1495,19 @@ class User {
             $orderBy = 'u.nombre, u.apellido';
             switch($ordenar) {
                 case 'experiencia':
-                    $orderBy = 'u.experiencia_anos DESC, u.nombre, u.apellido';
+                    // Ordenar por fecha de registro ya que experiencia_anos fue eliminada
+                    $orderBy = 'u.fecha_registro DESC, u.nombre, u.apellido';
                     break;
                 case 'reciente':
                     $orderBy = 'u.fecha_registro DESC, u.nombre, u.apellido';
                     break;
                 case 'propiedades':
-                    // Por ahora ordenar por experiencia, después se puede mejorar
-                    $orderBy = 'u.experiencia_anos DESC, u.nombre, u.apellido';
+                    // Ordenar por total de propiedades
+                    $orderBy = 'total_propiedades DESC, u.nombre, u.apellido';
                     break;
                 case 'calificacion':
-                    // Por ahora ordenar por nombre, después se puede mejorar
-                    $orderBy = 'u.nombre, u.apellido';
+                    // Ordenar por calificación promedio
+                    $orderBy = 'calificacion_promedio DESC, u.nombre, u.apellido';
                     break;
             }
             
@@ -1533,12 +1520,8 @@ class User {
                         u.telefono,
                         u.ciudad,
                         u.sector,
-                        u.experiencia_anos,
-                        u.especialidades,
                         u.idiomas,
                         u.biografia,
-                        u.licencia_inmobiliaria,
-                        u.horario_disponibilidad,
                         u.foto_perfil,
                         u.fecha_registro,
                         u.ultimo_acceso,
@@ -1576,22 +1559,13 @@ class User {
             
             // Procesar datos para cada agente
             foreach ($agentes as &$agente) {
-                // Procesar especialidades
-                if (!empty($agente['especialidades'])) {
-                    if (is_string($agente['especialidades'])) {
-                        $agente['especialidades'] = array_filter(array_map('trim', explode(',', $agente['especialidades'])));
-                    }
-                } else {
-                $agente['especialidades'] = [];
-                }
-                
                 // Procesar idiomas
                 if (!empty($agente['idiomas'])) {
                     if (is_string($agente['idiomas'])) {
                         $agente['idiomas'] = array_filter(array_map('trim', explode(',', $agente['idiomas'])));
                     }
                 } else {
-                $agente['idiomas'] = [];
+                    $agente['idiomas'] = [];
                 }
                 
                 // Calcular tiempo de registro
