@@ -172,9 +172,7 @@ $pageTitle = 'Reportes de Citas - ' . APP_NAME;
             <div class="px-6 py-4 border-b border-gray-200">
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-semibold text-gray-800">Detalle de Citas</h2>
-                    <button onclick="exportToCSV()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
-                        Exportar CSV
-                    </button>
+
                 </div>
             </div>
             
@@ -278,40 +276,7 @@ $pageTitle = 'Reportes de Citas - ' . APP_NAME;
     </div>
 </div>
 
-<script>
-function exportToCSV() {
-    // Crear datos CSV
-    const headers = ['Fecha', 'Hora', 'Agente', 'Cliente', 'Tipo', 'Estado', 'Ubicación'];
-    const data = <?= json_encode(array_map(function($cita) {
-        return [
-            date('d/m/Y', strtotime($cita['fecha_cita'])),
-            date('H:i', strtotime($cita['fecha_cita'])),
-            $cita['agente_nombre'] . ' ' . $cita['agente_apellido'],
-            $cita['cliente_nombre'] . ' ' . $cita['cliente_apellido'],
-            ucfirst(str_replace('_', ' ', $cita['tipo_cita'])),
-            ucfirst($cita['estado']),
-            $cita['lugar'] ?? 'No especificada'
-        ];
-    }, $citas)) ?>;
-    
-    // Crear contenido CSV
-    let csvContent = headers.join(',') + '\n';
-    data.forEach(row => {
-        csvContent += row.map(field => `"${field}"`).join(',') + '\n';
-    });
-    
-    // Descargar archivo
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'reporte_citas_<?= date('Y-m-d') ?>.csv');
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-</script>
+
 
 <?php
 $content = ob_get_clean();

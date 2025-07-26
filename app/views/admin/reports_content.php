@@ -118,11 +118,7 @@ function getReportPriority($report) {
         <h4 class="mb-0">
             <i class="fas fa-flag"></i> Lista de Reportes
         </h4>
-        <div>
-            <button class="btn btn-success" onclick="exportReports()">
-                <i class="fas fa-download"></i> Exportar
-            </button>
-        </div>
+        
     </div>
 
     <div class="table-responsive">
@@ -307,25 +303,7 @@ function getReportPriority($report) {
         window.location.href = url;
     }
 
-    function exportReports() {
-        // Construir URL de exportación con filtros actuales
-        const url = new URL('/admin/reports', window.location.origin);
-        url.searchParams.set('action', 'export');
-        
-        // Agregar filtros actuales
-        const status = document.getElementById('statusFilter').value;
-        const priority = document.getElementById('priorityFilter').value;
-        const type = document.getElementById('typeFilter').value;
-        const search = document.getElementById('searchReport').value;
-        
-        if (status) url.searchParams.set('status', status);
-        if (priority) url.searchParams.set('priority', priority);
-        if (type) url.searchParams.set('type', type);
-        if (search) url.searchParams.set('search', search);
-        
-        // Descargar archivo
-        window.location.href = url.toString();
-    }
+
 
     // Mejorar funcionalidad del buscador
     $(document).ready(function() {

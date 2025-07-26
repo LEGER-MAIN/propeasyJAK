@@ -33,6 +33,12 @@ class AgenteController {
         
         $userId = $_SESSION['user_id'];
         
+        // Verificar si es una solicitud de exportación
+        if (isset($_GET['action']) && $_GET['action'] === 'export') {
+            $this->exportDashboard($userId);
+            return;
+        }
+        
         // Obtener datos para el dashboard
         $stats = $this->getAgenteStats($userId);
         $recentProperties = $this->propertyModel->getPropiedadesPorAgente($userId, 5);
@@ -319,6 +325,24 @@ class AgenteController {
             error_log("Error obteniendo actividad reciente: " . $e->getMessage());
             return [];
         }
+    }
+    
+    /**
+     * Exportar dashboard del agente en PDF
+     */
+    private function exportDashboard($userId) {
+        // Obtener datos para el dashboard
+        $stats = $this->getAgenteStats($userId);
+        $recentProperties = $this->propertyModel->getPropiedadesPorAgente($userId, 5);
+        $recentSolicitudes = $this->getSolicitudesRecientes($userId, 5);
+        $actividadReciente = $this->getActividadReciente($userId, 10);
+        
+        // Exportación PDF
+        if (!class_exists('PdfHelper')) {
+            require_once APP_PATH . '/helpers/PdfHelper.php';
+        }
+        $pdfHelper = new PdfHelper();
+        $pdfHelper->generateAgenteDashboardReport($stats, $recentProperties, $recentSolicitudes, $actividadReciente);
     }
     
     /**

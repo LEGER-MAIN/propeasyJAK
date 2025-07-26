@@ -35,6 +35,7 @@ session_start();
 if (!defined('ROOT_PATH')) define('ROOT_PATH', dirname(__DIR__));
 if (!defined('APP_PATH')) define('APP_PATH', ROOT_PATH . '/app');
 if (!defined('PUBLIC_PATH')) define('PUBLIC_PATH', ROOT_PATH . '/public');
+if (!defined('VENDOR_PATH')) define('VENDOR_PATH', ROOT_PATH . '/vendor');
 if (!defined('UPLOAD_PATH')) define('UPLOAD_PATH', PUBLIC_PATH . '/uploads');
 if (!defined('UPLOADS_URL')) define('UPLOADS_URL', (function_exists('getAppUrl') ? getAppUrl() : 'http://localhost:80') . '/uploads');
 
@@ -90,42 +91,48 @@ if (!defined('APP_VERSION')) define('APP_VERSION', '1.0.0');
 if (!defined('APP_ENV')) define('APP_ENV', 'production');
 
 // Función para mostrar errores detallados en modo desarrollo
-function showDetailedError($error, $file = '', $line = '') {
-    if (APP_ENV === 'development') {
-        echo '<div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin: 10px; border-radius: 5px; font-family: monospace;">';
-        echo '<h3>Error en modo desarrollo:</h3>';
-        echo '<p><strong>Mensaje:</strong> ' . htmlspecialchars($error) . '</p>';
-        if ($file) echo '<p><strong>Archivo:</strong> ' . htmlspecialchars($file) . '</p>';
-        if ($line) echo '<p><strong>Línea:</strong> ' . htmlspecialchars($line) . '</p>';
-        echo '<p><strong>Backtrace:</strong></p>';
-        
-        echo '</div>';
+if (!function_exists('showDetailedError')) {
+    function showDetailedError($error, $file = '', $line = '') {
+        if (APP_ENV === 'development') {
+            echo '<div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin: 10px; border-radius: 5px; font-family: monospace;">';
+            echo '<h3>Error en modo desarrollo:</h3>';
+            echo '<p><strong>Mensaje:</strong> ' . htmlspecialchars($error) . '</p>';
+            if ($file) echo '<p><strong>Archivo:</strong> ' . htmlspecialchars($file) . '</p>';
+            if ($line) echo '<p><strong>Línea:</strong> ' . htmlspecialchars($line) . '</p>';
+            echo '<p><strong>Backtrace:</strong></p>';
+            
+            echo '</div>';
+        }
     }
 }
 
 // Manejador de errores personalizado
-function customErrorHandler($errno, $errstr, $errfile, $errline) {
-    $error_message = date('Y-m-d H:i:s') . " - Error [$errno]: $errstr in $errfile on line $errline\n";
-    error_log($error_message, 3, __DIR__ . '/../logs/error.log');
-    
-    if (APP_ENV === 'development') {
-        showDetailedError($errstr, $errfile, $errline);
+if (!function_exists('customErrorHandler')) {
+    function customErrorHandler($errno, $errstr, $errfile, $errline) {
+        $error_message = date('Y-m-d H:i:s') . " - Error [$errno]: $errstr in $errfile on line $errline\n";
+        error_log($error_message, 3, __DIR__ . '/../logs/error.log');
+        
+        if (APP_ENV === 'development') {
+            showDetailedError($errstr, $errfile, $errline);
+        }
+        
+        return true;
     }
-    
-    return true;
 }
 
 // Manejador de excepciones personalizado
-function customExceptionHandler($exception) {
-    $error_message = date('Y-m-d H:i:s') . " - Exception: " . $exception->getMessage() . " in " . $exception->getFile() . " on line " . $exception->getLine() . "\n";
-    error_log($error_message, 3, __DIR__ . '/../logs/error.log');
-    
-    if (APP_ENV === 'development') {
-        showDetailedError($exception->getMessage(), $exception->getFile(), $exception->getLine());
-    } else {
-        // En producción, mostrar página de error genérica
-        http_response_code(500);
-        include APP_PATH . '/views/errors/500.php';
+if (!function_exists('customExceptionHandler')) {
+    function customExceptionHandler($exception) {
+        $error_message = date('Y-m-d H:i:s') . " - Exception: " . $exception->getMessage() . " in " . $exception->getFile() . " on line " . $exception->getLine() . "\n";
+        error_log($error_message, 3, __DIR__ . '/../logs/error.log');
+        
+        if (APP_ENV === 'development') {
+            showDetailedError($exception->getMessage(), $exception->getFile(), $exception->getLine());
+        } else {
+            // En producción, mostrar página de error genérica
+            http_response_code(500);
+            include APP_PATH . '/views/errors/500.php';
+        }
     }
 }
 
@@ -160,128 +167,156 @@ spl_autoload_register(function ($class) {
 /**
  * Función para obtener la URL base de la aplicación
  */
-function getBaseUrl() {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-    $path = dirname($_SERVER['SCRIPT_NAME']);
-    return $protocol . '://' . $host . $path;
+if (!function_exists('getBaseUrl')) {
+    function getBaseUrl() {
+        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'];
+        $path = dirname($_SERVER['SCRIPT_NAME']);
+        return $protocol . '://' . $host . $path;
+    }
 }
 
 /**
  * Función para redirigir a una URL
  */
-function redirect($url) {
-    header('Location: ' . $url);
-    exit();
+if (!function_exists('redirect')) {
+    function redirect($url) {
+        header('Location: ' . $url);
+        exit();
+    }
 }
 
 /**
  * Función para generar CSRF token
  */
-function generateCSRFToken() {
-    if (!isset($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+if (!function_exists('generateCSRFToken')) {
+    function generateCSRFToken() {
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
     }
-    return $_SESSION['csrf_token'];
 }
 
 /**
  * Función para verificar CSRF token
  */
-function verifyCSRFToken($token) {
-    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+if (!function_exists('verifyCSRFToken')) {
+    function verifyCSRFToken($token) {
+        return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+    }
 }
 
 /**
  * Función para limpiar datos de entrada
  */
-function sanitizeInput($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
-    return $data;
+if (!function_exists('sanitizeInput')) {
+    function sanitizeInput($data) {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
+        return $data;
+    }
 }
 
 /**
  * Función para validar email
  */
-function validateEmail($email) {
-    return filter_var($email, FILTER_VALIDATE_EMAIL);
+if (!function_exists('validateEmail')) {
+    function validateEmail($email) {
+        return filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
 }
 
 /**
  * Función para generar mensajes flash
  */
-function setFlashMessage($type, $message) {
-    $_SESSION['flash_messages'][] = [
-        'type' => $type,
-        'message' => $message
-    ];
+if (!function_exists('setFlashMessage')) {
+    function setFlashMessage($type, $message) {
+        $_SESSION['flash_messages'][] = [
+            'type' => $type,
+            'message' => $message
+        ];
+    }
 }
 
 /**
  * Función para obtener y limpiar mensajes flash
  */
-function getFlashMessages() {
-    $messages = $_SESSION['flash_messages'] ?? [];
-    unset($_SESSION['flash_messages']);
-    return $messages;
+if (!function_exists('getFlashMessages')) {
+    function getFlashMessages() {
+        $messages = $_SESSION['flash_messages'] ?? [];
+        unset($_SESSION['flash_messages']);
+        return $messages;
+    }
 }
 
 /**
  * Función para verificar si el usuario está autenticado
  */
-function isAuthenticated() {
-    $authenticated = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
-    // error_log("isAuthenticated() - Session ID: " . session_id() . ", User ID: " . ($_SESSION['user_id'] ?? 'NO SET') . ", Result: " . ($authenticated ? 'TRUE' : 'FALSE'));
-    return $authenticated;
+if (!function_exists('isAuthenticated')) {
+    function isAuthenticated() {
+        $authenticated = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+        // error_log("isAuthenticated() - Session ID: " . session_id() . ", User ID: " . ($_SESSION['user_id'] ?? 'NO SET') . ", Result: " . ($authenticated ? 'TRUE' : 'FALSE'));
+        return $authenticated;
+    }
 }
 
 /**
  * Función para verificar el rol del usuario
  */
-function hasRole($role) {
-    return isset($_SESSION['user_rol']) && $_SESSION['user_rol'] === $role;
+if (!function_exists('hasRole')) {
+    function hasRole($role) {
+        return isset($_SESSION['user_rol']) && $_SESSION['user_rol'] === $role;
+    }
 }
 
 /**
  * Función para verificar si el usuario tiene al menos uno de los roles especificados
  */
-function hasAnyRole($roles) {
-    if (!is_array($roles)) {
-        $roles = [$roles];
+if (!function_exists('hasAnyRole')) {
+    function hasAnyRole($roles) {
+        if (!is_array($roles)) {
+            $roles = [$roles];
+        }
+        return isset($_SESSION['user_rol']) && in_array($_SESSION['user_rol'], $roles);
     }
-    return isset($_SESSION['user_rol']) && in_array($_SESSION['user_rol'], $roles);
 }
 
 /**
  * Función para requerir autenticación
  */
-function requireAuth() {
-    if (!isAuthenticated()) {
-        setFlashMessage('error', 'Debes iniciar sesión para acceder a esta página.');
-        redirect('/login');
+if (!function_exists('requireAuth')) {
+    function requireAuth() {
+        if (!isAuthenticated()) {
+            setFlashMessage('error', 'Debes iniciar sesión para acceder a esta página.');
+            redirect('/login');
+        }
     }
 }
 
 /**
  * Función para requerir un rol específico
  */
-function requireRole($role) {
-    requireAuth();
-    if (!hasRole($role)) {
-        setFlashMessage('error', 'No tienes permisos para acceder a esta página.');
-        redirect('/dashboard');
+if (!function_exists('requireRole')) {
+    function requireRole($role) {
+        requireAuth();
+        if (!hasRole($role)) {
+            setFlashMessage('error', 'No tienes permisos para acceder a esta página.');
+            redirect('/dashboard');
+        }
     }
 }
 
 /**
  * Función para requerir al menos uno de los roles especificados
  */
-function requireAnyRole($roles) {
-    requireAuth();
-    if (!hasAnyRole($roles)) {
-        setFlashMessage('error', 'No tienes permisos para acceder a esta página.');
-        redirect('/dashboard');
+if (!function_exists('requireAnyRole')) {
+    function requireAnyRole($roles) {
+        requireAuth();
+        if (!hasAnyRole($roles)) {
+            setFlashMessage('error', 'No tienes permisos para acceder a esta página.');
+            redirect('/dashboard');
+        }
     }
 } 

@@ -354,11 +354,7 @@ if (!hasRole(ROLE_ADMIN)) {
                         <h4 class="mb-0">
                             <i class="fas fa-list"></i> Lista de Reportes
                         </h4>
-                        <div>
-                            <button class="btn btn-success" onclick="exportReports()">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                        </div>
+
                     </div>
 
                     <div class="table-responsive">
@@ -576,10 +572,7 @@ if (!hasRole(ROLE_ADMIN)) {
             }
         }
 
-        function exportReports() {
-            // Implementar exportación de reportes
-            alert('Función de exportación en desarrollo');
-        }
+
 
         // Filtros
         $('#statusFilter, #priorityFilter, #typeFilter').change(function() {

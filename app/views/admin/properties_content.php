@@ -60,15 +60,7 @@ require_once APP_PATH . '/helpers/PropertyHelper.php';
             </div>
             <div class="col-md-2">
                 <label for="cityFilter" class="form-label">Ciudad:</label>
-                <select class="form-select" id="cityFilter" name="city">
-                    <option value="">Todas las ciudades</option>
-                    <?php 
-                    $cities = array_unique(array_column($properties, 'ciudad'));
-                    foreach ($cities as $city): 
-                    ?>
-                        <option value="<?= htmlspecialchars($city) ?>" <?= ($_GET['city'] ?? '') === $city ? 'selected' : '' ?>><?= htmlspecialchars($city) ?></option>
-                    <?php endforeach; ?>
-                </select>
+                <input type="text" class="form-control" id="cityFilter" name="city" placeholder="Buscar ciudad..." value="<?= htmlspecialchars($_GET['city'] ?? '') ?>">
             </div>
             <div class="col-md-3">
                 <label for="searchProperty" class="form-label">Buscar:</label>
@@ -100,11 +92,7 @@ require_once APP_PATH . '/helpers/PropertyHelper.php';
         <h4 class="mb-0">
             <i class="fas fa-home"></i> Lista de Propiedades
         </h4>
-        <div>
-            <button class="btn btn-success" onclick="exportProperties()">
-                <i class="fas fa-download"></i> Exportar
-            </button>
-        </div>
+        
     </div>
 
     <div class="table-responsive">
@@ -313,15 +301,7 @@ require_once APP_PATH . '/helpers/PropertyHelper.php';
         }
     }
 
-    function exportProperties() {
-        // Construir URL de exportación con filtros actuales
-        const currentUrl = new URL(window.location);
-        const params = new URLSearchParams(currentUrl.search);
-        params.set('action', 'export');
-        
-        // Redirigir a la exportación
-        window.location.href = '/admin/properties?' + params.toString();
-    }
+
 
 
 
@@ -381,7 +361,7 @@ require_once APP_PATH . '/helpers/PropertyHelper.php';
             let activeFilters = [];
             if (urlParams.get('status')) activeFilters.push('Estado: ' + $('#statusFilter option:selected').text());
             if (urlParams.get('type')) activeFilters.push('Tipo: ' + $('#typeFilter option:selected').text());
-            if (urlParams.get('city')) activeFilters.push('Ciudad: ' + $('#cityFilter option:selected').text());
+            if (urlParams.get('city')) activeFilters.push('Ciudad: "' + urlParams.get('city') + '"');
             if (urlParams.get('search')) activeFilters.push('Búsqueda: "' + urlParams.get('search') + '"');
             
             $('#activeFilters').text(activeFilters.join(', '));

@@ -109,11 +109,7 @@
                 <?php endif; ?>
             </small>
         </div>
-        <div>
-            <button class="btn btn-success" onclick="exportUsers()">
-                <i class="fas fa-download"></i> Exportar
-            </button>
-        </div>
+        
     </div>
 
     <div class="table-responsive">
@@ -353,12 +349,7 @@
         }
     }
 
-    function exportUsers() {
-        // Exportar usuarios a CSV con filtros aplicados
-        const searchParams = new URLSearchParams(window.location.search);
-        searchParams.set('action', 'export');
-        window.location.href = '/admin/users?' + searchParams.toString();
-    }
+
 
     // Búsqueda en tiempo real (opcional - para mejor UX)
     let searchTimeout;

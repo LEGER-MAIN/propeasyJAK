@@ -327,4 +327,6 @@ function getEstadoPropiedadDisplayName($estado) {
             return ucfirst(str_replace('_', ' ', $estado));
     }
 }
-?> 
+?>
+
+ 

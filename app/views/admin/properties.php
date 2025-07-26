@@ -384,11 +384,7 @@ if (!hasRole(ROLE_ADMIN)) {
                         <h4 class="mb-0">
                             <i class="fas fa-list"></i> Lista de Propiedades
                         </h4>
-                        <div>
-                            <button class="btn btn-success" onclick="exportProperties()">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                        </div>
+
                     </div>
 
                     <div class="table-responsive">
@@ -604,10 +600,7 @@ if (!hasRole(ROLE_ADMIN)) {
             }
         }
 
-        function exportProperties() {
-            // Implementar exportación de propiedades
-            alert('Función de exportación en desarrollo');
-        }
+
 
         // Filtros
         $('#statusFilter, #typeFilter, #cityFilter').change(function() {

@@ -50,6 +50,12 @@ class AdminController {
     public function dashboard() {
         requireRole(ROLE_ADMIN);
         
+        // Verificar si es una exportación
+        if (isset($_GET['action']) && $_GET['action'] === 'export') {
+            $this->exportDashboard();
+            return;
+        }
+        
         try {
             // Obtener estadísticas globales en tiempo real
             $stats = $this->getRealTimeStats();
@@ -90,9 +96,42 @@ class AdminController {
     }
     
     /**
-     * Obtener estadísticas en tiempo real del sistema
+     * Exportar dashboard a PDF por período
      */
-    private function getRealTimeStats() {
+    private function exportDashboard() {
+        try {
+            // Obtener período de la URL
+            $period = $_GET['period'] ?? 'all';
+            
+            // Obtener datos del dashboard según el período
+            $stats = $this->getRealTimeStats($period);
+            $chartData = $this->getRealTimeChartData($period);
+            $recentActivities = $this->getSystemActivities($period);
+            
+            // Asegurar que las variables sean arrays
+            if (!is_array($recentActivities)) $recentActivities = [];
+            if (!is_array($chartData)) $chartData = [];
+            
+            // Exportación PDF
+            if (!class_exists('PdfHelper')) {
+                require_once APP_PATH . '/helpers/PdfHelper.php';
+            }
+            $pdfHelper = new PdfHelper();
+            $pdfHelper->generateDashboardReport($stats, $chartData, $recentActivities, $period);
+            
+        } catch (Exception $e) {
+            error_log("Error exportando dashboard: " . $e->getMessage());
+            setFlashMessage('error', 'Error al exportar dashboard');
+            redirect('/admin/dashboard');
+        }
+    }
+    
+    
+    
+    /**
+     * Obtener estadísticas en tiempo real del sistema por período
+     */
+    private function getRealTimeStats($period = 'all') {
         $stats = [];
         
         try {
@@ -180,6 +219,54 @@ class AdminController {
 
     
     /**
+     * Obtener fechas de filtro según el período
+     */
+    private function getPeriodDates($period) {
+        $now = new DateTime();
+        $startDate = null;
+        $endDate = $now->format('Y-m-d H:i:s');
+        
+        switch ($period) {
+            case 'month':
+                $startDate = $now->modify('-1 month')->format('Y-m-d H:i:s');
+                break;
+            case 'quarter':
+                $startDate = $now->modify('-3 months')->format('Y-m-d H:i:s');
+                break;
+            case 'year':
+                $startDate = $now->modify('-1 year')->format('Y-m-d H:i:s');
+                break;
+            default: // 'all'
+                $startDate = null;
+                break;
+        }
+        
+        return [
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'period_name' => $this->getPeriodName($period)
+        ];
+    }
+    
+    /**
+     * Obtener nombre del período
+     */
+    private function getPeriodName($period) {
+        switch ($period) {
+            case 'month':
+                return 'Último Mes';
+            case 'quarter':
+                return 'Último Trimestre';
+            case 'year':
+                return 'Último Año';
+            default:
+                return 'Todos los Datos';
+        }
+    }
+    
+
+    
+    /**
      * Mostrar todas las actividades del sistema
      */
     public function allActivities() {
@@ -230,9 +317,9 @@ class AdminController {
     }
     
     /**
-     * Obtener actividades recientes del sistema
+     * Obtener actividades recientes del sistema por período
      */
-    private function getSystemActivities() {
+    private function getSystemActivities($period = 'all') {
         try {
             // Cargar el modelo de actividades
             require_once APP_PATH . '/models/ActivityLog.php';
@@ -501,9 +588,9 @@ class AdminController {
     }
 
     /**
-     * Obtener datos para gráficos en tiempo real
+     * Obtener datos para gráficos en tiempo real por período
      */
-    private function getRealTimeChartData() {
+    private function getRealTimeChartData($period = 'all') {
         $chartData = [];
 
         try {
@@ -606,7 +693,7 @@ class AdminController {
     /**
      * Calcular comisiones totales
      */
-    private function calculateTotalCommissions() {
+    private function calculateTotalCommissions($startDate = null, $endDate = null) {
         try {
             // Calcular 5% de comisión sobre ventas totales
             $totalSales = $this->propertyModel->getTotalSales();
@@ -616,6 +703,8 @@ class AdminController {
             return 0;
         }
     }
+    
+
     
     /**
      * Gestión completa de usuarios
@@ -947,42 +1036,55 @@ class AdminController {
             
             $users = $this->userModel->searchUsersForAdmin($search, $role, $status);
             
-            // Configurar headers para descarga
-            header('Content-Type: text/csv; charset=utf-8');
-            header('Content-Disposition: attachment; filename="usuarios_' . date('Y-m-d_H-i-s') . '.csv"');
+            // Determinar formato de exportación
+            $format = $_GET['format'] ?? 'pdf';
             
-            // Crear archivo CSV
-            $output = fopen('php://output', 'w');
-            
-            // BOM para UTF-8
-            fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
-            
-            // Headers del CSV
-            fputcsv($output, [
-                'ID', 'Nombre', 'Apellido', 'Email', 'Teléfono', 'Rol', 'Estado',
-                'Email Verificado', 'Fecha Registro', 'Último Acceso', 'Ciudad', 'Sector'
-            ]);
-            
-            // Datos de usuarios
-            foreach ($users as $user) {
+            if ($format === 'csv') {
+                // Exportación CSV (mantener compatibilidad)
+                header('Content-Type: text/csv; charset=utf-8');
+                header('Content-Disposition: attachment; filename="usuarios_' . date('Y-m-d_H-i-s') . '.csv"');
+                
+                $output = fopen('php://output', 'w');
+                fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+                
                 fputcsv($output, [
-                    $user['id'],
-                    $user['nombre'] ?? '',
-                    $user['apellido'] ?? '',
-                    $user['email'] ?? '',
-                    $user['telefono'] ?? '',
-                    $user['rol'] ?? '',
-                    $user['estado'] ?? '',
-                    $user['email_verificado'] ? 'Sí' : 'No',
-                    $user['fecha_registro'] ?? '',
-                    $user['ultimo_acceso'] ?? 'Nunca',
-                    $user['ciudad'] ?? '',
-                    $user['sector'] ?? ''
+                    'ID', 'Nombre', 'Apellido', 'Email', 'Teléfono', 'Rol', 'Estado',
+                    'Email Verificado', 'Fecha Registro', 'Último Acceso', 'Ciudad', 'Sector'
                 ]);
+                
+                foreach ($users as $user) {
+                    fputcsv($output, [
+                        $user['id'],
+                        $user['nombre'] ?? '',
+                        $user['apellido'] ?? '',
+                        $user['email'] ?? '',
+                        $user['telefono'] ?? '',
+                        $user['rol'] ?? '',
+                        $user['estado'] ?? '',
+                        $user['email_verificado'] ? 'Sí' : 'No',
+                        $user['fecha_registro'] ?? '',
+                        $user['ultimo_acceso'] ?? 'Nunca',
+                        $user['ciudad'] ?? '',
+                        $user['sector'] ?? ''
+                    ]);
+                }
+                
+                fclose($output);
+                exit;
+            } else {
+                // Exportación PDF (por defecto)
+                if (!class_exists('PdfHelper')) {
+                    require_once APP_PATH . '/helpers/PdfHelper.php';
+                }
+                $pdfHelper = new PdfHelper();
+                
+                $filters = [];
+                if (!empty($search)) $filters['search'] = $search;
+                if (!empty($role)) $filters['role'] = $role;
+                if (!empty($status)) $filters['status'] = $status;
+                
+                $pdfHelper->generateUsersReport($users, $filters);
             }
-            
-            fclose($output);
-            exit;
             
         } catch (Exception $e) {
             error_log("Error exportando usuarios: " . $e->getMessage());
@@ -1142,7 +1244,7 @@ class AdminController {
 
     
     /**
-     * Exportar propiedades a CSV
+     * Exportar propiedades a PDF o CSV
      */
     private function exportProperties() {
         try {
@@ -1167,63 +1269,77 @@ class AdminController {
                 $properties = [];
             }
             
-            // Configurar headers para descarga CSV
-            $filename = 'propiedades_' . date('Y-m-d_H-i-s') . '.csv';
-            header('Content-Type: text/csv; charset=utf-8');
-            header('Content-Disposition: attachment; filename="' . $filename . '"');
-            header('Pragma: no-cache');
-            header('Expires: 0');
+            // Determinar formato de exportación
+            $format = $_GET['format'] ?? 'pdf';
             
-            // Crear archivo CSV
-            $output = fopen('php://output', 'w');
-            
-            // BOM para UTF-8
-            fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
-            
-            // Headers del CSV
-            fputcsv($output, [
-                'ID',
-                'Título',
-                'Tipo',
-                'Precio',
-                'Moneda',
-                'Ciudad',
-                'Sector',
-                'Dirección',
-                'Metros Cuadrados',
-                'Habitaciones',
-                'Baños',
-                'Estacionamientos',
-                'Estado Propiedad',
-                'Estado Publicación',
-                'Agente',
-                'Fecha Creación'
-            ]);
-            
-            // Datos de las propiedades
-            foreach ($properties as $property) {
+            if ($format === 'csv') {
+                // Exportación CSV (mantener compatibilidad)
+                $filename = 'propiedades_' . date('Y-m-d_H-i-s') . '.csv';
+                header('Content-Type: text/csv; charset=utf-8');
+                header('Content-Disposition: attachment; filename="' . $filename . '"');
+                header('Pragma: no-cache');
+                header('Expires: 0');
+                
+                $output = fopen('php://output', 'w');
+                fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+                
                 fputcsv($output, [
-                    $property['id'],
-                    $property['titulo'],
-                    $property['tipo'],
-                    $property['precio'],
-                    $property['moneda'] ?? 'USD',
-                    $property['ciudad'],
-                    $property['sector'],
-                    $property['direccion'],
-                    $property['metros_cuadrados'],
-                    $property['habitaciones'],
-                    $property['banos'],
-                    $property['estacionamientos'] ?? 0,
-                    $property['estado_propiedad'] ?? 'bueno',
-                    $property['estado_publicacion'] ?? 'activa',
-                    $property['agente_nombre'] ?? $property['agente_id'] ?? 'N/A',
-                    $property['fecha_creacion'] ?? 'N/A'
+                    'ID',
+                    'Título',
+                    'Tipo',
+                    'Precio',
+                    'Moneda',
+                    'Ciudad',
+                    'Sector',
+                    'Dirección',
+                    'Metros Cuadrados',
+                    'Habitaciones',
+                    'Baños',
+                    'Estacionamientos',
+                    'Estado Propiedad',
+                    'Estado Publicación',
+                    'Agente',
+                    'Fecha Creación'
                 ]);
+                
+                foreach ($properties as $property) {
+                    fputcsv($output, [
+                        $property['id'],
+                        $property['titulo'],
+                        $property['tipo'],
+                        $property['precio'],
+                        $property['moneda'] ?? 'USD',
+                        $property['ciudad'],
+                        $property['sector'],
+                        $property['direccion'],
+                        $property['metros_cuadrados'],
+                        $property['habitaciones'],
+                        $property['banos'],
+                        $property['estacionamientos'] ?? 0,
+                        $property['estado_propiedad'] ?? 'bueno',
+                        $property['estado_publicacion'] ?? 'activa',
+                        $property['agente_nombre'] ?? $property['agente_id'] ?? 'N/A',
+                        $property['fecha_creacion'] ?? 'N/A'
+                    ]);
+                }
+                
+                fclose($output);
+                exit;
+            } else {
+                // Exportación PDF (por defecto)
+                if (!class_exists('PdfHelper')) {
+                    require_once APP_PATH . '/helpers/PdfHelper.php';
+                }
+                $pdfHelper = new PdfHelper();
+                
+                $exportFilters = [];
+                if (!empty($filters['search'])) $exportFilters['search'] = $filters['search'];
+                if (!empty($filters['estado_publicacion'])) $exportFilters['status'] = $filters['estado_publicacion'];
+                if (!empty($filters['tipo'])) $exportFilters['type'] = $filters['tipo'];
+                if (!empty($filters['ciudad'])) $exportFilters['city'] = $filters['ciudad'];
+                
+                $pdfHelper->generatePropertiesReport($properties, $exportFilters);
             }
-            
-            fclose($output);
-            exit;
             
         } catch (Exception $e) {
             error_log("Error exportando propiedades: " . $e->getMessage());
@@ -1475,47 +1591,61 @@ class AdminController {
                 $reports = [];
             }
             
-            // Configurar headers para descarga CSV
-            $filename = 'reportes_' . date('Y-m-d_H-i-s') . '.csv';
-            header('Content-Type: text/csv; charset=utf-8');
-            header('Content-Disposition: attachment; filename="' . $filename . '"');
-            header('Pragma: no-cache');
-            header('Expires: 0');
+            // Determinar formato de exportación
+            $format = $_GET['format'] ?? 'pdf';
             
-            // Crear archivo CSV
-            $output = fopen('php://output', 'w');
-            
-            // BOM para UTF-8
-            fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
-            
-            // Headers del CSV
-            fputcsv($output, [
-                'ID',
-                'Título',
-                'Descripción',
-                'Tipo',
-                'Prioridad',
-                'Estado',
-                'Reportado por',
-                'Fecha Creación'
-            ]);
-            
-            // Datos de los reportes
-            foreach ($reports as $report) {
+            if ($format === 'csv') {
+                // Exportación CSV (mantener compatibilidad)
+                $filename = 'reportes_' . date('Y-m-d_H-i-s') . '.csv';
+                header('Content-Type: text/csv; charset=utf-8');
+                header('Content-Disposition: attachment; filename="' . $filename . '"');
+                header('Pragma: no-cache');
+                header('Expires: 0');
+                
+                $output = fopen('php://output', 'w');
+                fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+                
                 fputcsv($output, [
-                    $report['id'],
-                    $report['titulo'],
-                    $report['descripcion'],
-                    $report['tipo'],
-                    $report['prioridad'],
-                    $report['estado'],
-                    $report['reportado_por'],
-                    $report['fecha_creacion']
+                    'ID',
+                    'Título',
+                    'Descripción',
+                    'Tipo',
+                    'Prioridad',
+                    'Estado',
+                    'Reportado por',
+                    'Fecha Creación'
                 ]);
+                
+                foreach ($reports as $report) {
+                    fputcsv($output, [
+                        $report['id'],
+                        $report['titulo'],
+                        $report['descripcion'],
+                        $report['tipo'],
+                        $report['prioridad'],
+                        $report['estado'],
+                        $report['reportado_por'],
+                        $report['fecha_creacion']
+                    ]);
+                }
+                
+                fclose($output);
+                exit;
+            } else {
+                // Exportación PDF (por defecto)
+                if (!class_exists('PdfHelper')) {
+                    require_once APP_PATH . '/helpers/PdfHelper.php';
+                }
+                $pdfHelper = new PdfHelper();
+                
+                $exportFilters = [];
+                if (!empty($filters['search'])) $exportFilters['search'] = $filters['search'];
+                if (!empty($filters['estado'])) $exportFilters['status'] = $filters['estado'];
+                if (!empty($filters['prioridad'])) $exportFilters['priority'] = $filters['prioridad'];
+                if (!empty($filters['tipo'])) $exportFilters['type'] = $filters['tipo'];
+                
+                $pdfHelper->generateReportsReport($reports, $exportFilters);
             }
-            
-            fclose($output);
-            exit;
             
         } catch (Exception $e) {
             error_log("Error exportando reportes: " . $e->getMessage());

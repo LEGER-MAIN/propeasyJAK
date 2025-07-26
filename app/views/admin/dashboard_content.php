@@ -11,6 +11,38 @@
 
 
 
+<!-- Header con botón de exportación -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">
+                <i class="fas fa-chart-bar text-primary"></i> 
+                Resumen del Sistema
+            </h4>
+            <div class="dropdown">
+                <button class="btn btn-success dropdown-toggle" type="button" id="exportDashboardDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-download"></i> Exportar Dashboard
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="exportDashboardDropdown">
+                    <li><a class="dropdown-item" href="#" onclick="exportDashboard('pdf', 'month')">
+                        <i class="fas fa-file-pdf text-danger"></i> Exportar PDF - Mes
+                    </a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportDashboard('pdf', 'quarter')">
+                        <i class="fas fa-file-pdf text-danger"></i> Exportar PDF - Trimestre
+                    </a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportDashboard('pdf', 'year')">
+                        <i class="fas fa-file-pdf text-danger"></i> Exportar PDF - Año
+                    </a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportDashboard('pdf', 'all')">
+                        <i class="fas fa-file-pdf text-danger"></i> Exportar PDF - Todos los Datos
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Estadísticas Principales -->
 <div class="row mb-4">
     <div class="col-xl-3 col-md-6 mb-3">
@@ -66,14 +98,14 @@
             <div class="stats-icon">
                 <i class="fas fa-file-alt"></i>
             </div>
-            <div class="stats-content">
-                <h3><?= number_format(is_numeric($stats['total_solicitudes']) ? $stats['total_solicitudes'] : 0) ?></h3>
-                <p>Solicitudes</p>
-                <div class="stats-trend">
-                    <i class="fas fa-clock text-warning"></i>
-                    <span><?= is_numeric($stats['solicitudes_nuevas']) ? $stats['solicitudes_nuevas'] : 0 ?> nuevas</span>
+                            <div class="stats-content">
+                    <h3><?= number_format(is_numeric($stats['total_solicitudes'] ?? 0) ? $stats['total_solicitudes'] : 0) ?></h3>
+                    <p>Solicitudes</p>
+                    <div class="stats-trend">
+                        <i class="fas fa-clock text-warning"></i>
+                        <span><?= is_numeric($stats['solicitudes_nuevas'] ?? 0) ? $stats['solicitudes_nuevas'] : 0 ?> nuevas</span>
+                    </div>
                 </div>
-            </div>
         </div>
     </div>
 </div>
@@ -126,11 +158,11 @@
                     <div class="metric-label">Agentes</div>
                 </div>
                 <div class="metric-item">
-                    <div class="metric-value text-success"><?= number_format(is_numeric($stats['total_clientes']) ? $stats['total_clientes'] : 0) ?></div>
+                    <div class="metric-value text-success"><?= number_format(is_numeric($stats['total_clientes'] ?? 0) ? $stats['total_clientes'] : 0) ?></div>
                     <div class="metric-label">Clientes</div>
                 </div>
                 <div class="metric-item">
-                    <div class="metric-value text-danger"><?= number_format(is_numeric($stats['usuarios_suspendidos']) ? $stats['usuarios_suspendidos'] : 0) ?></div>
+                    <div class="metric-value text-danger"><?= number_format(is_numeric($stats['usuarios_suspendidos'] ?? 0) ? $stats['usuarios_suspendidos'] : 0) ?></div>
                     <div class="metric-label">Suspendidos</div>
                 </div>
             </div>
@@ -145,7 +177,7 @@
             </h5>
             <div class="metrics-grid">
                 <div class="metric-item">
-                    <div class="metric-value text-success"><?= number_format(is_numeric($stats['propiedades_activas']) ? $stats['propiedades_activas'] : 0) ?></div>
+                    <div class="metric-value text-success"><?= number_format(is_numeric($stats['propiedades_activas'] ?? 0) ? $stats['propiedades_activas'] : 0) ?></div>
                     <div class="metric-label">Activas</div>
                 </div>
                 <div class="metric-item">
@@ -153,7 +185,7 @@
                     <div class="metric-label">En Revisión</div>
                 </div>
                 <div class="metric-item">
-                    <div class="metric-value text-info"><?= number_format(is_numeric($stats['propiedades_vendidas']) ? $stats['propiedades_vendidas'] : 0) ?></div>
+                    <div class="metric-value text-info"><?= number_format(is_numeric($stats['propiedades_vendidas'] ?? 0) ? $stats['propiedades_vendidas'] : 0) ?></div>
                     <div class="metric-label">Vendidas</div>
                 </div>
             </div>
@@ -391,7 +423,7 @@
     
     // Datos de distribución de usuarios
     const agentes = <?= is_numeric($stats['total_agentes']) ? $stats['total_agentes'] : 0 ?>;
-    const clientes = <?= is_numeric($stats['total_clientes']) ? $stats['total_clientes'] : 0 ?>;
+    const clientes = <?= is_numeric($stats['total_clientes'] ?? 0) ? $stats['total_clientes'] : 0 ?>;
     const admins = <?= is_numeric($stats['total_usuarios']) ? ($stats['total_usuarios'] - ($stats['total_agentes'] ?? 0) - ($stats['total_clientes'] ?? 0)) : 0 ?>;
     
     // Si no hay datos, usar datos de ejemplo
@@ -890,4 +922,24 @@
     font-size: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
-</style> 
+</style>
+
+<script>
+// Función para exportar dashboard a PDF por período
+function exportDashboard(format = 'pdf', period = 'all') {
+    // Mostrar indicador de carga
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando PDF...';
+    button.disabled = true;
+    
+    // Redirigir a la exportación con período
+    window.location.href = '/admin/dashboard?action=export&format=' + format + '&period=' + period;
+    
+    // Restaurar botón después de un tiempo (por si acaso)
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }, 5000);
+}
+</script> 

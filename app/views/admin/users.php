@@ -341,11 +341,7 @@ if (!hasRole(ROLE_ADMIN)) {
                         <h4 class="mb-0">
                             <i class="fas fa-list"></i> Lista de Usuarios
                         </h4>
-                        <div>
-                            <button class="btn btn-success" onclick="exportUsers()">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                        </div>
+
                     </div>
 
                     <div class="table-responsive">
@@ -486,10 +482,7 @@ if (!hasRole(ROLE_ADMIN)) {
             }
         }
 
-        function exportUsers() {
-            // Implementar exportación de usuarios
-            alert('Función de exportación en desarrollo');
-        }
+
 
         // Filtros
         $('#roleFilter, #statusFilter').change(function() {
