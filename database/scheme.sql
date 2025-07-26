@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS `conversaciones_directas` (
   KEY `idx_estado` (`estado`),
   CONSTRAINT `conversaciones_directas_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `conversaciones_directas_ibfk_2` FOREIGN KEY (`agente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -314,7 +314,7 @@ CREATE TABLE IF NOT EXISTS `logs_actividad` (
   KEY `idx_tabla_afectada` (`tabla_afectada`),
   KEY `idx_fecha_actividad` (`fecha_actividad`),
   CONSTRAINT `logs_actividad_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=402 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=407 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -354,7 +354,7 @@ CREATE TABLE IF NOT EXISTS `mensajes_directos` (
   KEY `idx_leido` (`leido`),
   CONSTRAINT `mensajes_directos_ibfk_1` FOREIGN KEY (`conversacion_id`) REFERENCES `conversaciones_directas` (`id`) ON DELETE CASCADE,
   CONSTRAINT `mensajes_directos_ibfk_2` FOREIGN KEY (`remitente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -662,8 +662,8 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `telefono` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ciudad` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sector` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ciudad` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sector` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `rol` enum('cliente','agente','admin') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'cliente',
   `estado` enum('activo','inactivo','suspendido') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'activo',
   `email_verificado` tinyint(1) NOT NULL DEFAULT '0',
@@ -684,7 +684,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   KEY `idx_fecha_registro` (`fecha_registro`),
   KEY `idx_ciudad` (`ciudad`),
   KEY `idx_sector` (`sector`)
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -709,7 +709,41 @@ CREATE TABLE `vista_conversaciones_directas` (
 
 -- Dumping structure for view propeasy_db.vista_estadisticas_detalladas_agente
 -- Creating temporary table to overcome VIEW dependency errors
-CREATE TABLE `vista_estadisticas_detalladas_agente` 
+CREATE TABLE `vista_estadisticas_detalladas_agente` (
+	`agente_id` INT NOT NULL,
+	`nombre_agente` VARCHAR(1) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`email_agente` VARCHAR(1) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`telefono_agente` VARCHAR(1) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`ciudad_agente` VARCHAR(1) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`sector_agente` VARCHAR(1) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`fecha_registro` DATETIME NOT NULL,
+	`ultimo_acceso` DATETIME NULL,
+	`perfil_publico_activo` TINYINT(1) NULL COMMENT 'Indica si el perfil público del agente está activo',
+	`biografia` TEXT NULL COMMENT 'Biografía del agente' COLLATE 'utf8mb4_unicode_ci',
+	`total_propiedades` BIGINT NOT NULL,
+	`propiedades_activas` BIGINT NOT NULL,
+	`propiedades_vendidas` BIGINT NOT NULL,
+	`propiedades_revision` BIGINT NOT NULL,
+	`propiedades_rechazadas` BIGINT NOT NULL,
+	`total_solicitudes` BIGINT NOT NULL,
+	`solicitudes_nuevas` BIGINT NOT NULL,
+	`solicitudes_revision` BIGINT NOT NULL,
+	`solicitudes_reunion` BIGINT NOT NULL,
+	`solicitudes_cerradas` BIGINT NOT NULL,
+	`total_citas` BIGINT NOT NULL,
+	`citas_propuestas` BIGINT NOT NULL,
+	`citas_aceptadas` BIGINT NOT NULL,
+	`citas_realizadas` BIGINT NOT NULL,
+	`citas_canceladas` BIGINT NOT NULL,
+	`total_ventas` DECIMAL(34,2) NOT NULL,
+	`precio_promedio_venta` DECIMAL(16,6) NOT NULL,
+	`calificacion_promedio` DECIMAL(14,4) NOT NULL,
+	`total_calificaciones` BIGINT NOT NULL,
+	`calificaciones_5` BIGINT NOT NULL,
+	`calificaciones_4` BIGINT NOT NULL,
+	`calificaciones_3` BIGINT NOT NULL,
+	`calificaciones_2` BIGINT NOT NULL,
+	`calificaciones_1` BIGINT NOT NULL
 ) ENGINE=MyISAM;
 
 -- Dumping structure for view propeasy_db.vista_estadisticas_propiedades
@@ -874,7 +908,7 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_conversaciones_direc
 
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `vista_estadisticas_detalladas_agente`;
-CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_estadisticas_detalladas_agente` AS select `u`.`id` AS `agente_id`,concat(`u`.`nombre`,' ',`u`.`apellido`) AS `nombre_agente`,`u`.`email` AS `email_agente`,`u`.`telefono` AS `telefono_agente`,`u`.`ciudad` AS `ciudad_agente`,`u`.`sector` AS `sector_agente`,`u`.`fecha_registro` AS `fecha_registro`,`u`.`ultimo_acceso` AS `ultimo_acceso`,`u`.`perfil_publico_activo` AS `perfil_publico_activo`,`u`.`biografia` AS `biografia`,`u`.`experiencia_anos` AS `experiencia_anos`,`u`.`especialidades` AS `especialidades`,`u`.`licencia_inmobiliaria` AS `licencia_inmobiliaria`,`u`.`horario_disponibilidad` AS `horario_disponibilidad`,`u`.`idiomas` AS `idiomas`,`u`.`redes_sociales` AS `redes_sociales`,count(`p`.`id`) AS `total_propiedades`,count((case when (`p`.`estado_publicacion` = 'activa') then 1 end)) AS `propiedades_activas`,count((case when (`p`.`estado_publicacion` = 'vendida') then 1 end)) AS `propiedades_vendidas`,count((case when (`p`.`estado_publicacion` = 'en_revision') then 1 end)) AS `propiedades_revision`,count((case when (`p`.`estado_publicacion` = 'rechazada') then 1 end)) AS `propiedades_rechazadas`,count(`sc`.`id`) AS `total_solicitudes`,count((case when (`sc`.`estado` = 'nuevo') then 1 end)) AS `solicitudes_nuevas`,count((case when (`sc`.`estado` = 'en_revision') then 1 end)) AS `solicitudes_revision`,count((case when (`sc`.`estado` = 'reunion_agendada') then 1 end)) AS `solicitudes_reunion`,count((case when (`sc`.`estado` = 'cerrado') then 1 end)) AS `solicitudes_cerradas`,count(`c`.`id`) AS `total_citas`,count((case when (`c`.`estado` = 'propuesta') then 1 end)) AS `citas_propuestas`,count((case when (`c`.`estado` = 'aceptada') then 1 end)) AS `citas_aceptadas`,count((case when (`c`.`estado` = 'realizada') then 1 end)) AS `citas_realizadas`,count((case when (`c`.`estado` = 'cancelada') then 1 end)) AS `citas_canceladas`,coalesce(sum((case when (`p`.`estado_publicacion` = 'vendida') then `p`.`precio_venta` else 0 end)),0) AS `total_ventas`,coalesce(avg((case when (`p`.`estado_publicacion` = 'vendida') then `p`.`precio_venta` end)),0) AS `precio_promedio_venta`,coalesce(avg(`ca`.`calificacion`),0) AS `calificacion_promedio`,count(`ca`.`id`) AS `total_calificaciones`,count((case when (`ca`.`calificacion` = 5) then 1 end)) AS `calificaciones_5`,count((case when (`ca`.`calificacion` = 4) then 1 end)) AS `calificaciones_4`,count((case when (`ca`.`calificacion` = 3) then 1 end)) AS `calificaciones_3`,count((case when (`ca`.`calificacion` = 2) then 1 end)) AS `calificaciones_2`,count((case when (`ca`.`calificacion` = 1) then 1 end)) AS `calificaciones_1` from ((((`usuarios` `u` left join `propiedades` `p` on((`u`.`id` = `p`.`agente_id`))) left join `solicitudes_compra` `sc` on((`u`.`id` = `sc`.`agente_id`))) left join `citas` `c` on((`u`.`id` = `c`.`agente_id`))) left join `calificaciones_agentes` `ca` on((`u`.`id` = `ca`.`agente_id`))) where (`u`.`rol` = 'agente') group by `u`.`id`;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_estadisticas_detalladas_agente` AS select `u`.`id` AS `agente_id`,concat(`u`.`nombre`,' ',`u`.`apellido`) AS `nombre_agente`,`u`.`email` AS `email_agente`,`u`.`telefono` AS `telefono_agente`,`u`.`ciudad` AS `ciudad_agente`,`u`.`sector` AS `sector_agente`,`u`.`fecha_registro` AS `fecha_registro`,`u`.`ultimo_acceso` AS `ultimo_acceso`,`u`.`perfil_publico_activo` AS `perfil_publico_activo`,`u`.`biografia` AS `biografia`,count(`p`.`id`) AS `total_propiedades`,count((case when (`p`.`estado_publicacion` = 'activa') then 1 end)) AS `propiedades_activas`,count((case when (`p`.`estado_publicacion` = 'vendida') then 1 end)) AS `propiedades_vendidas`,count((case when (`p`.`estado_publicacion` = 'en_revision') then 1 end)) AS `propiedades_revision`,count((case when (`p`.`estado_publicacion` = 'rechazada') then 1 end)) AS `propiedades_rechazadas`,count(`sc`.`id`) AS `total_solicitudes`,count((case when (`sc`.`estado` = 'nuevo') then 1 end)) AS `solicitudes_nuevas`,count((case when (`sc`.`estado` = 'en_revision') then 1 end)) AS `solicitudes_revision`,count((case when (`sc`.`estado` = 'reunion_agendada') then 1 end)) AS `solicitudes_reunion`,count((case when (`sc`.`estado` = 'cerrado') then 1 end)) AS `solicitudes_cerradas`,count(`c`.`id`) AS `total_citas`,count((case when (`c`.`estado` = 'propuesta') then 1 end)) AS `citas_propuestas`,count((case when (`c`.`estado` = 'aceptada') then 1 end)) AS `citas_aceptadas`,count((case when (`c`.`estado` = 'realizada') then 1 end)) AS `citas_realizadas`,count((case when (`c`.`estado` = 'cancelada') then 1 end)) AS `citas_canceladas`,coalesce(sum((case when (`p`.`estado_publicacion` = 'vendida') then `p`.`precio_venta` else 0 end)),0) AS `total_ventas`,coalesce(avg((case when (`p`.`estado_publicacion` = 'vendida') then `p`.`precio_venta` end)),0) AS `precio_promedio_venta`,coalesce(avg(`ca`.`calificacion`),0) AS `calificacion_promedio`,count(`ca`.`id`) AS `total_calificaciones`,count((case when (`ca`.`calificacion` = 5) then 1 end)) AS `calificaciones_5`,count((case when (`ca`.`calificacion` = 4) then 1 end)) AS `calificaciones_4`,count((case when (`ca`.`calificacion` = 3) then 1 end)) AS `calificaciones_3`,count((case when (`ca`.`calificacion` = 2) then 1 end)) AS `calificaciones_2`,count((case when (`ca`.`calificacion` = 1) then 1 end)) AS `calificaciones_1` from ((((`usuarios` `u` left join `propiedades` `p` on((`u`.`id` = `p`.`agente_id`))) left join `solicitudes_compra` `sc` on((`u`.`id` = `sc`.`agente_id`))) left join `citas` `c` on((`u`.`id` = `c`.`agente_id`))) left join `calificaciones_agentes` `ca` on((`u`.`id` = `ca`.`agente_id`))) where (`u`.`rol` = 'agente') group by `u`.`id`;
 
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `vista_estadisticas_propiedades`;
@@ -886,7 +920,7 @@ CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_estadisticas_usuario
 
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `vista_favoritos_usuario`;
-CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_favoritos_usuario` AS select `f`.`id` AS `favorito_id`,`f`.`usuario_id` AS `usuario_id`,`f`.`propiedad_id` AS `propiedad_id`,`f`.`fecha_agregado` AS `fecha_agregado`,`p`.`titulo` AS `titulo`,`p`.`descripcion` AS `descripcion`,`p`.`tipo` AS `tipo`,`p`.`precio` AS `precio`,`p`.`moneda` AS `moneda`,`p`.`ciudad` AS `ciudad`,`p`.`sector` AS `sector`,`p`.`direccion` AS `direccion`,`p`.`metros_cuadrados` AS `metros_cuadrados`,`p`.`habitaciones` AS `habitaciones`,`p`.`banos` AS `banos`,`p`.`estacionamientos` AS `estacionamientos`,`p`.`estado_propiedad` AS `estado_propiedad`,`p`.`estado_publicacion` AS `estado_publicacion`,`p`.`fecha_creacion` AS `fecha_creacion`,`u`.`nombre` AS `agente_nombre`,`u`.`apellido` AS `agente_apellido`,`u`.`telefono` AS `agente_telefono`,(select `imagenes_propiedades`.`ruta` from `imagenes_propiedades` where ((`imagenes_propiedades`.`propiedad_id` = `p`.`id`) and (`imagenes_propiedades`.`es_principal` = 1)) limit 1) AS `imagen_principal` from ((`favoritos_propiedades` `f` join `propiedades` `p` on((`f`.`propiedad_id` = `p`.`id`))) left join `usuarios` `u` on((`p`.`agente_id` = `u`.`id`))) where (`p`.`estado_publicacion` = 'activa') order by `f`.`fecha_agregado` desc;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vista_favoritos_usuario` AS select `f`.`id` AS `favorito_id`,`f`.`usuario_id` AS `usuario_id`,`f`.`propiedad_id` AS `propiedad_id`,`f`.`fecha_agregado` AS `fecha_agregado`,`p`.`titulo` AS `titulo`,`p`.`descripcion` AS `descripcion`,`p`.`tipo` AS `tipo`,`p`.`precio` AS `precio`,`p`.`moneda` AS `moneda`,`p`.`ciudad` AS `ciudad`,`p`.`sector` AS `sector`,`p`.`direccion` AS `direccion`,`p`.`metros_cuadrados` AS `metros_cuadrados`,`p`.`habitaciones` AS `habitaciones`,`p`.`banos` AS `banos`,`p`.`estacionamientos` AS `estacionamientos`,`p`.`estado_propiedad` AS `estado_propiedad`,`p`.`estado_publicacion` AS `estado_publicacion`,`p`.`fecha_creacion` AS `fecha_creacion`,`u`.`nombre` AS `agente_nombre`,`u`.`apellido` AS `agente_apellido`,`u`.`telefono` AS `agente_telefono`,(select `ip`.`ruta` from `imagenes_propiedades` `ip` where ((`ip`.`propiedad_id` = `p`.`id`) and (`ip`.`es_principal` = 1)) limit 1) AS `imagen_principal` from ((`favoritos_propiedades` `f` join `propiedades` `p` on((`f`.`propiedad_id` = `p`.`id`))) left join `usuarios` `u` on((`p`.`agente_id` = `u`.`id`))) where (`p`.`estado_publicacion` = 'activa') order by `f`.`fecha_agregado` desc;
 
 -- Removing temporary table and create final VIEW structure
 DROP TABLE IF EXISTS `vista_propiedades_agente`;
