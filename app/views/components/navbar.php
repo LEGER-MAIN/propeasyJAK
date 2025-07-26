@@ -8,7 +8,9 @@
 ?>
 
 <!-- Navbar Principal -->
-<header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40" style="background-color: var(--bg-light) !important; border-bottom-color: var(--color-gris-claro) !important; box-shadow: var(--shadow-sm) !important;">
+<header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40" 
+        data-user-role="<?= $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente' ?>"
+        style="background-color: var(--bg-light) !important; border-bottom-color: var(--color-gris-claro) !important; box-shadow: var(--shadow-sm) !important;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
             <!-- Logo -->
@@ -76,12 +78,14 @@
                         <span>Dashboard</span>
                     </a>
                     
-                    <!-- Chat Icon -->
+                    <!-- Chat Icon - Solo para clientes y agentes -->
+                    <?php if (!hasRole(ROLE_ADMIN)): ?>
                     <a href="/chat" class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 relative <?= $_SERVER['REQUEST_URI'] === '/chat' ? 'bg-blue-100 text-blue-700' : '' ?>" style="color: var(--text-primary); <?= $_SERVER['REQUEST_URI'] === '/chat' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-comments"></i>
                         <span>Chat</span>
                         <span id="chat-notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
                     </a>
+                    <?php endif; ?>
                 <?php endif; ?>
             </nav>
             
@@ -250,11 +254,13 @@
                         <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
                     </a>
                     
-                    <!-- Chat en menú mobile -->
+                    <!-- Chat en menú mobile - Solo para clientes y agentes -->
+                    <?php if (!hasRole(ROLE_ADMIN)): ?>
                     <a href="/chat" class="block px-3 py-2 text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md text-base font-medium relative <?= $_SERVER['REQUEST_URI'] === '/chat' ? 'bg-blue-50 text-blue-700' : '' ?>" style="<?= $_SERVER['REQUEST_URI'] === '/chat' ? 'background-color: var(--color-azul-marino-light) !important; color: var(--color-azul-marino) !important;' : '' ?>">
                         <i class="fas fa-comments mr-3"></i>Chat
                         <span id="chat-notification-badge-mobile" class="absolute top-2 right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
                     </a>
+                    <?php endif; ?>
                     
 
                     
@@ -374,6 +380,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateChatNotifications() {
         // Verificar si el usuario está autenticado
         if (!document.querySelector('[data-user-id]')) return;
+        
+        // Verificar si el usuario es administrador (no mostrar notificaciones de chat)
+        const userRole = document.querySelector('[data-user-role]')?.dataset.userRole;
+        if (userRole === 'admin') return;
         
         fetch('/chat/unread-count', {
             method: 'GET',

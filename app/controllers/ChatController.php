@@ -30,6 +30,13 @@ class ChatController {
             exit;
         }
 
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            include APP_PATH . '/views/errors/chat_admin_restricted.php';
+            exit;
+        }
+
         // Redirigir al chat simple que funciona
         header('Location: /chat/simple');
         exit;
@@ -46,6 +53,13 @@ class ChatController {
 
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
+            exit;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            include APP_PATH . '/views/errors/chat_admin_restricted.php';
             exit;
         }
 
@@ -91,6 +105,13 @@ class ChatController {
 
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
+            exit;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            include APP_PATH . '/views/errors/chat_admin_restricted.php';
             exit;
         }
 
@@ -142,6 +163,14 @@ class ChatController {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado']);
+            return;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
             return;
         }
 
@@ -198,6 +227,14 @@ class ChatController {
             return;
         }
 
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
+            return;
+        }
+
         $user_id = $_SESSION['user_id'];
 
         // Verificar acceso a la conversación
@@ -228,6 +265,13 @@ class ChatController {
 
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
+            exit;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            include APP_PATH . '/views/errors/chat_admin_restricted.php';
             exit;
         }
 
@@ -294,6 +338,14 @@ class ChatController {
             return;
         }
 
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
+            return;
+        }
+
         $user_id = $_SESSION['user_id'];
         $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
 
@@ -324,6 +376,14 @@ class ChatController {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado']);
+            return;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
             return;
         }
 
@@ -364,6 +424,14 @@ class ChatController {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado']);
+            return;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
             return;
         }
 
@@ -420,6 +488,14 @@ class ChatController {
             return;
         }
 
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
+            return;
+        }
+
         $user_id = $_SESSION['user_id'];
         $user_role = $_SESSION['role'] ?? 'cliente';
 
@@ -461,6 +537,14 @@ class ChatController {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado']);
+            return;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
             return;
         }
 
@@ -522,6 +606,14 @@ class ChatController {
             return;
         }
 
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
+            return;
+        }
+
         $user_id = $_SESSION['user_id'];
         $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
 
@@ -554,6 +646,14 @@ class ChatController {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado']);
+            return;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
             return;
         }
 
@@ -602,6 +702,14 @@ class ChatController {
             return;
         }
 
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
+            return;
+        }
+
         $user_id = $_SESSION['user_id'];
         $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
 
@@ -632,6 +740,14 @@ class ChatController {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado']);
+            return;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
             return;
         }
 
@@ -672,6 +788,14 @@ class ChatController {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado']);
+            return;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
             return;
         }
 
@@ -780,6 +904,14 @@ class ChatController {
             return;
         }
 
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
+            return;
+        }
+
         // Obtener datos JSON
         $input = json_decode(file_get_contents('php://input'), true);
         $other_user_id = $input['user_id'] ?? null;
@@ -856,6 +988,13 @@ class ChatController {
 
         if (!isset($_SESSION['user_id'])) {
             header('Location: /login');
+            exit;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            include APP_PATH . '/views/errors/chat_admin_restricted.php';
             exit;
         }
 
@@ -966,6 +1105,14 @@ class ChatController {
             return;
         }
 
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
+            return;
+        }
+
         // Obtener datos JSON
         $input = json_decode(file_get_contents('php://input'), true);
         $conversation_id = $input['conversation_id'] ?? null;
@@ -1024,6 +1171,14 @@ class ChatController {
             return;
         }
 
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
+            return;
+        }
+
         $user_id = $_SESSION['user_id'];
         $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
 
@@ -1054,6 +1209,14 @@ class ChatController {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado']);
+            return;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
             return;
         }
 
@@ -1093,6 +1256,14 @@ class ChatController {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado']);
+            return;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
             return;
         }
 
@@ -1144,6 +1315,14 @@ class ChatController {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado']);
+            return;
+        }
+
+        // Verificar que no sea administrador
+        $user_role = $_SESSION['user_rol'] ?? $_SESSION['role'] ?? 'cliente';
+        if ($user_role === 'admin') {
+            http_response_code(403);
+            echo json_encode(['error' => 'Acceso denegado para administradores']);
             return;
         }
 

@@ -62,6 +62,7 @@ El chat funciona automáticamente una vez que el sistema esté corriendo. Incluy
 - ✅ Chat directo entre usuarios
 - ✅ Chat con agentes desde propiedades
 - ✅ Notificaciones automáticas
+- ✅ **Restricción**: Solo disponible para clientes y agentes (no administradores)
 
 ---
 

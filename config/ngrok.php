@@ -67,7 +67,7 @@ function getWebSocketUrl() {
         }
         
         // Si no se puede obtener, usar la URL hardcodeada como fallback
-        return 'wss://e4c5a0211f2f.ngrok-free.app';
+        return 'wss://f278b5549a81.ngrok-free.app';
     }
     
     // 2. Para desarrollo local (sin ngrok)
@@ -157,6 +157,7 @@ if (isNgrok() || isLocalDevelopment()) {
         setNgrokHeaders();
     }
 } 
+
 
 
 
