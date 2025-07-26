@@ -9,12 +9,29 @@ Sistema completo de gestión inmobiliaria con chat en tiempo real, citas, report
 - MySQL
 - ngrok (se descarga automáticamente)
 
-### **Para iniciar:**
+### **Opciones de inicio:**
+
+#### **1. Con ngrok (Internet + Local):**
 ```powershell
 .\start_propeasy.bat
 ```
 
-**El script hace todo automáticamente:**
+#### **2. Solo local (sin ngrok):**
+```powershell
+.\start_local.bat
+```
+
+#### **3. Solo WebSocket local:**
+```powershell
+.\start_websocket_local.bat
+```
+
+#### **4. Probar configuración:**
+```powershell
+php test_websocket.php
+```
+
+**El script principal hace todo automáticamente:**
 - ✅ Descarga e instala ngrok
 - ✅ Inicia servidor web (puerto 80)
 - ✅ Inicia WebSocket (puerto 8080)
@@ -26,6 +43,12 @@ Sistema completo de gestión inmobiliaria con chat en tiempo real, citas, report
 
 ## 🌐 Acceso
 
+### **Modo Local (sin ngrok):**
+- **Web**: `http://localhost:80`
+- **WebSocket**: `ws://localhost:8080`
+- **Desde otra máquina**: `http://[TU-IP]:80` y `ws://[TU-IP]:8080`
+
+### **Modo ngrok (Internet + Local):**
 - **Local**: `http://localhost:80`
 - **Internet**: URL de ngrok en `http://localhost:4040`
 - **WebSocket**: Configurado automáticamente para chat en tiempo real
